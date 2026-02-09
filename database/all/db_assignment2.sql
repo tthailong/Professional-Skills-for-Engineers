@@ -749,7 +749,7 @@ VALUES
 
 -- ReactionIcon
 CREATE TABLE ReactionIcon (
-    Reaction_id INT PRIMARY KEY AUTO_INCREMENT,
+    Icon_id INT PRIMARY KEY AUTO_INCREMENT,
     Name VARCHAR(50) NOT NULL,
     Symbol VARCHAR(50) NOT NULL
 ) ENGINE=InnoDB
@@ -757,22 +757,27 @@ CREATE TABLE ReactionIcon (
   COLLATE=utf8mb4_unicode_ci;
 INSERT INTO ReactionIcon (Name, Symbol)
 VALUES
-('Boring', 'https://www.svgrepo.com/show/533103/heart.svg'),
-('Mind-blowing', 'https://www.svgrepo.com/show/533103/heart.svg'),
-('Scared', 'https://www.svgrepo.com/show/533103/heart.svg'),
-('Funny', 'https://www.svgrepo.com/show/533103/heart.svg'),
-('Sad', 'https://www.svgrepo.com/show/533103/heart.svg'),
-('Epic', 'https://www.svgrepo.com/show/533103/heart.svg');
+('Boring', 'https://raw.githubusercontent.com/googlefonts/noto-emoji/main/svg/emoji_u1f634.svg'),
+('Mind-blowing', 'https://raw.githubusercontent.com/googlefonts/noto-emoji/main/svg/emoji_u1f92f.svg'),
+('Scared', 'https://raw.githubusercontent.com/googlefonts/noto-emoji/main/svg/emoji_u1f628.svg'),
+('Funny', 'https://raw.githubusercontent.com/googlefonts/noto-emoji/main/svg/emoji_u1f602.svg'),
+('Sad', 'https://raw.githubusercontent.com/googlefonts/noto-emoji/main/svg/emoji_u1f62d.svg'),
+('Epic', 'https://raw.githubusercontent.com/googlefonts/noto-emoji/main/svg/emoji_u1f525.svg');
 
---CREATE TABLE movie_reactions (
---    vote_id INT PRIMARY KEY AUTO_INCREMENT,
---    movie_id INT NOT NULL,
---    user_id INT NOT NULL,
---    reaction_id INT NOT NULL, -- This links to ReactionIcon
---    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
---    FOREIGN KEY (reaction_id) REFERENCES ReactionIcon(reaction_id),
---    UNIQUE KEY (movie_id, user_id) -- Prevents a user from voting twice on the same movie
---);
+CREATE TABLE React (
+    React_id INT PRIMARY KEY AUTO_INCREMENT,
+    Movie_id INT NOT NULL,
+    Customer_id INT NOT NULL,
+    Icon_id INT NOT NULL, -- This links to ReactionIcon
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (Icon_id) REFERENCES ReactionIcon(Icon_id),
+    FOREIGN KEY (Movie_id) REFERENCES Movie(Movie_id),
+    FOREIGN KEY (Customer_id) REFERENCES Customer(Customer_id),
+    UNIQUE KEY (Movie_id, Customer_id, Icon_id) -- Prevents a user from voting the same icon on the same movie
+) ENGINE=InnoDB
+  DEFAULT CHARSET=utf8mb4
+  COLLATE=utf8mb4_unicode_ci;
+
 
 -- THÊM KHÓA NGOẠI SAU KHI BẢNG CHA ĐÃ TẠO
 ALTER TABLE Movie
