@@ -59,6 +59,7 @@ CREATE TABLE Review(
     Rating Decimal(2,1),
     Date_comment Date,
     Comment VARCHAR(250),
+    spoiler_tag enum('spoiler', 'non_spoiler') NOT NULL DEFAULT 'non_spoiler',
     FOREIGN KEY(Movie_id) REFERENCES Movie(Movie_id),
     FOREIGN KEY(Customer_id) REFERENCES Customer(Customer_id)
 )ENGINE=InnoDB
