@@ -18,6 +18,7 @@ from admin_regular_routes.admin_regular_movies import router as admin_regular_mo
 from admin_regular_routes.admin_regular_showtime import router as admin_regular_showtimes_router
 from routes.receipt import router as receipt_router
 from admin_routes.dashboard import router as dashboard_router
+from routes.votemood import router as votemood_router
 
 app = FastAPI()
 origins = [
@@ -43,6 +44,7 @@ app.include_router(authentication_router)
 app.include_router(voucher)
 app.include_router(membership)
 app.include_router(receipt_router)
+app.include_router(votemood_router)
 
 
 # router cho admin

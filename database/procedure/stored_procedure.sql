@@ -154,7 +154,7 @@ BEGIN
 		SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'ERROR: Invalid date of birth format.';
 	END IF;
     IF dob IS NOT NULL AND dob != old_dob AND TIMESTAMPDIFF(YEAR, dob, CURDATE()) < 15 THEN
-        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'ERROR: Customer\'s age has to be greater than or equal to 15.';
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'ERROR: Customer age has to be greater than or equal to 15.';
     END IF;
 
     -- foreign key membershipid --
@@ -3645,7 +3645,49 @@ BEGIN
     DELETE FROM Receipt WHERE Receipt_id = p_receipt_id;
 END $$
 
+-- this is vote mood --
+DROP PROCEDURE IF EXISTS vote_mood$$
+CREATE PROCEDURE vote_mood
+(
+    IN p_movie_id INT,
+    IN p_customer_id INT,
+    IN p_mood_id INT
+)
+BEGIN
 
+    -- Validate movie_id
+    IF p_movie_id IS NULL THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'ERROR: movie id cant be null';
+    ELSEIF NOT EXISTS (SELECT 1 FROM Movie WHERE Movie_id = p_movie_id) THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'ERROR: movie id dont exist';
+    END IF;
+    
+    -- Validate customer_id
+    IF p_customer_id IS NULL THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'ERROR: customer id cant be null';
+    ELSEIF NOT EXISTS (SELECT 1 FROM Customer WHERE Customer_id = p_customer_id) THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'ERROR: customer id dont exist';
+    END IF;
+
+    -- Validate mood_id
+    IF p_mood_id IS NULL THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'ERROR: mood id cant be null';
+    ELSEIF NOT EXISTS (SELECT 1 FROM Mood WHERE Mood_id = p_mood_id) THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'ERROR: mood id dont exist';
+    END IF;
+
+    -- Toggle vote: delete if exists, insert if doesn't exist
+    IF EXISTS (SELECT 1 FROM Vote WHERE Movie_id = p_movie_id AND Customer_id = p_customer_id AND Mood_id = p_mood_id) THEN
+        DELETE FROM Vote WHERE Movie_id = p_movie_id AND Customer_id = p_customer_id AND Mood_id = p_mood_id;
+    ELSE
+        INSERT INTO Vote (Movie_id, Customer_id, Mood_id)
+        VALUES (p_movie_id, p_customer_id, p_mood_id);
+    END IF;
+
+END $$
+
+
+------------------------------------------------------------------------------------------------------------------
 -- READ PROCEDURE --
 -- xếp hạng thành viên có loyal point cao nhất dựa theo từng mức (input: Bronze, Silver)
 DROP PROCEDURE IF EXISTS get_customers_by_membership $$
@@ -4425,7 +4467,7 @@ BEGIN
     -- date of birth --
     SET dob = STR_TO_DATE(dob_input, '%d/%m/%Y');
     IF dob IS NOT NULL AND TIMESTAMPDIFF(YEAR, dob, CURDATE()) < 18 THEN
-        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'ERROR: Admin\'s age has to be greater than or equal to 18.';
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'ERROR: Admin age has to be greater than or equal to 18.';
     END IF;
     
     -- foreign key branch id --
@@ -4502,7 +4544,7 @@ BEGIN
     -- date of birth --
     SET dob = STR_TO_DATE(dob_input, '%d/%m/%Y');
     IF dob IS NOT NULL AND dob != old_dob AND TIMESTAMPDIFF(YEAR, dob, CURDATE()) < 18 THEN
-        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'ERROR: Admin\'s age has to be greater than or equal to 18.';
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'ERROR: Admin age has to be greater than or equal to 18.';
     END IF;
     
     -- foreign key branch id --

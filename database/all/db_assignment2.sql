@@ -748,6 +748,38 @@ VALUES
 (4, 'Comedy'),
 (5, 'Fantasy');
 
+-- Mood
+CREATE TABLE Mood (
+    Mood_id INT PRIMARY KEY AUTO_INCREMENT,
+    Name VARCHAR(50) NOT NULL,
+    Symbol VARCHAR(255) NOT NULL
+) ENGINE=InnoDB
+  DEFAULT CHARSET=utf8mb4
+  COLLATE=utf8mb4_unicode_ci;
+INSERT INTO Mood (Name, Symbol)
+VALUES
+('Boring', 'https://raw.githubusercontent.com/googlefonts/noto-emoji/main/svg/emoji_u1f634.svg'),
+('Mind-blowing', 'https://raw.githubusercontent.com/googlefonts/noto-emoji/main/svg/emoji_u1f92f.svg'),
+('Scared', 'https://raw.githubusercontent.com/googlefonts/noto-emoji/main/svg/emoji_u1f628.svg'),
+('Funny', 'https://raw.githubusercontent.com/googlefonts/noto-emoji/main/svg/emoji_u1f602.svg'),
+('Sad', 'https://raw.githubusercontent.com/googlefonts/noto-emoji/main/svg/emoji_u1f62d.svg'),
+('Epic', 'https://raw.githubusercontent.com/googlefonts/noto-emoji/main/svg/emoji_u1f525.svg');
+
+CREATE TABLE Vote (
+    Vote_id INT PRIMARY KEY AUTO_INCREMENT,
+    Movie_id INT NOT NULL,
+    Customer_id INT NOT NULL,
+    Mood_id INT NOT NULL,
+    Created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (Mood_id) REFERENCES Mood(Mood_id),
+    FOREIGN KEY (Movie_id) REFERENCES Movie(Movie_id),
+    FOREIGN KEY (Customer_id) REFERENCES Customer(Customer_id),
+    UNIQUE KEY (Movie_id, Customer_id, Mood_id) -- Prevents a user from voting the same icon on the same movie
+) ENGINE=InnoDB
+  DEFAULT CHARSET=utf8mb4
+  COLLATE=utf8mb4_unicode_ci;
+
+
 -- THÊM KHÓA NGOẠI SAU KHI BẢNG CHA ĐÃ TẠO
 ALTER TABLE Movie
 ADD CONSTRAINT fk_movie_admin FOREIGN KEY (Admin_id) REFERENCES Admin(Admin_id);
