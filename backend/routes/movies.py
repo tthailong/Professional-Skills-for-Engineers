@@ -5,6 +5,7 @@ from typing import Optional, List
 from sqlalchemy import text
 from database import get_session
 from datetime import datetime
+from model import is_non_spoiler_comment
 router = APIRouter(
     prefix="/movies",
     tags =["movies - publics"]
@@ -134,7 +135,7 @@ def get_movies(
         raise HTTPException(status_code=500, detail=str(e))
     
 @router.get("/{movie_id}", response_model=MovieDetailOut)
-def get_movie_detail(movie_id: int, session: Session = Depends(get_session)):
+def get_movie_detail(movie_id: int, tag: Optional[str] = None, session: Session = Depends(get_session)):
     try:
         # 1) Lấy movie detail with multi-value attributes
         movie_query = text("""
@@ -184,8 +185,8 @@ def get_movie_detail(movie_id: int, session: Session = Depends(get_session)):
         showtimes_result = session.exec(showtime_proc, params={"mid": movie_id})
         showtimes = showtimes_result.mappings().all()
 
-        review_proc = text("CALL GetMovieReviews(:mid)")
-        review_result = session.exec(review_proc, params={"mid": movie_id})
+        review_proc = text("CALL GetMovieReviews(:mid,:spoiler)")
+        review_result = session.exec(review_proc, params={"mid": movie_id, "spoiler": tag})
         reviews = review_result.mappings().all()
 
         return {
@@ -202,6 +203,7 @@ class ReviewCreate(BaseModel):
     rating: float
     date_comment: Optional[str] = None   # dd/mm/yyyy
     comment: Optional[str] = None
+    spoiler: Optional[str] = "spoiler"
 
 @router.post("/{movie_id}/reviews")
 def create_review(movie_id: int, 
@@ -211,13 +213,20 @@ def create_review(movie_id: int,
     try:
         date_str = datetime.now().strftime("%d/%m/%Y")
         
+        if data.spoiler == "non_spoiler" and not is_non_spoiler_comment(data.comment):
+            return {
+                "result": False,
+                "message": "Comment submitted may contains spoilers, please remove spoiler content or change spoiler tag."
+                }
+        
         proc = text("""
             CALL create_review(
                 :movie_id,
                 :customer_id,
                 :rating,
                 :date_comment,
-                :comment
+                :comment,
+                :spoiler
             )
         """)
 
@@ -226,11 +235,13 @@ def create_review(movie_id: int,
             "customer_id": data.customer_id,
             "rating": data.rating,
             "date_comment": date_str,
-            "comment": data.comment
+            "comment": data.comment,
+            "spoiler": data.spoiler
         })
         session.commit()
 
         return {
+            "result": True,
             "message": "Review created successfully"
         }
 
