@@ -59,6 +59,7 @@ CREATE TABLE Review(
     Rating Decimal(2,1),
     Date_comment Date,
     Comment VARCHAR(250),
+    spoiler_tag enum('spoiler', 'non_spoiler') NOT NULL DEFAULT 'non_spoiler',
     FOREIGN KEY(Movie_id) REFERENCES Movie(Movie_id),
     FOREIGN KEY(Customer_id) REFERENCES Customer(Customer_id)
 )ENGINE=InnoDB
@@ -2879,7 +2880,7 @@ DELIMITER ;
 -- ============================================
 DELIMITER $$
 DROP PROCEDURE IF EXISTS GetMovieReviews $$
-CREATE PROCEDURE GetMovieReviews(IN p_movie_id INT)
+CREATE PROCEDURE GetMovieReviews(IN p_movie_id INT, IN p_spoiler_tag varchar(20))
 BEGIN
     SELECT 
         c.FName AS Customer_name,
@@ -2888,8 +2889,8 @@ BEGIN
         DATE_FORMAT(r.Date_comment, '%d/%m/%Y') AS Review_date
     FROM Review r
     JOIN Customer c 
-        ON c.Customer_id = r.Customer_id
-    WHERE r.Movie_id = p_movie_id
+        ON c.Customer_id = r.Customer_id 
+    WHERE r.Movie_id = p_movie_id AND (p_spoiler_tag IS NULL OR r.spoiler_tag = p_spoiler_tag)
     ORDER BY r.Date_comment DESC;
 END$$
 
@@ -5396,7 +5397,8 @@ CREATE PROCEDURE create_review
     IN p_customer_id INT,
     IN p_rating DECIMAL(2,1),
     IN input_date_comment VARCHAR(50),
-    IN p_comment VARCHAR(250)
+    IN p_comment VARCHAR(250),
+    IN p_spoiler_tag ENUM('spoiler','non_spoiler')
 )
 BEGIN
     DECLARE p_date_comment DATE;
@@ -5445,8 +5447,8 @@ BEGIN
     END IF;
 
     -- Insert review
-    INSERT INTO Review (Movie_id, Customer_id, Rating, Date_comment, Comment)
-    VALUES (p_movie_id, p_customer_id, p_rating, p_date_comment, p_comment);
+    INSERT INTO Review (Movie_id, Customer_id, Rating, Date_comment, Comment,spoiler_tag)
+    VALUES (p_movie_id, p_customer_id, p_rating, p_date_comment, p_comment, p_spoiler_tag);
 
 END $$
 

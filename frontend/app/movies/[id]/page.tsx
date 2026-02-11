@@ -32,6 +32,11 @@ import { Textarea } from "@/components/ui/textarea";
 // 🌎 API & DATA TYPE DEFINITIONS (Matching FastAPI output)
 // =========================================================================
 
+enum SpoilerTag {
+  NON_SPOILER = "non_spoiler",
+  SPOILER = "spoiler",
+}
+
 interface Review {
   Customer_name: string;
   Rating: number;
@@ -163,6 +168,8 @@ export default function MovieDetailsPage() {
   const searchParams = useSearchParams();
   const movieId = params.id ? Number(params.id) : null;
 
+  const [tag, setTag] = useState<SpoilerTag>(SpoilerTag.NON_SPOILER);
+
   // --- State for API Data ---
   const [movieData, setMovieData] = useState<MovieData | null>(null);
   const [showtimesData, setShowtimesData] = useState<Showtime[]>([]);
@@ -192,39 +199,42 @@ export default function MovieDetailsPage() {
   const [selectedDate, setSelectedDate] = useState<Date>(initialDate);
 
   // --- API Fetch Logic ---
-  const fetchMovieDetails = useCallback(async (id: number) => {
-    setIsLoading(true);
-    setError(null);
-    try {
-      const url = `${API_BASE_URL}/movies/${id}`;
-      const response = await fetch(url);
+  const fetchMovieDetails = useCallback(
+    async (id: number, tag: SpoilerTag | null) => {
+      setIsLoading(true);
+      setError(null);
+      try {
+        const url = `${API_BASE_URL}/movies/${id}/${tag ? `?tag=${tag}` : ""}`;
+        const response = await fetch(url);
 
-      if (response.status === 404) {
-        setError("Movie not found (404)");
-        toast.error(`Movie with ID ${id} not found.`);
-        return;
+        if (response.status === 404) {
+          setError("Movie not found (404)");
+          toast.error(`Movie with ID ${id} not found.`);
+          return;
+        }
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+
+        const data: MovieDetailApi = await response.json();
+
+        const movie = transformMovieData(data.movie, data.reviews);
+
+        setMovieData(movie);
+        setShowtimesData(data.showtimes);
+        setReviewsData(data.reviews);
+      } catch (e: any) {
+        const errorMessage = e.message || "An unknown error occurred.";
+        setError(errorMessage);
+        toast.error(`Failed to load movie details: ${errorMessage}`);
+        console.error("API Fetch Error:", e);
+      } finally {
+        setIsLoading(false);
       }
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! Status: ${response.status}`);
-      }
-
-      const data: MovieDetailApi = await response.json();
-
-      const movie = transformMovieData(data.movie, data.reviews);
-
-      setMovieData(movie);
-      setShowtimesData(data.showtimes);
-      setReviewsData(data.reviews);
-    } catch (e: any) {
-      const errorMessage = e.message || "An unknown error occurred.";
-      setError(errorMessage);
-      toast.error(`Failed to load movie details: ${errorMessage}`);
-      console.error("API Fetch Error:", e);
-    } finally {
-      setIsLoading(false);
-    }
-  }, []);
+    },
+    [],
+  );
 
   // --- Mood Voting Functions ---
   const fetchMoodOptions = useCallback(async () => {
@@ -328,7 +338,7 @@ export default function MovieDetailsPage() {
 
   useEffect(() => {
     if (movieId) {
-      fetchMovieDetails(movieId);
+      fetchMovieDetails(movieId, tag);
       fetchMoodOptions();
       fetchMoodVotes(movieId);
       
@@ -430,8 +440,9 @@ export default function MovieDetailsPage() {
             customer_id: parseInt(user.id),
             rating: newReviewData.rating,
             comment: newReviewData.comment,
+            spoiler: tag,
           }),
-        }
+        },
       );
 
       if (!res.ok) {
@@ -439,9 +450,17 @@ export default function MovieDetailsPage() {
         throw new Error(errorData.detail || "Failed to submit review");
       }
 
-      toast.success("Review submitted successfully!");
+      const data = await res.json();
+      if (data.result) {
+        toast.success("Review submitted successfully!");
+      } else {
+        toast.error(
+          data.message || "Failed to submit review. Please try again.",
+        );
+        return;
+      }
       // Refresh reviews
-      fetchMovieDetails(movieData.id);
+      fetchMovieDetails(movieData.id, tag);
     } catch (err: any) {
       toast.error(err.message);
     }

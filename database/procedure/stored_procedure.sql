@@ -2405,7 +2405,8 @@ CREATE PROCEDURE create_review
     IN p_customer_id INT,
     IN p_rating DECIMAL(2,1),
     IN input_date_comment VARCHAR(50),
-    IN p_comment VARCHAR(250)
+    IN p_comment VARCHAR(250),
+    IN p_spoiler_tag ENUM('spoiler','non_spoiler')
 )
 BEGIN
     DECLARE p_date_comment DATE;
@@ -2454,8 +2455,8 @@ BEGIN
     END IF;
 
     -- Insert review
-    INSERT INTO Review (Movie_id, Customer_id, Rating, Date_comment, Comment)
-    VALUES (p_movie_id, p_customer_id, p_rating, p_date_comment, p_comment);
+    INSERT INTO Review (Movie_id, Customer_id, Rating, Date_comment, Comment, spoiler_tag)
+    VALUES (p_movie_id, p_customer_id, p_rating, p_date_comment, p_comment, p_spoiler_tag);
 
 END $$
 

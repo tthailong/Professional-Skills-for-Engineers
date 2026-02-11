@@ -41,7 +41,7 @@ DELIMITER ;
 -- ============================================
 DELIMITER $$
 DROP PROCEDURE IF EXISTS GetMovieReviews $$
-CREATE PROCEDURE GetMovieReviews(IN p_movie_id INT)
+CREATE PROCEDURE GetMovieReviews(IN p_movie_id INT, IN p_spoiler_tag varchar(20))
 BEGIN
     SELECT 
         c.FName AS Customer_name,
@@ -51,7 +51,7 @@ BEGIN
     FROM Review r
     JOIN Customer c 
         ON c.Customer_id = r.Customer_id
-    WHERE r.Movie_id = p_movie_id
+    WHERE r.Movie_id = p_movie_id AND (p_spoiler_tag IS NULL OR r.spoiler_tag = p_spoiler_tag)
     ORDER BY r.Date_comment DESC;
 END$$
 
