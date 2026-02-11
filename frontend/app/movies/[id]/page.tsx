@@ -75,6 +75,18 @@ interface MovieDetailApi {
   reviews: Review[];
 }
 
+interface MoodOption {
+  mood_id: number;
+  name: string;
+  symbol: string; // SVG URL
+}
+
+interface MoodVoteData {
+  mood_id: number;
+  mood_name: string;
+  count: number;
+}
+
 // --- Component State Type (Flattened & Processed) ---
 interface MovieData {
   id: number;
@@ -158,6 +170,13 @@ export default function MovieDetailsPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  // --- Mood Voting State ---
+  const [moodOptions, setMoodOptions] = useState<MoodOption[]>([]);
+  const [moodVotes, setMoodVotes] = useState<MoodVoteData[]>([]);
+  const [userMoodVotes, setUserMoodVotes] = useState<number[]>([]); // Array of mood IDs user voted for
+  const [hasPurchased, setHasPurchased] = useState(false);
+  const [isLoadingMoods, setIsLoadingMoods] = useState(false);
+
   // --- State for UI/Filtering ---
   const initialDateParam = searchParams.get("date");
   const initialDate = initialDateParam
@@ -207,14 +226,122 @@ export default function MovieDetailsPage() {
     }
   }, []);
 
+  // --- Mood Voting Functions ---
+  const fetchMoodOptions = useCallback(async () => {
+    try {
+      console.log("Fetching mood options from:", `${API_BASE_URL}/api/votemood/moods`);
+      const res = await fetch(`${API_BASE_URL}/api/votemood/moods`);
+      console.log("Mood options response status:", res.status);
+      if (!res.ok) throw new Error("Failed to fetch moods");
+      const data: MoodOption[] = await res.json();
+      console.log("Mood options loaded:", data);
+      setMoodOptions(data);
+    } catch (err: any) {
+      console.error("Error fetching moods:", err);
+    }
+  }, []);
+
+  const fetchMoodVotes = useCallback(async (movieId: number) => {
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/votemood/movie/${movieId}`);
+      if (!res.ok) throw new Error("Failed to fetch mood votes");
+      const data: MoodVoteData[] = await res.json();
+      setMoodVotes(data);
+    } catch (err: any) {
+      console.error("Error fetching mood votes:", err);
+    }
+  }, []);
+
+  const fetchUserMoodVotes = useCallback(
+    async (customerId: number, movieId: number) => {
+      try {
+        const res = await fetch(
+          `${API_BASE_URL}/api/votemood/user/${customerId}/movie/${movieId}`
+        );
+        if (!res.ok) throw new Error("Failed to fetch user votes");
+        const data: { mood_ids: number[] } = await res.json();
+        setUserMoodVotes(data.mood_ids);
+      } catch (err: any) {
+        console.error("Error fetching user votes:", err);
+      }
+    },
+    []
+  );
+
+  const checkPurchaseStatus = useCallback(
+    async (customerId: number, movieId: number) => {
+      try {
+        const res = await fetch(
+          `${API_BASE_URL}/api/votemood/user/${customerId}/has-purchased/${movieId}`
+        );
+        if (!res.ok) throw new Error("Failed to check purchase");
+        const data: { has_purchased: boolean } = await res.json();
+        setHasPurchased(data.has_purchased);
+      } catch (err: any) {
+        console.error("Error checking purchase:", err);
+        setHasPurchased(false);
+      }
+    },
+    []
+  );
+
+  const handleMoodVote = async (moodId: number) => {
+    if (!user || !movieData) {
+      toast.error("Please log in to vote");
+      return;
+    }
+
+    if (!hasPurchased) {
+      toast.error("You must purchase a ticket for this movie to vote");
+      return;
+    }
+
+    setIsLoadingMoods(true);
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/votemood/change`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          movie_id: movieData.id,
+          customer_id: parseInt(user.id),
+          mood_id: moodId,
+        }),
+      });
+
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData.detail || "Failed to toggle mood vote");
+      }
+
+      // Refresh mood votes and user votes
+      await fetchMoodVotes(movieData.id);
+      await fetchUserMoodVotes(parseInt(user.id), movieData.id);
+      
+      toast.success("Vote updated!");
+    } catch (err: any) {
+      toast.error(err.message);
+    } finally {
+      setIsLoadingMoods(false);
+    }
+  };
+
+
   useEffect(() => {
     if (movieId) {
       fetchMovieDetails(movieId);
+      fetchMoodOptions();
+      fetchMoodVotes(movieId);
+      
+      // If user is logged in, fetch their votes and purchase status
+      if (user) {
+        fetchUserMoodVotes(parseInt(user.id), movieId);
+        checkPurchaseStatus(parseInt(user.id), movieId);
+      }
     } else {
       setError("Invalid Movie ID provided.");
       setIsLoading(false);
     }
-  }, [movieId, fetchMovieDetails]);
+  }, [movieId, user, fetchMovieDetails, fetchMoodOptions, fetchMoodVotes, fetchUserMoodVotes, checkPurchaseStatus]);
 
   const isLoggedIn = !!user;
 
@@ -622,9 +749,115 @@ export default function MovieDetailsPage() {
 
         {/* Reviews Tab */}
         {activeTab === "reviews" && (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
-            {/* Read Reviews */}
-            <Card className="bg-card border-border h-fit">
+          <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+            {/* Write Review Section - TOP */}
+            <Card className="bg-card border-border">
+              <CardHeader>
+                <CardTitle>Write a Review</CardTitle>
+              </CardHeader>
+              <CardContent>
+                {!isLoggedIn ? (
+                  <div className="text-center py-6 space-y-4">
+                    <p className="text-muted-foreground">
+                      Please log in to share your experience.
+                    </p>
+                    <Link href="/auth/login">
+                      <Button variant="outline" className="w-full">
+                        Log In
+                      </Button>
+                    </Link>
+                  </div>
+                ) : (
+                  <AddReviewForm onSubmit={handleAddReview} />
+                )}
+              </CardContent>
+            </Card>
+
+            {/* Mood Voting Section */}
+            <Card className="bg-card border-border">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  How did this movie make you feel?
+                </CardTitle>
+                {!isLoggedIn && (
+                  <p className="text-sm text-muted-foreground mt-2">
+                    🔒 Log in to vote
+                  </p>
+                )}
+                {isLoggedIn && !hasPurchased && (
+                  <p className="text-sm text-amber-500 mt-2">
+                    🔒 Purchase a ticket for this movie to vote
+                  </p>
+                )}
+              </CardHeader>
+              <CardContent>
+                {/* Facebook-style mood row */}
+                <div className="flex flex-wrap gap-3 mb-6">
+                  {moodOptions.length === 0 ? (
+                    <p className="text-sm text-muted-foreground">
+                      Loading moods... (If this persists, check console for errors)
+                    </p>
+                  ) : (
+                    moodOptions.map((mood) => {
+                      const voteData = moodVotes.find(
+                        (v) => v.mood_id === mood.mood_id
+                      );
+                      const voteCount = voteData?.count || 0;
+                      const isVoted = userMoodVotes.includes(mood.mood_id);
+                      const canVote = isLoggedIn && hasPurchased;
+
+                      return (
+                        <button
+                          key={mood.mood_id}
+                          onClick={() => canVote && handleMoodVote(mood.mood_id)}
+                          disabled={!canVote || isLoadingMoods}
+                          className={cn(
+                            "flex items-center gap-2 px-4 py-2.5 rounded-full border-2 transition-all",
+                            "hover:scale-105 disabled:cursor-not-allowed disabled:opacity-60",
+                            isVoted
+                              ? "bg-primary border-primary text-primary-foreground shadow-lg"
+                              : "bg-secondary/30 border-border hover:border-primary/50"
+                          )}
+                        >
+                          <img
+                            src={mood.symbol}
+                            alt={mood.name}
+                            className="w-6 h-6"
+                            onError={(e) => {
+                              console.error("Failed to load mood icon:", mood.symbol);
+                              e.currentTarget.style.display = "none";
+                            }}
+                          />
+                          <span className="font-semibold text-sm">
+                            {mood.name}
+                          </span>
+                          <span
+                            className={cn(
+                              "text-xs font-bold px-2 py-0.5 rounded-full",
+                              isVoted
+                                ? "bg-primary-foreground/20"
+                                : "bg-muted"
+                            )}
+                          >
+                            {voteCount}
+                          </span>
+                        </button>
+                      );
+                    })
+                  )}
+                </div>
+
+                {/* Show loading state */}
+                {isLoadingMoods && (
+                  <p className="text-sm text-muted-foreground text-center">
+                    Updating votes...
+                  </p>
+                )}
+              </CardContent>
+            </Card>
+
+            {/* User Reviews Section - BOTTOM */}
+            <Card className="bg-card border-border">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <User className="w-5 h-5 text-primary" /> User Reviews
@@ -667,29 +900,6 @@ export default function MovieDetailsPage() {
                       </p>
                     </div>
                   ))
-                )}
-              </CardContent>
-            </Card>
-
-            {/* Add Review */}
-            <Card className="bg-card border-border h-fit sticky top-24">
-              <CardHeader>
-                <CardTitle>Write a Review</CardTitle>
-              </CardHeader>
-              <CardContent>
-                {!isLoggedIn ? (
-                  <div className="text-center py-6 space-y-4">
-                    <p className="text-muted-foreground">
-                      Please log in to share your experience.
-                    </p>
-                    <Link href="/auth/login">
-                      <Button variant="outline" className="w-full">
-                        Log In
-                      </Button>
-                    </Link>
-                  </div>
-                ) : (
-                  <AddReviewForm onSubmit={handleAddReview} />
                 )}
               </CardContent>
             </Card>
