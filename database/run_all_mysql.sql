@@ -6,6 +6,9 @@
 -- Or from MySQL CLI: SOURCE /path/to/run_all_mysql.sql
 -- =============================================================================
 
+
+-- dont work in mysql workbench
+
 -- Display script information
 SELECT 'Starting MySQL Batch Execution...' AS Status;
 SELECT NOW() AS 'Execution Start Time';

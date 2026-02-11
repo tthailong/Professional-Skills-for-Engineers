@@ -3654,24 +3654,28 @@ CREATE PROCEDURE vote_mood
 )
 BEGIN
 
+    -- Validate movie_id
     IF p_movie_id IS NULL THEN
-        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'ERROR: movie id cant be null'
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'ERROR: movie id cant be null';
     ELSEIF NOT EXISTS (SELECT 1 FROM Movie WHERE Movie_id = p_movie_id) THEN
-        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'ERROR: movie id dont exist'
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'ERROR: movie id dont exist';
     END IF;
     
+    -- Validate customer_id
     IF p_customer_id IS NULL THEN
-        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'ERROR: customer id cant be null'
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'ERROR: customer id cant be null';
     ELSEIF NOT EXISTS (SELECT 1 FROM Customer WHERE Customer_id = p_customer_id) THEN
-        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'ERROR: customer id dont exist'
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'ERROR: customer id dont exist';
     END IF;
 
+    -- Validate mood_id
     IF p_mood_id IS NULL THEN
-        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'ERROR: mood id cant be null'
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'ERROR: mood id cant be null';
     ELSEIF NOT EXISTS (SELECT 1 FROM Mood WHERE Mood_id = p_mood_id) THEN
-        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'ERROR: mood id dont exist'
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'ERROR: mood id dont exist';
     END IF;
 
+    -- Toggle vote: delete if exists, insert if doesn't exist
     IF EXISTS (SELECT 1 FROM Vote WHERE Movie_id = p_movie_id AND Customer_id = p_customer_id AND Mood_id = p_mood_id) THEN
         DELETE FROM Vote WHERE Movie_id = p_movie_id AND Customer_id = p_customer_id AND Mood_id = p_mood_id;
     ELSE
