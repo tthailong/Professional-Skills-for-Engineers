@@ -13,7 +13,7 @@ from email.mime.image import MIMEImage
 SMTP_SERVER = 'smtp.gmail.com'
 SMTP_PORT = 587
 SENDER_EMAIL = "email.update.ticket@gmail.com" # email gửi vé
-SENDER_PASSWORD = "yyfe gzfl amyy dbpg"  # app pass để gửi
+SENDER_PASSWORD = "yyfe gzfl amyy dbpg"  # app pass để gửi (giữ nguyên không đổi)
 
 
 def generate_qr_code(data):
@@ -135,5 +135,6 @@ if __name__ == "__main__":
         "cinema": "HCMUT Cinema",
         "seat": "H8, H9"
     }
+
 
     send_ticket_email("@gmail.com", sample_ticket) # gmail của khách hàng để gửi
