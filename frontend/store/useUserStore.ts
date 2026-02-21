@@ -50,8 +50,8 @@ export const API_BASE_URL = "http://127.0.0.1:8000";
 
 async function registerApiCall(data: RegisterData): Promise<User> {
   const nameParts = data.name.trim().split(/\s+/); // Split by one or more spaces
-  const lastName = nameParts.pop(); // Remove and capture the last word
-  const firstName = nameParts.join(" "); // Join everything else
+  const firstName = nameParts.length > 1 ? nameParts.slice(0, -1).join(" ") : nameParts[0];
+  const lastName = nameParts.length > 1 ? nameParts[nameParts.length - 1] : nameParts[0];
   const formattedDob = formatDobForBackend(data.dob);
   const response = await fetch(`${API_BASE_URL}/auth/customer/register`, {
     method: "POST",

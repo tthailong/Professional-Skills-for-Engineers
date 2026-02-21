@@ -787,8 +787,9 @@ export default function MovieDetailsPage() {
                     </Link>
                   </div>
                 ) : (
-                  <AddReviewForm onSubmit={handleAddReview} />
+                  <AddReviewForm onSubmit={handleAddReview} disabled={!hasPurchased} />
                 )}
+
               </CardContent>
             </Card>
 
@@ -932,8 +933,10 @@ export default function MovieDetailsPage() {
 // Helper Review Form Component
 function AddReviewForm({
   onSubmit,
+  disabled = false,
 }: {
   onSubmit: (data: { rating: number; comment: string }) => void;
+  disabled?: boolean;
 }) {
   const [rating, setRating] = useState(0);
   const [comment, setComment] = useState("");
@@ -994,12 +997,15 @@ function AddReviewForm({
           placeholder="Tell us what you liked or disliked..."
         />
       </div>
-      <Button
-        type="submit"
-        className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-bold py-6"
-      >
-        Submit Review
-      </Button>
+      <div title={disabled ? "You must purchase a ticket for this movie before leaving a review." : undefined}>
+        <Button
+          type="submit"
+          disabled={disabled}
+          className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-bold py-6 disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          {disabled ? "🎟️ Purchase a ticket to submit" : "Submit Review"}
+        </Button>
+      </div>
     </form>
   );
 }

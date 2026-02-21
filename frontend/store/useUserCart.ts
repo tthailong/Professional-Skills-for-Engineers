@@ -115,14 +115,12 @@ export const useUserCart = create<CartState>()(
 
         let total = ticketsTotal + productsTotal;
 
-        // Apply Voucher logic (assuming simple flat discount for now)
+        // Apply Voucher (percentage discount)
         if (state.voucher) {
-          total = Math.max(0, total - state.voucher.discount);
+          total = Math.max(0, total - (state.voucher.discount * total) / 100);
         }
 
-        // Add Tax (e.g., 18% as per previous examples)
-        const tax = total * 0.18;
-        return total + tax;
+        return total;
       },
     }),
     {
