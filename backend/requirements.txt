@@ -4,3 +4,8 @@ sqlmodel
 python-dotenv
 pymysql
 pydantic[email]
+transformers
+torch
+#tokenizers
+#sentencepiece
+qrcode[pil]

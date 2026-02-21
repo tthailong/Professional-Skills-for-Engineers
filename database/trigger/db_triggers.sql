@@ -344,5 +344,5 @@ BEGIN
     CLOSE cur;
 END;
 //
-DELIMITER;
+DELIMITER ;
 

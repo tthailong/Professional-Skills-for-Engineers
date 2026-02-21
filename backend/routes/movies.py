@@ -212,7 +212,28 @@ def create_review(movie_id: int,
 ):
     try:
         date_str = datetime.now().strftime("%d/%m/%Y")
-        
+        purchase_check = text("""
+            SELECT COUNT(*) as purchase_count
+            FROM Receipt r
+            INNER JOIN Ticket t ON r.Receipt_id = t.Receipt_id
+            INNER JOIN ShowtimeSeat ss ON 
+                t.Showtime_id = ss.Showtime_id AND
+                t.Branch_id = ss.Branch_id AND
+                t.Hall_number = ss.Hall_number AND
+                t.Seat_number = ss.Seat_number
+            WHERE r.Customer_id = :customer_id 
+              AND ss.Movie_id = :movie_id
+        """)
+        purchase_result = session.exec(purchase_check, params={
+            "customer_id": data.customer_id,
+            "movie_id": movie_id
+        }).first()
+        if not purchase_result or purchase_result[0] == 0:
+            raise HTTPException(
+                status_code=403,
+                detail="You must purchase a ticket for this movie before leaving a review."
+            )
+
         if data.spoiler == "non_spoiler" and not is_non_spoiler_comment(data.comment):
             return {
                 "result": False,
