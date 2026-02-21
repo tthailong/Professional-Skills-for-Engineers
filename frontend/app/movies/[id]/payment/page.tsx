@@ -172,8 +172,6 @@ export default function PaymentPage() {
       grossTotal - (discount * grossTotal) / 100
     );
 
-    // Tax (18% of the discounted amount)
-
     // Final
     const finalTotal = afterDiscount;
 
@@ -671,6 +669,7 @@ export default function PaymentPage() {
                       </span>
                     </div>
                   )}
+                  {/* VAT Row removed */}
                 </div>
 
                 <div className="flex justify-between">

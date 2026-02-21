@@ -446,8 +446,8 @@ export default function BookingPage() {
       subtotalConcessions,
       subtotal,
       discount: 0,
-      gst: Math.round(subtotal * 0.18),
-      total: subtotal + Math.round(subtotal * 0.18),
+      gst: 0,
+      total: subtotal,
     };
   }, [selectedSeats, concessionCart, seats]);
 

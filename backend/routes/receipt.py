@@ -6,6 +6,7 @@ from sqlalchemy import text
 from typing import Optional, List
 
 from database import get_session
+from mail_service import send_ticket_email
 
 router = APIRouter(
     prefix="/receipts",
@@ -172,6 +173,44 @@ def create_receipt_endpoint(
                 })
         
         session.commit()
+        
+        # --- Send ticket confirmation email ---
+        try:
+            customer_q = text("""
+                SELECT c.Email, CONCAT(c.FName, ' ', c.LName) as full_name
+                FROM Customer c WHERE c.Customer_id = :cid
+            """)
+            cust = session.exec(customer_q, params={"cid": data.customer_id}).first()
+            print(f"[Email] Customer: {cust}")
+
+            ticket_q = text("""
+                SELECT m.Title, s.Start_time, s.Date, b.Name as branch_name
+                FROM Ticket t
+                JOIN Showtime s ON t.Showtime_id = s.Showtime_id
+                JOIN Movie m ON s.Movie_id = m.Movie_id
+                JOIN Cinema_Branch b ON t.Branch_id = b.Branch_id
+                WHERE t.Receipt_id = :rid
+                LIMIT 1
+            """)
+            ticket_row = session.exec(ticket_q, params={"rid": receipt_id}).first()
+            print(f"[Email] Ticket row: {ticket_row}")
+
+            if cust and ticket_row:
+                seat_numbers = ", ".join([t.seat_number for t in data.tickets])
+                ticket_info = {
+                    "ticket_id": str(receipt_id),
+                    "customer_name": cust[1],
+                    "movie_name": ticket_row[0],
+                    "showtime": f"{str(ticket_row[1])[:5]} - {ticket_row[2]}",
+                    "cinema": ticket_row[3],
+                    "seat": seat_numbers,
+                }
+                send_ticket_email(cust[0], ticket_info)
+            else:
+                print(f"[Email] Skipped — cust={cust}, ticket_row={ticket_row}")
+        except Exception as mail_err:
+            print(f"[Email] Failed to send ticket email: {mail_err}")
+        # --- End email ---
         
         return {
             "message": "Receipt created successfully",

@@ -159,7 +159,7 @@ async function createHallApiCall(branchId: string, data: Hall): Promise<void> {
     Type: data.type,
     Seat_capacity: data.seatCapacity,
     Row_count: data.rowCount,
-    colCount: data.colCount,
+    Col_count: data.colCount,
   };
   const res = await fetch(`${API_BASE_URL}/branches/${branchId}/halls`, {
     method: "POST",
@@ -182,7 +182,7 @@ async function updateHallApiCall(
     Type: data.type,
     Seat_capacity: data.seatCapacity,
     Row_count: data.rowCount,
-    colCount: data.colCount,
+    Col_count: data.colCount,
   };
   const res = await fetch(
     `${API_BASE_URL}/branches/${branchId}/halls/${hallNumber}`,
