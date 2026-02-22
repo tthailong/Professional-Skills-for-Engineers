@@ -76,7 +76,7 @@ export default function AdminMoviesPage() {
 
   // 3. Filter Logic
   const filteredMovies = movies.filter((movie) =>
-    movie.title.toLowerCase().includes(searchQuery.toLowerCase())
+    movie.title.toLowerCase().includes(searchQuery.toLowerCase()),
   );
 
   // 4. Handlers
@@ -167,7 +167,7 @@ export default function AdminMoviesPage() {
     setEditingMovie({
       ...editingMovie,
       [listName]: editingMovie[listName].filter(
-        (item: string) => item !== itemToRemove
+        (item: string) => item !== itemToRemove,
       ),
     });
   };

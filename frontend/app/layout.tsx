@@ -5,11 +5,11 @@ import { Analytics } from "@vercel/analytics/next";
 import "./globals.css";
 import { Toast } from "@/components/ui/toast";
 import { Toaster } from "sonner";
-
+import { Navbar } from "@/app/navbar";
 const balooFont = Baloo_Chettan_2({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "CineBook - Movie Ticket Booking",
+  title: "LDHK Cinema - Movie Ticket Booking",
   description: "Book your favorite movie tickets online",
   generator: "v0.app",
 };
