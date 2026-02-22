@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { Navbar } from "@/app/navbar";
 import {
   Card,
@@ -12,21 +13,8 @@ import {
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
+import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from "recharts";
 import {
-  LineChart,
-  Line,
-  PieChart,
-  Pie,
-  Cell,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  Legend,
-  ResponsiveContainer,
-} from "recharts";
-import {
-  Download,
   Filter,
   TrendingUp,
   DollarSign,
@@ -35,53 +23,18 @@ import {
   AlertTriangle,
   Calendar,
   Clock,
-  Film,
+  LayoutDashboard,
+  RefreshCw,
 } from "lucide-react";
 import { useUserStore, API_BASE_URL } from "@/store/useUserStore";
 import { useAdminStore } from "@/store/useAdminStore";
 
-interface ChartData {
-  name?: string;
-  date?: string;
-  value?: number;
-  ticket_revenue?: number;
-  product_revenue?: number;
-  total_revenue?: number;
-  [key: string]: any;
-}
-
-interface DashboardData {
-  branch_id?: number;
-  period: {
-    start: string;
-    end: string;
-  };
-  financials?: {
-    net_revenue: number;
-    avg_receipt_value: number;
-  };
-  stats?: {
-    net_revenue: number;
-    occupancy_rate: number;
-  };
-  system_stats?: {
-    total_admins: number;
-    total_bookings: number;
-    total_movies: number;
-    occupancy_rate?: number;
-  };
-  charts: {
-    top_movies: ChartData[];
-    revenue_trend: ChartData[];
-  };
-}
+// --- ROSE THEME CONSTANTS ---
+const ROSE_COLORS = ["#e11d48", "#fb7185", "#fda4af", "#fff1f2", "#f43f5e"];
 
 const formatCurrency = (amount: number) => {
-  if (amount >= 1000000000) {
-    return `${(amount / 1000000000).toFixed(1)}B`; // Billion
-  } else if (amount >= 1000000) {
-    return `${(amount / 1000000).toFixed(1)}M`; // Million
-  }
+  if (amount >= 1000000000) return `${(amount / 1000000000).toFixed(1)}B`;
+  if (amount >= 1000000) return `${(amount / 1000000).toFixed(1)}M`;
   return new Intl.NumberFormat("en-US", {
     style: "currency",
     currency: "USD",
@@ -89,89 +42,55 @@ const formatCurrency = (amount: number) => {
 };
 
 export default function PrimaryDashboard() {
-  const { user } = useUserStore();
   const { admin, alerts, totalAlerts, fetchLowOccupancyAlerts } =
     useAdminStore();
-  // Default to current month
   const [startDate, setStartDate] = useState(
     new Date(new Date().getFullYear(), new Date().getMonth(), 1)
       .toISOString()
-      .split("T")[0]
+      .split("T")[0],
   );
   const [endDate, setEndDate] = useState(
-    new Date().toISOString().split("T")[0]
+    new Date().toISOString().split("T")[0],
   );
-  const [data, setData] = useState<DashboardData | null>(null);
+  const [data, setData] = useState<any | null>(null);
   const [loading, setLoading] = useState(true);
   const [alertPage, setAlertPage] = useState(1);
   const alertLimit = 5;
 
+  // ... (Keep your existing useEffect Fetch Logic exactly as it was) ...
   useEffect(() => {
     const fetchData = async () => {
       if (!admin) return;
-
       setLoading(true);
       try {
         const endpoint = admin.assignedBranchId
           ? `/admin/dashboard/regular/${admin.assignedBranchId}`
           : `/admin/dashboard/primary`;
-
-        const queryParams = new URLSearchParams({
-          startDate,
-          endDate,
-        });
-
-        const res = await fetch(`${API_BASE_URL}${endpoint}?${queryParams}`);
-        if (res.ok) {
-          const jsonData = await res.json();
-          setData(jsonData);
-        }
+        const res = await fetch(
+          `${API_BASE_URL}${endpoint}?${new URLSearchParams({ startDate, endDate })}`,
+        );
+        if (res.ok) setData(await res.json());
       } catch (error) {
-        console.error("Failed to fetch dashboard data:", error);
+        console.error(error);
       } finally {
         setLoading(false);
       }
     };
-
     fetchData();
   }, [admin, startDate, endDate]);
 
-  // Fetch Alerts when page or date changes
   useEffect(() => {
-    const fetchAlerts = async () => {
-      if (!admin) return;
-      const end = new Date(endDate);
-      await fetchLowOccupancyAlerts(
-        end.getMonth() + 1,
-        end.getFullYear(),
-        20.0, // Threshold
-        admin.assignedBranchId ? parseInt(admin.assignedBranchId) : undefined,
-        alertPage,
-        alertLimit
-      );
-    };
-    fetchAlerts();
+    if (!admin) return;
+    fetchLowOccupancyAlerts(
+      new Date(endDate).getMonth() + 1,
+      new Date(endDate).getFullYear(),
+      20.0,
+      admin.assignedBranchId ? parseInt(admin.assignedBranchId) : undefined,
+      alertPage,
+      alertLimit,
+    );
   }, [admin, endDate, alertPage, fetchLowOccupancyAlerts]);
 
-  const COLORS = ["#dc2626", "#ea580c", "#f59e0b", "#10b981", "#3b82f6"];
-
-  if (loading && !data) {
-    return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <p className="text-muted-foreground">Loading dashboard...</p>
-      </div>
-    );
-  }
-
-  if (!data) {
-    return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <p className="text-destructive">Failed to load dashboard data.</p>
-      </div>
-    );
-  }
-
-  // Determine which stats to show based on role
   const isBranch = !!admin?.assignedBranchId;
 
   const summaryCards = isBranch
@@ -179,313 +98,309 @@ export default function PrimaryDashboard() {
         {
           label: "Net Revenue",
           value: data?.stats?.net_revenue || 0,
-          change: "Selected Period",
           icon: DollarSign,
-          color: "text-primary",
+          color: "text-rose-600",
+          bg: "bg-rose-50",
         },
         {
           label: "Occupancy Rate",
           value: `${data?.stats?.occupancy_rate?.toFixed(1)}%` || "0%",
-          change: "Avg for Period",
           icon: Users,
-          color: "text-blue-600",
+          color: "text-rose-500",
+          bg: "bg-rose-50",
         },
       ]
     : [
         {
           label: "Total Net Revenue",
           value: data?.financials?.net_revenue || 0,
-          change: "Selected Period",
           icon: DollarSign,
-          color: "text-primary",
+          color: "text-rose-600",
+          bg: "bg-rose-50",
         },
         {
-          label: "Total Seats",
+          label: "Total Tickets",
           value: data?.system_stats?.total_bookings || 0,
-          change: "All Time",
           icon: Ticket,
-          color: "text-accent",
+          color: "text-rose-500",
+          bg: "bg-rose-50",
         },
         {
           label: "Avg Order Value",
           value: data?.financials?.avg_receipt_value || 0,
-          change: "Selected Period",
           icon: TrendingUp,
-          color: "text-green-600",
+          color: "text-rose-400",
+          bg: "bg-rose-50",
         },
         {
           label: "Occupancy Rate",
           value: `${data?.system_stats?.occupancy_rate?.toFixed(1)}%` || "0%",
-          change: "Avg for Period",
           icon: Users,
-          color: "text-blue-600",
+          color: "text-rose-600",
+          bg: "bg-rose-50",
         },
       ];
 
+  if (loading && !data)
+    return (
+      <div className="min-h-screen bg-white flex items-center justify-center">
+        <div className="w-12 h-12 border-4 border-rose-100 border-t-rose-600 rounded-full animate-spin" />
+      </div>
+    );
+
   return (
-    <div className="min-h-screen bg-gradient-to-b from-background to-secondary/20">
+    <div className="min-h-screen bg-white relative overflow-hidden text-slate-900">
+      {/* Rose Aurora Blurs */}
+      <div className="absolute top-[-10%] left-[-5%] w-[40%] h-[40%] rounded-full bg-rose-50/60 blur-[120px] -z-10" />
+      <div className="absolute bottom-[-10%] right-[-5%] w-[30%] h-[40%] rounded-full bg-rose-100/40 blur-[120px] -z-10" />
+
       <Navbar />
-      <main className="container mx-auto px-4 py-8">
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
+
+      <main className="container mx-auto px-4 pt-16 pb-24 relative z-10">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="flex flex-col md:flex-row justify-between items-end mb-12 gap-6"
+        >
           <div>
-            <h1 className="text-4xl font-bold text-foreground mb-2">
-              {isBranch ? "Branch Dashboard" : "System Overview"}
-            </h1>
-            <p className="text-muted-foreground">
-              {isBranch
-                ? `Monitor performance for Branch ID: ${data?.branch_id}`
-                : "Overview of system-wide performance"}
-            </p>
-          </div>
-        </div>
-
-        {/* Filters Bar */}
-        <Card className="border-border bg-card mb-6">
-          <CardContent className="pt-6">
-            <div className="flex flex-wrap gap-4 items-end">
-              <div>
-                <label className="text-sm text-muted-foreground block mb-2">
-                  Start Date
-                </label>
-                <Input
-                  type="date"
-                  value={startDate}
-                  onChange={(e) => setStartDate(e.target.value)}
-                  className="w-[180px] bg-secondary border-border"
-                />
+            <div className="flex items-center gap-2 mb-2">
+              <div className="p-2 bg-rose-600 rounded-xl shadow-lg shadow-rose-200">
+                <LayoutDashboard className="w-5 h-5 text-white" />
               </div>
-              <div>
-                <label className="text-sm text-muted-foreground block mb-2">
-                  End Date
-                </label>
-                <Input
-                  type="date"
-                  value={endDate}
-                  onChange={(e) => setEndDate(e.target.value)}
-                  className="w-[180px] bg-secondary border-border"
-                />
-              </div>
-
-              <Button
-                variant="outline"
-                className="border-border bg-transparent text-foreground hover:bg-card ml-auto"
-                onClick={() => {
-                  // Refresh logic if needed, currently auto-refreshes on state change
-                }}
-              >
-                <Filter className="w-4 h-4 mr-2" />
-                Refresh Data
-              </Button>
+              <span className="text-xs font-black uppercase tracking-widest text-rose-600">
+                Admin Control
+              </span>
             </div>
-          </CardContent>
-        </Card>
+            <h1 className="text-5xl font-black tracking-tighter bg-gradient-to-r from-slate-900 to-rose-900 bg-clip-text text-transparent">
+              {isBranch ? "Branch Metrics" : "System Core"}
+            </h1>
+          </div>
 
-        {/* Summary Cards */}
+          {/* Rose Filter Bar */}
+          <div className="p-2 bg-white/60 backdrop-blur-xl border border-rose-100 rounded-3xl shadow-xl flex flex-wrap gap-4 items-center">
+            <div className="flex items-center gap-2 px-4">
+              <Calendar className="w-4 h-4 text-rose-500" />
+              <Input
+                type="date"
+                value={startDate}
+                onChange={(e) => setStartDate(e.target.value)}
+                className="border-none bg-transparent h-8 w-32 focus-visible:ring-0 font-bold p-0"
+              />
+              <span className="text-slate-300 mx-1">—</span>
+              <Input
+                type="date"
+                value={endDate}
+                onChange={(e) => setEndDate(e.target.value)}
+                className="border-none bg-transparent h-8 w-32 focus-visible:ring-0 font-bold p-0"
+              />
+            </div>
+            <Button
+              size="icon"
+              variant="ghost"
+              className="rounded-2xl hover:bg-rose-50 text-rose-600"
+              onClick={() => window.location.reload()}
+            >
+              <RefreshCw className="w-4 h-4" />
+            </Button>
+          </div>
+        </motion.div>
+
+        {/* Rose Summary Cards */}
         <div
-          className={`grid grid-cols-1 md:grid-cols-2 ${
-            !isBranch ? "lg:grid-cols-4" : ""
-          } gap-6 mb-8`}
+          className={`grid grid-cols-1 md:grid-cols-2 ${!isBranch ? "lg:grid-cols-4" : ""} gap-8 mb-12`}
         >
           {summaryCards.map((item, i) => (
-            <Card key={i} className="border-border bg-card">
-              <CardContent className="pt-6">
-                <div className="flex items-start justify-between">
-                  <div>
-                    <p className="text-sm text-muted-foreground mb-1">
-                      {item.label}
-                    </p>
-                    <div className="text-2xl font-bold text-foreground">
-                      {typeof item.value === "number" &&
-                      (item.label.includes("Revenue") ||
-                        item.label.includes("Value"))
-                        ? formatCurrency(item.value as number)
-                        : item.value}
+            <motion.div
+              key={i}
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: i * 0.1 }}
+            >
+              <Card className="border-none bg-white/80 backdrop-blur-md shadow-[0_8px_30px_rgb(0,0,0,0.04)] rounded-[2.5rem] overflow-hidden group hover:shadow-2xl hover:shadow-rose-100 transition-all duration-500">
+                <CardContent className="p-8">
+                  <div className="flex items-start justify-between">
+                    <div>
+                      <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">
+                        {item.label}
+                      </p>
+                      <div className="text-3xl font-black text-slate-900 leading-none">
+                        {typeof item.value === "number" &&
+                        item.label.includes("Revenue")
+                          ? formatCurrency(item.value)
+                          : item.value}
+                      </div>
                     </div>
-                    <p className="text-xs text-green-600 mt-1">{item.change}</p>
+                    <div
+                      className={`p-4 ${item.bg} rounded-[1.5rem] group-hover:scale-110 transition-transform duration-500`}
+                    >
+                      <item.icon className={`w-6 h-6 ${item.color}`} />
+                    </div>
                   </div>
-                  <item.icon className={`w-8 h-8 ${item.color}`} />
-                </div>
-              </CardContent>
-            </Card>
+                </CardContent>
+              </Card>
+            </motion.div>
           ))}
         </div>
 
-        {/* Charts */}
-        <Tabs defaultValue="movies" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-2 bg-secondary">
-            <TabsTrigger value="movies">Top Movies</TabsTrigger>
-            <TabsTrigger value="alerts" className="flex items-center gap-2">
-              <AlertTriangle className="w-4 h-4 text-destructive" />
-              Low Occupancy Alerts
+        <Tabs defaultValue="movies" className="space-y-8">
+          <TabsList className="bg-rose-50/50 backdrop-blur-md p-1 rounded-2xl border border-rose-100 w-fit">
+            <TabsTrigger
+              value="movies"
+              className="rounded-xl px-8 py-3 data-[state=active]:bg-white data-[state=active]:text-rose-600 font-bold transition-all"
+            >
+              Movie Performance
+            </TabsTrigger>
+            <TabsTrigger
+              value="alerts"
+              className="rounded-xl px-8 py-3 data-[state=active]:bg-white data-[state=active]:text-rose-600 font-bold transition-all gap-2"
+            >
+              <AlertTriangle className="w-4 h-4" /> System Alerts
             </TabsTrigger>
           </TabsList>
 
-          {/* Top Movies */}
           <TabsContent value="movies">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <Card className="border-border bg-card">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+              <Card className="lg:col-span-5 border-none bg-white shadow-xl shadow-slate-100 rounded-[2.5rem] p-6">
                 <CardHeader>
-                  <CardTitle>Top Movies by Revenue</CardTitle>
+                  <CardTitle className="font-black text-xl">
+                    Revenue Share
+                  </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <ResponsiveContainer width="100%" height={300}>
+                  <ResponsiveContainer width="100%" height={350}>
                     <PieChart>
                       <Pie
                         data={data?.charts.top_movies || []}
                         cx="50%"
                         cy="50%"
-                        labelLine={false}
-                        label={({ name, value }) => `${name}`}
-                        outerRadius={100}
-                        fill="#8884d8"
+                        innerRadius={80}
+                        outerRadius={120}
+                        paddingAngle={5}
                         dataKey="value"
                       >
-                        {(data?.charts.top_movies || []).map((entry, index) => (
-                          <Cell
-                            key={`cell-${index}`}
-                            fill={COLORS[index % COLORS.length]}
-                          />
-                        ))}
+                        {data?.charts.top_movies.map(
+                          (_: any, index: number) => (
+                            <Cell
+                              key={index}
+                              fill={ROSE_COLORS[index % ROSE_COLORS.length]}
+                              stroke="none"
+                            />
+                          ),
+                        )}
                       </Pie>
-                      <Tooltip
-                        formatter={(value: number) => formatCurrency(value)}
-                      />
+                      <Tooltip />
                     </PieChart>
                   </ResponsiveContainer>
                 </CardContent>
               </Card>
 
-              <Card className="border-border bg-card">
+              <Card className="lg:col-span-7 border-none bg-white shadow-xl shadow-slate-100 rounded-[2.5rem] p-8">
                 <CardHeader>
-                  <CardTitle>Movie Performance List</CardTitle>
+                  <CardTitle className="font-black text-xl">
+                    Top Ranking Movies
+                  </CardTitle>
                 </CardHeader>
-                <CardContent>
-                  <div className="space-y-3">
-                    {(data?.charts.top_movies || []).map((movie, i) => (
-                      <div
-                        key={i}
-                        className="flex items-center justify-between p-3 bg-secondary rounded"
-                      >
-                        <div className="flex-1">
-                          <p className="font-semibold text-foreground text-sm">
+                <CardContent className="space-y-6">
+                  {data?.charts.top_movies.map((movie: any, i: number) => (
+                    <div key={i} className="flex items-center gap-4 group">
+                      <span className="text-lg font-black text-rose-200">
+                        0{i + 1}
+                      </span>
+                      <div className="flex-1">
+                        <div className="flex justify-between mb-2">
+                          <span className="font-bold text-slate-900 truncate">
                             {movie.name}
-                          </p>
-                          <div className="w-full bg-border rounded-full h-1.5 mt-1">
-                            <div
-                              className="bg-primary h-1.5 rounded-full"
-                              style={{
-                                width: `${
-                                  (movie.value! /
-                                    (data?.charts.top_movies[0]?.value || 1)) *
-                                  100
-                                }%`,
-                              }}
-                            ></div>
-                          </div>
+                          </span>
+                          <span className="font-black text-rose-600">
+                            {formatCurrency(movie.value)}
+                          </span>
                         </div>
-                        <span className="text-primary font-bold ml-4 text-sm whitespace-nowrap">
-                          {formatCurrency(movie.value!)}
-                        </span>
+                        <div className="w-full bg-slate-50 rounded-full h-3 overflow-hidden">
+                          <motion.div
+                            initial={{ width: 0 }}
+                            animate={{
+                              width: `${(movie.value / data.charts.top_movies[0].value) * 100}%`,
+                            }}
+                            className="bg-gradient-to-r from-rose-400 to-rose-600 h-full rounded-full"
+                          />
+                        </div>
                       </div>
-                    ))}
-                  </div>
+                    </div>
+                  ))}
                 </CardContent>
               </Card>
             </div>
           </TabsContent>
 
-          {/* Alerts Tab */}
           <TabsContent value="alerts">
-            <Card className="border-border bg-card">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <AlertTriangle className="w-5 h-5 text-destructive" />
-                  Low Occupancy Alerts
-                </CardTitle>
-                <CardDescription>
-                  Showtimes with occupancy rate below 20% for the selected
-                  month.
-                </CardDescription>
+            <Card className="border-none bg-white shadow-2xl shadow-rose-100/50 rounded-[2.5rem] overflow-hidden">
+              <CardHeader className="p-10 pb-4 border-b border-slate-50">
+                <div className="flex items-center gap-3">
+                  <div className="p-3 bg-rose-50 rounded-2xl">
+                    <AlertTriangle className="w-6 h-6 text-rose-600" />
+                  </div>
+                  <div>
+                    <CardTitle className="font-black text-2xl">
+                      Low Occupancy Watch
+                    </CardTitle>
+                    <CardDescription className="font-medium">
+                      Showtimes below 20% capacity.
+                    </CardDescription>
+                  </div>
+                </div>
               </CardHeader>
-              <CardContent>
+              <CardContent className="p-0">
                 {alerts.length === 0 ? (
-                  <div className="text-center py-8 text-muted-foreground">
-                    No low occupancy alerts found for this period.
+                  <div className="py-20 text-center text-slate-400 font-bold">
+                    Safe! No low occupancy alerts found.
                   </div>
                 ) : (
-                  <>
-                    <div className="border rounded-md overflow-hidden mb-4">
-                      <table className="w-full text-sm text-left">
-                        <thead className="bg-secondary text-muted-foreground font-medium">
-                          <tr>
-                            <th className="p-3">Movie</th>
-                            <th className="p-3">Branch</th>
-                            <th className="p-3">Date & Time</th>
-                            <th className="p-3 text-right">Occupancy</th>
-                            <th className="p-3 text-right">Booked / Total</th>
-                          </tr>
-                        </thead>
-                        <tbody className="divide-y divide-border">
-                          {alerts.map((alert, idx) => (
-                            <tr key={idx} className="hover:bg-muted/50">
-                              <td className="p-3 font-medium">
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-left">
+                      <thead className="bg-slate-50/50 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">
+                        <tr>
+                          <th className="px-10 py-5">Movie Detail</th>
+                          <th className="px-6 py-5">Branch</th>
+                          <th className="px-6 py-5 text-right">Occupancy</th>
+                          <th className="px-10 py-5 text-right">Action</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-slate-50">
+                        {alerts.map((alert, idx) => (
+                          <tr
+                            key={idx}
+                            className="group hover:bg-rose-50/30 transition-colors"
+                          >
+                            <td className="px-10 py-6">
+                              <p className="font-black text-slate-900">
                                 {alert.Movie_Name}
-                              </td>
-                              <td className="p-3">{alert.Branch_Name}</td>
-                              <td className="p-3">
-                                <div className="flex flex-col">
-                                  <span className="flex items-center gap-1">
-                                    <Calendar className="w-3 h-3" />{" "}
-                                    {alert.Date}
-                                  </span>
-                                  <span className="flex items-center gap-1 text-xs text-muted-foreground">
-                                    <Clock className="w-3 h-3" />{" "}
-                                    {alert.Start_time}
-                                  </span>
-                                </div>
-                              </td>
-                              <td className="p-3 text-right">
-                                <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-destructive/10 text-destructive">
-                                  {alert.Occupancy_Rate}%
-                                </span>
-                              </td>
-                              <td className="p-3 text-right text-muted-foreground">
-                                {alert.Booked_Seats} / {alert.Total_Capacity}
-                              </td>
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
-                    </div>
-                    {/* Pagination Controls */}
-                    <div className="flex items-center justify-between">
-                      <div className="text-sm text-muted-foreground">
-                        Showing {(alertPage - 1) * alertLimit + 1} to{" "}
-                        {Math.min(alertPage * alertLimit, totalAlerts)} of{" "}
-                        {totalAlerts} alerts
-                      </div>
-                      <div className="flex gap-2">
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() =>
-                            setAlertPage((p) => Math.max(1, p - 1))
-                          }
-                          disabled={alertPage === 1}
-                        >
-                          Previous
-                        </Button>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => setAlertPage((p) => p + 1)}
-                          disabled={alertPage * alertLimit >= totalAlerts}
-                        >
-                          Next
-                        </Button>
-                      </div>
-                    </div>
-                  </>
+                              </p>
+                              <p className="text-xs text-slate-400 font-bold mt-1">
+                                {alert.Date} @ {alert.Start_time}
+                              </p>
+                            </td>
+                            <td className="px-6 py-6 font-bold text-slate-600 text-sm">
+                              {alert.Branch_Name}
+                            </td>
+                            <td className="px-6 py-6 text-right">
+                              <span className="px-3 py-1 bg-rose-100 text-rose-600 rounded-full text-xs font-black">
+                                {alert.Occupancy_Rate}%
+                              </span>
+                            </td>
+                            <td className="px-10 py-6 text-right">
+                              <Button
+                                size="sm"
+                                variant="ghost"
+                                className="rounded-xl text-xs font-bold hover:bg-rose-600 hover:text-white"
+                              >
+                                Notify Branch
+                              </Button>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
                 )}
               </CardContent>
             </Card>

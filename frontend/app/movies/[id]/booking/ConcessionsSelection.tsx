@@ -51,7 +51,7 @@ export const ConcessionsSelection: React.FC<ConcessionsSelectionProps> = ({
       const existingItem = prevCart.find((i) => i.item.id === item.id);
       if (existingItem) {
         return prevCart.map((i) =>
-          i.item.id === item.id ? { ...i, quantity: newQuantity } : i
+          i.item.id === item.id ? { ...i, quantity: newQuantity } : i,
         );
       } else {
         return [...prevCart, { item, quantity: newQuantity }];
@@ -73,7 +73,7 @@ export const ConcessionsSelection: React.FC<ConcessionsSelectionProps> = ({
     const filtered = concessions.filter(
       (item) =>
         item.name.toLowerCase().includes(query) ||
-        item.description.toLowerCase().includes(query)
+        item.description.toLowerCase().includes(query),
     );
 
     const totalCount = filtered.length;
@@ -114,9 +114,9 @@ export const ConcessionsSelection: React.FC<ConcessionsSelectionProps> = ({
   const handlePrevious = () => setCurrentPage((prev) => Math.max(prev - 1, 1));
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-6">
       {/* Price Breakdown Card (Updated) */}
-      <Card className="border-border bg-card top-20">
+      <Card className="rounded-2xl border border-white/40 bg-white/70 backdrop-blur-xl shadow-lg hover:shadow-xl transition-all">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Ticket className="w-5 h-5 text-primary" />

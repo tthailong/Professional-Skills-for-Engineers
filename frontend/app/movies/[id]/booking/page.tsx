@@ -114,16 +114,17 @@ const BookingSummaryHeader: React.FC<{
   hallName: string;
   showtimeInfo: string;
 }> = ({ hallName, showtimeInfo }) => (
-  <div className="mb-8 p-6 bg-card rounded-xl border border-border shadow-sm">
-    <h1 className="text-3xl font-bold text-foreground mb-2">
-      Select Your Seats
-    </h1>
+  <div className="mb-10 p-6 rounded-2xl backdrop-blur-xl border border-white/40 bg-white/70 shadow-xl">
+    <h1 className="text-3xl font-bold text-rose-600 mb-2">Select Your Seats</h1>
+
     <div className="flex flex-col md:flex-row md:items-center gap-2 md:gap-6 text-muted-foreground">
-      <p className="text-lg text-primary font-medium flex items-center gap-2">
+      <p className="text-lg font-semibold flex items-center gap-2 text-rose-500">
         <Ticket className="w-5 h-5" /> {showtimeInfo}
       </p>
-      <span className="hidden md:inline text-border">|</span>
-      <p className="text-sm font-medium border border-border px-3 py-1 rounded-full bg-secondary/50">
+
+      <span className="hidden md:inline text-rose-200">|</span>
+
+      <p className="text-sm font-medium border border-rose-200 px-3 py-1 rounded-full bg-white">
         {hallName}
       </p>
     </div>
@@ -171,12 +172,12 @@ const SeatMapSection: React.FC<{
                           key={seat.id}
                           onClick={() => toggleSeat(seat.id)}
                           disabled={!seat.isAvailable}
-                          className={`relative w-8 h-8 rounded-t-lg rounded-b-sm text-[10px] font-medium transition-all duration-200 flex items-center justify-center ${
+                          className={`relative w-8 h-8 rounded-t-lg rounded-b-sm text-[10px] font-medium transition-all duration-300 flex items-center justify-center shadow-sm ${
                             !seat.isAvailable
                               ? "bg-muted text-muted-foreground cursor-not-allowed opacity-40"
                               : isSelected
-                              ? "bg-primary text-primary-foreground shadow-md scale-110 z-10 ring-2 ring-background"
-                              : `${seatType.color} hover:brightness-110 hover:-translate-y-1`
+                                ? "bg-primary text-primary-foreground shadow-md scale-110 z-10 ring-2 ring-background"
+                                : `${seatType.color} hover:brightness-110 hover:-translate-y-1`
                           }`}
                         >
                           {isSelected ? (
@@ -221,7 +222,7 @@ const ConcessionsSelection: React.FC<{
         const newQty = existing.quantity + delta;
         if (newQty <= 0) return prev.filter((c) => c.item.id !== product.id);
         return prev.map((c) =>
-          c.item.id === product.id ? { ...c, quantity: newQty } : c
+          c.item.id === product.id ? { ...c, quantity: newQty } : c,
         );
       }
       if (delta > 0) return [...prev, { item: product, quantity: 1 }];
@@ -395,7 +396,7 @@ export default function BookingPage() {
           type: (s.Seat_type.charAt(0).toUpperCase() +
             s.Seat_type.slice(1).toLowerCase()) as keyof typeof SEAT_TYPES_MAP,
           isAvailable: s.Status.toUpperCase() === "AVAILABLE",
-        }))
+        })),
       );
       setProductsList(
         data.products.map((p) => ({
@@ -405,7 +406,7 @@ export default function BookingPage() {
           description: p.Description || "",
           status: "Active",
           price: p.Price,
-        }))
+        })),
       );
     } catch (e: any) {
       setError(e.message);
@@ -425,7 +426,7 @@ export default function BookingPage() {
     setSelectedSeats((prev) =>
       prev.includes(seatId)
         ? prev.filter((id) => id !== seatId)
-        : [...prev, seatId]
+        : [...prev, seatId],
     );
   };
 
@@ -438,7 +439,7 @@ export default function BookingPage() {
     });
     const subtotalConcessions = concessionCart.reduce(
       (acc, item) => acc + item.item.price * item.quantity,
-      0
+      0,
     );
     const subtotal = subtotalSeats + subtotalConcessions;
     return {
@@ -512,24 +513,36 @@ export default function BookingPage() {
   } | ${showtimeData.Start_time.substring(0, 5)} on ${showtimeData.Date}`;
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-background to-secondary">
+    <div className="min-h-screen bg-gradient-to-br from-white via-rose-50 to-white">
       <Navbar />
-      <main className="container mx-auto px-4 py-8">
-        <BookingSummaryHeader hallName={hallName} showtimeInfo={showtimeInfo} />
+
+      <main className="container mx-auto px-4 py-10">
+        <div className="animate-fadeIn">
+          <BookingSummaryHeader
+            hallName={hallName}
+            showtimeInfo={showtimeInfo}
+          />
+        </div>
+
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          <SeatMapSection
-            seats={seats}
-            selectedSeats={selectedSeats}
-            toggleSeat={toggleSeat}
-          />
-          <ConcessionsSelection
-            concessions={products}
-            concessionCart={concessionCart}
-            setConcessionCart={setConcessionCart}
-            prices={calculatePrices}
-            handleProceedToPayment={handleProceedToPayment}
-            selectedSeatsCount={selectedSeats.length}
-          />
+          <div className="lg:col-span-2 animate-slideUp">
+            <SeatMapSection
+              seats={seats}
+              selectedSeats={selectedSeats}
+              toggleSeat={toggleSeat}
+            />
+          </div>
+
+          <div className="animate-slideUp delay-100">
+            <ConcessionsSelection
+              concessions={products}
+              concessionCart={concessionCart}
+              setConcessionCart={setConcessionCart}
+              prices={calculatePrices}
+              handleProceedToPayment={handleProceedToPayment}
+              selectedSeatsCount={selectedSeats.length}
+            />
+          </div>
         </div>
       </main>
     </div>

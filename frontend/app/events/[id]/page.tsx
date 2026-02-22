@@ -206,7 +206,7 @@ export default function EventDetailsPage() {
                   {/* Status Badge */}
                   <span
                     className={`px-4 py-1.5 rounded-full text-sm font-bold tracking-wide border ${getStatusColor(
-                      event.status
+                      event.status,
                     )}`}
                   >
                     {event.status}

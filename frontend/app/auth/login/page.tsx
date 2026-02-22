@@ -102,7 +102,7 @@ export default function LoginPage() {
       toast.error("Wrong Password or Email");
       console.error("Login failed:", error);
       setLoginError(
-        error instanceof Error ? error.message : "An unknown error occurred."
+        error instanceof Error ? error.message : "An unknown error occurred.",
       );
     } finally {
       setIsLoading(false);
@@ -167,7 +167,7 @@ export default function LoginPage() {
             <Button
               type="submit"
               disabled={isLoading}
-              className="w-full bg-primary hover:bg-primary/90 text-primary-foreground"
+              className="w-full bg-rose-600 hover:bg-rose-700 text-white font-semibold shadow-lg hover:shadow-xl transition"
             >
               {isLoading ? "Signing in..." : "Sign In"}
             </Button>
