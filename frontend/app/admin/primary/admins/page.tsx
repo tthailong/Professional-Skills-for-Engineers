@@ -126,14 +126,14 @@ export default function AdminManagementPage() {
   }, [admin]);
 
   const handleInputChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
   ) => {
     const { name, value } = e.target;
     setNewAdminData((prev) => ({ ...prev, [name]: value }));
   };
 
   const handlePasswordChangeInput = (
-    e: React.ChangeEvent<HTMLInputElement>
+    e: React.ChangeEvent<HTMLInputElement>,
   ) => {
     const { name, value } = e.target;
     setPasswordForm((prev) => ({ ...prev, [name]: value }));
@@ -181,14 +181,14 @@ export default function AdminManagementPage() {
   };
 
   const handleEditProfileChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
   ) => {
     const { name, value } = e.target;
     setEditProfileForm((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleEditAdminChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
   ) => {
     const { name, value } = e.target;
     setEditAdminForm((prev) => ({ ...prev, [name]: value }));

@@ -45,7 +45,7 @@ export default function NewMoviePage() {
   const handleChange = (
     e: React.ChangeEvent<
       HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
-    >
+    >,
   ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
@@ -56,7 +56,7 @@ export default function NewMoviePage() {
     item: string,
     list: string[],
     setList: Function,
-    setInput: Function
+    setInput: Function,
   ) => {
     if (item.trim() && !list.includes(item.trim())) {
       setList([...list, item.trim()]);
@@ -68,7 +68,7 @@ export default function NewMoviePage() {
   const removeItem = (
     itemToRemove: string,
     list: string[],
-    setList: Function
+    setList: Function,
   ) => {
     setList(list.filter((item) => item !== itemToRemove));
   };
@@ -447,7 +447,7 @@ export default function NewMoviePage() {
                             newSubtitle,
                             subtitles,
                             setSubtitles,
-                            setNewSubtitle
+                            setNewSubtitle,
                           )
                         }
                         size="sm"

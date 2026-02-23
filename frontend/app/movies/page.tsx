@@ -1,6 +1,8 @@
 "use client";
-
+import { Badge } from "@/components/ui/badge";
+import { Film } from "lucide-react";
 import { useState, useMemo, useEffect, useCallback } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import { Navbar } from "@/app/navbar";
 import {
@@ -67,241 +69,205 @@ const transformApiMovie = (apiMovie: MovieResponse): Movie => {
     // --- End Placeholder/Mock Data ---
   };
 };
-
+const CustomBadge = ({
+  children,
+  className,
+}: {
+  children: React.ReactNode;
+  className?: string;
+}) => (
+  <div
+    className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold border transition-colors ${className}`}
+  >
+    {children}
+  </div>
+);
 export default function MoviesPage() {
-  // State for fetched movie data
   const [movies, setMovies] = useState<Movie[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-
-  // State for Search and Filters (will now map to API query parameters)
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedLanguage, setSelectedLanguage] = useState("all"); // Maps to 'language'
-  const [selectedAgeRating, setSelectedAgeRating] = useState("all"); // Maps to 'age_rating'
+  const [selectedLanguage, setSelectedLanguage] = useState("all");
+  const [selectedAgeRating, setSelectedAgeRating] = useState("all");
 
-  // NOTE: 'Genre' and 'Category' filters from the original mock are not directly supported by the API
-  // parameters, so we map them to Language and Age Rating, respectively, for API compatibility.
-  // The UI labels are kept for now, but the logic is linked to API params.
-
-  // --- API Fetch Logic ---
   const fetchMovies = useCallback(async () => {
     setIsLoading(true);
     setError(null);
-
-    // 1. Build Query Parameters
     const params = new URLSearchParams();
-    if (selectedLanguage !== "all") {
-      params.append("language", selectedLanguage);
-    }
-    if (selectedAgeRating !== "all") {
+    if (selectedLanguage !== "all") params.append("language", selectedLanguage);
+    if (selectedAgeRating !== "all")
       params.append("age_rating", selectedAgeRating);
-    }
-    if (searchQuery) {
-      params.append("search", searchQuery);
-    }
-
-    const url = `${API_BASE_URL}/movies?${params.toString()}`;
+    if (searchQuery) params.append("search", searchQuery);
 
     try {
-      const response = await fetch(url);
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! Status: ${response.status}`);
-      }
-
+      const response = await fetch(
+        `${API_BASE_URL}/movies?${params.toString()}`,
+      );
+      if (!response.ok) throw new Error(`Status: ${response.status}`);
       const apiMovies: MovieResponse[] = await response.json();
-
-      // 2. Transform and update state
-      const transformedMovies: Movie[] = apiMovies.map(transformApiMovie);
-
-      setMovies(transformedMovies);
+      setMovies(apiMovies.map(transformApiMovie));
     } catch (e: any) {
-      setError("Failed to fetch movies: " + e.message);
-      toast.error("Failed to load movies. Please check the API connection.");
-      console.error(e);
-      setMovies([]);
+      setError(e.message);
+      toast.error("Failed to load movies.");
     } finally {
       setIsLoading(false);
     }
-  }, [searchQuery, selectedLanguage, selectedAgeRating]); // Dependencies are the filter states
+  }, [searchQuery, selectedLanguage, selectedAgeRating]);
 
   useEffect(() => {
-    // Fetch data whenever search or filters change
     fetchMovies();
   }, [fetchMovies]);
-  // --- End API Fetch Logic ---
 
-  // Derived values for the filter buttons (must be fetched from the actual API response)
-  // Since we don't have separate endpoints for available languages/ratings, we derive them from the fetched list.
-  const uniqueLanguages = useMemo(() => {
-    const languages = new Set<string>();
-    movies.forEach((m) => languages.add(m.language));
-    return ["all", ...Array.from(languages)];
-  }, [movies]);
-
-  const uniqueAgeRatings = useMemo(() => {
-    const ratings = new Set<string>();
-    movies.forEach((m) => ratings.add(m.ageRating));
-    return ["all", ...Array.from(ratings)];
-  }, [movies]);
-
-  // NOTE: The original component's filtering logic is now handled by the API call,
-  // so `filteredMovies` simply becomes the fetched `movies` state.
-  const displayedMovies = movies;
-
-  // We use the Language/Age Rating as the filter options in the UI, replacing Genre/Category
-  const languages = uniqueLanguages;
-  const ageRatings = uniqueAgeRatings;
-
-  // Renamed the handlers to match the API parameters
-  const handleSetLanguage = (lang: string) => {
-    setSelectedLanguage(lang);
-  };
-
-  const handleSetAgeRating = (rating: string) => {
-    setSelectedAgeRating(rating);
-  };
+  const uniqueLanguages = useMemo(
+    () => ["all", ...Array.from(new Set(movies.map((m) => m.language)))],
+    [movies],
+  );
+  const uniqueAgeRatings = useMemo(
+    () => ["all", ...Array.from(new Set(movies.map((m) => m.ageRating)))],
+    [movies],
+  );
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-background to-secondary">
+    // THE NEW GRADIENT BACKGROUND: White base with soft indigo/rose/amber blurs
+    <div className="min-h-screen bg-white relative overflow-hidden text-slate-900">
+      {/* Aurora Effects */}
+      <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] rounded-full bg-blue-100/50 blur-[120px] -z-10" />
+      <div className="absolute top-[20%] right-[-5%] w-[30%] h-[30%] rounded-full bg-rose-100/40 blur-[120px] -z-10" />
+      <div className="absolute bottom-[-10%] left-[20%] w-[50%] h-[40%] rounded-full bg-indigo-50/60 blur-[120px] -z-10" />
+
       <Navbar />
 
-      <main className="container mx-auto px-4 py-8">
-        {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-4xl font-bold text-foreground mb-2">
+      <main className="container mx-auto px-4 pt-16 pb-24 relative z-10">
+        {/* Header Section */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="mb-12 text-center"
+        >
+          <h1 className="text-5xl md:text-7xl font-black tracking-tighter mb-4 bg-gradient-to-br from-rose-500 via-rose-500 to-rose-500 bg-clip-text text-transparent">
             Now Showing
           </h1>
-          <p className="text-muted-foreground">
-            Choose your favorite movie and book tickets
+          <p className="text-slate-500 text-lg md:text-xl font-medium max-w-2xl mx-auto">
+            Discover the latest cinematic masterpieces and book your experience.
           </p>
-        </div>
+        </motion.div>
 
-        {/* Search and Filters */}
-        <div className="space-y-4 mb-8">
-          <div className="relative">
-            <Search className="absolute left-3 top-3 w-5 h-5 text-muted-foreground" />
-            <Input
-              placeholder="Search by title..." // Simplified placeholder since API only searches title
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-10 bg-card border-border text-foreground placeholder:text-muted-foreground h-12"
-            />
-          </div>
-
-          {/* Filter 1: Language (replaces Genre) */}
-          <div className="flex gap-4 flex-wrap">
-            <div className="flex items-center gap-2">
-              <Filter className="w-4 h-4 text-primary" />
-              <span className="text-sm font-medium text-foreground">
-                Language:
-              </span>
+        {/* Modern Floating Search Bar */}
+        <div className="max-w-4xl mx-auto mb-16">
+          <div className="p-2 rounded-3xl bg-white/40 backdrop-blur-2xl border border-white/20 shadow-[0_8px_32px_0_rgba(31,38,135,0.07)]">
+            <div className="flex flex-col md:flex-row gap-2">
+              <div className="relative flex-1">
+                <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
+                <Input
+                  placeholder="Search for movies..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="pl-12 bg-transparent border-none focus-visible:ring-0 h-14 text-lg placeholder:text-slate-400"
+                />
+              </div>
+              <div className="h-10 w-[1px] bg-slate-200 hidden md:block self-center" />
+              <div className="flex gap-2 p-1 overflow-x-auto no-scrollbar">
+                {uniqueLanguages.map((lang) => (
+                  <Button
+                    key={lang}
+                    variant="ghost"
+                    onClick={() => setSelectedLanguage(lang)}
+                    className={`rounded-2xl px-5 h-12 transition-all duration-300 ${
+                      selectedLanguage === lang
+                        ? "bg-slate-900 text-white shadow-lg shadow-slate-200"
+                        : "hover:bg-slate-100 text-slate-600"
+                    }`}
+                  >
+                    {lang}
+                  </Button>
+                ))}
+              </div>
             </div>
-            {languages.map((lang) => (
-              <Button
-                key={lang}
-                onClick={() => handleSetLanguage(lang)}
-                className={`rounded-full capitalize ${
-                  selectedLanguage === lang
-                    ? "bg-primary text-primary-foreground"
-                    : "bg-secondary text-foreground hover:bg-card border border-border"
-                }`}
-              >
-                {lang}
-              </Button>
-            ))}
-          </div>
-
-          {/* Filter 2: Age Rating (replaces Category) */}
-          <div className="flex gap-4 flex-wrap">
-            <span className="text-sm font-medium text-foreground">
-              Age Rating:
-            </span>
-            {ageRatings.map((rating) => (
-              <Button
-                key={rating}
-                onClick={() => handleSetAgeRating(rating)}
-                size="sm"
-                className={`capitalize ${
-                  selectedAgeRating === rating
-                    ? "bg-accent text-accent-foreground"
-                    : "bg-card text-foreground hover:bg-secondary border border-border"
-                }`}
-              >
-                {rating}
-              </Button>
-            ))}
           </div>
         </div>
-
-        {/* Loading & Error States */}
-        {isLoading && (
-          <div className="text-center py-12 text-primary flex items-center justify-center gap-2">
-            <RotateCw className="w-6 h-6 animate-spin" />
-            <p className="text-lg">Loading movies...</p>
-          </div>
-        )}
-
-        {error && !isLoading && (
-          <div className="text-center py-12 text-red-500 border border-red-500/50 bg-red-500/10 rounded-lg p-4">
-            <p className="text-lg">Error: {error}</p>
-          </div>
-        )}
 
         {/* Movie Grid */}
-        {!isLoading && !error && (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {displayedMovies.map((movie) => (
-              <Link key={movie.id} href={`/movies/${movie.id}`} passHref>
-                <Card className="border-border bg-card hover:bg-card/80 transition cursor-pointer h-full overflow-hidden hover:shadow-lg hover:shadow-primary/20">
-                  <div className="relative h-64 overflow-hidden bg-secondary">
-                    <img
-                      // movie.poster now comes from API's Image field
-                      src={movie.poster}
-                      alt={movie.title}
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
+        <AnimatePresence mode="wait">
+          {isLoading ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+              {[1, 2, 3, 4].map((i) => (
+                <div
+                  key={i}
+                  className="aspect-[2/3] rounded-3xl bg-slate-100 animate-pulse"
+                />
+              ))}
+            </div>
+          ) : (
+            <motion.div
+              layout
+              initial="hidden"
+              animate="show"
+              variants={{
+                show: { transition: { staggerChildren: 0.1 } },
+              }}
+              className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8"
+            >
+              {movies.map((movie) => (
+                <motion.div
+                  key={movie.id}
+                  variants={{
+                    hidden: { opacity: 0, scale: 0.95 },
+                    show: { opacity: 1, scale: 1 },
+                  }}
+                  whileHover={{ y: -10 }}
+                  className="group"
+                >
+                  <Link href={`/movies/${movie.id}`}>
+                    <Card className="border-none bg-white/60 backdrop-blur-sm shadow-[0_10px_30px_rgba(0,0,0,0.04)] rounded-[2.5rem] overflow-hidden transition-all duration-500 hover:shadow-[0_20px_50px_rgba(0,0,0,0.1)]">
+                      <div className="relative aspect-[3/4] overflow-hidden">
+                        <img
+                          src={movie.poster}
+                          alt={movie.title}
+                          className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                        />
+                        <div className="absolute top-4 left-4">
+                          <CustomBadge className="bg-white/90 backdrop-blur text-slate-900 border-none shadow-sm">
+                            {movie.ageRating}
+                          </CustomBadge>
+                        </div>
+                      </div>
 
-                  <CardContent className="pt-4">
-                    <CardTitle className="text-lg line-clamp-2">
-                      {movie.title}
-                    </CardTitle>
-                    <CardDescription className="mb-3">
-                      <span className="text-primary font-semibold">
-                        {/* Using language as a genre-like tag */}
-                        {movie.language}
-                      </span>
-                    </CardDescription>
+                      <CardContent className="p-6">
+                        <h3 className="text-xl font-bold text-slate-900 mb-2 line-clamp-1">
+                          {movie.title}
+                        </h3>
 
-                    <div className="space-y-2 text-sm text-muted-foreground mb-4">
-                      <p className="flex items-center gap-2">
-                        <Users className="w-4 h-4" />
-                        {/* Displaying Director as a key person */}
-                        {movie.director}
-                      </p>
-                      <p className="flex items-center gap-2">
-                        <Calendar className="w-4 h-4" />
-                        {movie.duration} min • {movie.ageRating}
-                      </p>
-                    </div>
+                        <div className="flex flex-wrap items-center gap-3 text-sm text-slate-500 mb-6">
+                          <span className="flex items-center gap-1 bg-slate-100 px-2 py-1 rounded-lg">
+                            <Film className="w-3 h-3" /> {movie.language}
+                          </span>
+                          <span className="flex items-center gap-1 bg-slate-100 px-2 py-1 rounded-lg">
+                            <Calendar className="w-3 h-3" /> {movie.duration}m
+                          </span>
+                        </div>
 
-                    <Button className="w-full bg-primary hover:bg-primary/90 text-primary-foreground">
-                      Book Ticket
-                    </Button>
-                  </CardContent>
-                </Card>
-              </Link>
-            ))}
-          </div>
-        )}
+                        <Button className="w-full h-12 rounded-2xl bg-red-400 hover:bg-red-700 text-white font-bold shadow-lg shadow-indigo-100 transition-all active:scale-95">
+                          Book Ticket
+                        </Button>
+                      </CardContent>
+                    </Card>
+                  </Link>
+                </motion.div>
+              ))}
+            </motion.div>
+          )}
+        </AnimatePresence>
 
-        {/* No Movies Found */}
-        {displayedMovies.length === 0 && !isLoading && !error && (
-          <div className="text-center py-12">
-            <p className="text-muted-foreground text-lg">
-              No movies found matching your criteria.
-            </p>
+        {/* No Results Styling */}
+        {!isLoading && movies.length === 0 && (
+          <div className="text-center py-20">
+            <div className="inline-flex p-6 rounded-full bg-slate-50 mb-4">
+              <Search className="w-10 h-10 text-slate-300" />
+            </div>
+            <h2 className="text-2xl font-bold text-slate-900">
+              No movies found
+            </h2>
+            <p className="text-slate-500">Try a different search or filter.</p>
           </div>
         )}
       </main>

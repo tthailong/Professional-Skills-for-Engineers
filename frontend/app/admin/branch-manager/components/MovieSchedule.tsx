@@ -10,7 +10,6 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
   DialogFooter,
 } from "@/components/ui/dialog";
 import {
@@ -67,7 +66,6 @@ export const MovieScheduleTab: React.FC<MovieScheduleProps> = ({
   pages,
   setPages,
 }) => {
-  // State for Add Showtime Modal
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [selectedMovieId, setSelectedMovieId] = useState<number | null>(null);
   const [newShowtime, setNewShowtime] = useState({
@@ -80,26 +78,23 @@ export const MovieScheduleTab: React.FC<MovieScheduleProps> = ({
   const [availableHalls, setAvailableHalls] = useState<Hall[]>([]);
   const [isLoadingHalls, setIsLoadingHalls] = useState(false);
 
-  // Fetch halls when format changes
   useEffect(() => {
     const fetchHalls = async () => {
       if (!newShowtime.format || !branchData.id) return;
 
       setIsLoadingHalls(true);
       try {
-        const response = await fetch(
-          `${API_BASE_URL}/admin_regular/branch/halls/${
-            branchData.id
-          }?format=${encodeURIComponent(newShowtime.format)}`
+        const res = await fetch(
+          `${API_BASE_URL}/admin_regular/branch/halls/${branchData.id}?format=${encodeURIComponent(newShowtime.format)}`,
         );
-        if (response.ok) {
-          const halls = await response.json();
+        if (res.ok) {
+          const halls = await res.json();
           setAvailableHalls(halls);
-          // Reset hall selection if current selection is not in the new list
+
           if (
             newShowtime.hall_number &&
             !halls.find(
-              (h: Hall) => h.hall_number.toString() === newShowtime.hall_number
+              (h: Hall) => h.hall_number.toString() === newShowtime.hall_number,
             )
           ) {
             setNewShowtime((prev) => ({ ...prev, hall_number: "" }));
@@ -108,8 +103,7 @@ export const MovieScheduleTab: React.FC<MovieScheduleProps> = ({
           toast.error("Failed to fetch halls");
           setAvailableHalls([]);
         }
-      } catch (error) {
-        console.error("Error fetching halls:", error);
+      } catch {
         toast.error("Failed to fetch halls");
         setAvailableHalls([]);
       } finally {
@@ -146,17 +140,15 @@ export const MovieScheduleTab: React.FC<MovieScheduleProps> = ({
       return;
     }
 
-    // Format date to dd/mm/yyyy
-    const dateObj = new Date(newShowtime.date);
-    const day = String(dateObj.getDate()).padStart(2, "0");
-    const month = String(dateObj.getMonth() + 1).padStart(2, "0");
-    const year = dateObj.getFullYear();
-    const formattedDate = `${day}/${month}/${year}`;
+    const d = new Date(newShowtime.date);
+    const formatted = `${String(d.getDate()).padStart(2, "0")}/${String(
+      d.getMonth() + 1,
+    ).padStart(2, "0")}/${d.getFullYear()}`;
 
     addShowtime({
       movie_id: selectedMovieId,
-      start_time: newShowtime.time, // HH:mm
-      date: formattedDate,
+      start_time: newShowtime.time,
+      date: formatted,
       format: newShowtime.format,
       subtitle: newShowtime.subtitle,
       hall_number: parseInt(newShowtime.hall_number),
@@ -166,12 +158,13 @@ export const MovieScheduleTab: React.FC<MovieScheduleProps> = ({
   };
 
   return (
-    <div className="space-y-6">
-      <div className="relative max-w-md mb-4">
-        <Search className="absolute left-3 top-3 w-4 h-4 text-muted-foreground" />
+    <div className="space-y-8">
+      {/* SEARCH */}
+      <div className="relative max-w-md">
+        <Search className="absolute left-3 top-3 w-4 h-4 text-rose-400" />
         <Input
           placeholder="Search movies..."
-          className="pl-10 bg-card border-border"
+          className="pl-10 bg-white border-rose-200 focus-visible:ring-rose-400 shadow-sm"
           value={searchQueries.movies}
           onChange={(e) =>
             setSearchQueries((prev) => ({
@@ -182,125 +175,123 @@ export const MovieScheduleTab: React.FC<MovieScheduleProps> = ({
         />
       </div>
 
+      {/* MOVIES */}
       {paginatedMovies.map((movie) => {
-        // Find the movie in branchData to get the latest state (isActive, showtimes)
-        const currentMovieState =
+        const current =
           branchData.movies.find((m) => m.movie_id === movie.movie_id) || movie;
 
         return (
           <Card
             key={movie.movie_id}
-            className={`border-border bg-card transition-all duration-300 ${
-              currentMovieState.isActive
-                ? "border-l-4 border-l-green-500 shadow-[0_0_15px_rgba(34,197,94,0.1)]"
-                : "opacity-80 hover:opacity-100"
+            className={`rounded-2xl border border-rose-100 bg-white/80 backdrop-blur-xl shadow-md hover:shadow-xl transition-all duration-300 hover:-translate-y-1 ${
+              current.isActive
+                ? "ring-2 ring-green-400/40"
+                : "opacity-90 hover:opacity-100"
             }`}
           >
             <CardContent className="pt-6">
               <div className="flex flex-col md:flex-row gap-6">
-                {/* Movie Info & Toggle */}
-                <div className="flex-2">
+                {/* INFO */}
+                <div className="flex-1">
                   <div className="flex items-center justify-between mb-3">
                     <div className="flex items-center gap-3">
                       <div
                         className={`p-2 rounded-full ${
-                          currentMovieState.isActive
+                          current.isActive
                             ? "bg-green-100 text-green-600"
-                            : "bg-secondary text-muted-foreground"
+                            : "bg-rose-50 text-rose-400"
                         }`}
                       >
                         <Film className="w-5 h-5" />
                       </div>
+
                       <div>
-                        <h3 className="text-xl font-bold text-foreground flex items-center gap-2">
+                        <h3 className="text-xl font-bold flex items-center gap-2">
                           {movie.title}
-                          {currentMovieState.isActive && (
-                            <span className="text-xs bg-green-500 text-white px-2 py-0.5 rounded-full">
+                          {current.isActive && (
+                            <span className="text-xs bg-gradient-to-r from-green-500 to-emerald-500 text-white px-2 py-0.5 rounded-full">
                               Active
                             </span>
                           )}
                         </h3>
-                        <p className="text-sm text-muted-foreground">
+
+                        <p className="text-sm text-gray-400">
                           {movie.duration} mins • {movie.age_rating}
                         </p>
                       </div>
                     </div>
+
                     <Button
                       size="sm"
-                      variant={
-                        currentMovieState.isActive ? "destructive" : "default"
-                      }
                       onClick={() =>
-                        toggleMovieActive(
-                          movie.movie_id,
-                          currentMovieState.isActive
-                        )
+                        toggleMovieActive(movie.movie_id, current.isActive)
                       }
                       className={
-                        currentMovieState.isActive
-                          ? "bg-white border-2 border-red-500 text-red-500 hover:bg-red-50"
-                          : "bg-green-600 hover:bg-green-700"
+                        current.isActive
+                          ? "bg-white border border-red-400 text-red-500 hover:bg-red-50"
+                          : "bg-gradient-to-r from-rose-500 to-pink-500 text-white"
                       }
                     >
-                      {currentMovieState.isActive
-                        ? "Deactivate"
-                        : "Activate Movie"}
+                      {current.isActive ? "Deactivate" : "Activate"}
                     </Button>
                   </div>
 
-                  {!currentMovieState.isActive && (
-                    <p className="text-sm text-muted-foreground italic mt-2">
+                  {!current.isActive && (
+                    <p className="text-sm italic text-gray-400 mt-2">
                       Activate this movie to manage showtimes.
                     </p>
                   )}
                 </div>
 
-                {/* Scheduler (Only visible if Active) */}
-                {currentMovieState.isActive && (
-                  <div className="flex-2 border-l justify-center pt-4 md:pt-0 md:pl-6 bg-secondary/20 py-6 pr-6 rounded-r-lg">
+                {/* SHOWTIMES */}
+                {current.isActive && (
+                  <div className="flex-1 md:border-l md:pl-6">
                     <div className="flex items-center justify-between mb-3">
-                      <Label className="text-sm font-semibold flex items-center gap-2">
-                        <Clock className="w-4 h-4 text-white" /> Showtimes
+                      <Label className="font-semibold flex items-center gap-2">
+                        <Clock className="w-4 h-4 text-rose-500" />
+                        Showtimes
                       </Label>
+
                       <Button
                         size="sm"
-                        variant="secondary"
                         onClick={() => handleOpenAddModal(movie.movie_id)}
+                        className="bg-gradient-to-r from-rose-500 to-pink-500 text-white shadow"
                       >
-                        <Plus className="w-4 h-4 mr-2" /> Add Showtime
+                        <Plus className="w-4 h-4 mr-2" />
+                        Add
                       </Button>
                     </div>
 
-                    <div className="flex flex-wrap gap-2">
-                      {currentMovieState.showtimes.length === 0 ? (
-                        <span className="text-xs text-destructive italic flex items-center gap-1 bg-red-50 px-2 py-1 rounded">
-                          <AlertCircle className="w-3 h-3" /> No showtimes set
-                          (Movie won't appear on site)
+                    <div className="flex flex-wrap gap-3">
+                      {current.showtimes.length === 0 ? (
+                        <span className="text-xs text-red-500 bg-red-50 px-3 py-1 rounded-full flex items-center gap-1">
+                          <AlertCircle className="w-3 h-3" />
+                          No showtimes set
                         </span>
                       ) : (
-                        currentMovieState.showtimes.map((showtime) => (
+                        current.showtimes.map((s) => (
                           <div
-                            key={showtime.showtime_id}
-                            className="bg-slate-200/10 border border-border text-foreground px-3 py-2 rounded-md text-sm font-medium flex flex-col gap-1 shadow-sm group relative pr-8"
+                            key={s.showtime_id}
+                            className="relative group bg-white border border-rose-100 rounded-xl px-4 py-3 text-sm shadow hover:shadow-md transition"
                           >
-                            <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                              <Calendar className="w-3 h-3" /> {showtime.date}
+                            <div className="text-xs text-gray-400 flex items-center gap-1">
+                              <Calendar className="w-3 h-3" />
+                              {s.date}
                             </div>
-                            <div className="font-bold text-lg">
-                              {showtime.start_time.slice(0, 5)}
+
+                            <div className="font-bold text-lg text-rose-500">
+                              {s.start_time.slice(0, 5)}
                             </div>
-                            <div className="text-xs opacity-70">
-                              Hall {showtime.hall_number} • {showtime.format} •{" "}
-                              {showtime.subtitle}
+
+                            <div className="text-xs text-gray-400">
+                              Hall {s.hall_number} • {s.format} • {s.subtitle}
                             </div>
+
                             <button
                               onClick={() =>
-                                removeShowtime(
-                                  movie.movie_id,
-                                  showtime.showtime_id
-                                )
+                                removeShowtime(movie.movie_id, s.showtime_id)
                               }
-                              className="absolute top-2 right-2 text-muted-foreground hover:text-destructive transition-colors"
+                              className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 text-gray-400 hover:text-red-500 transition"
                             >
                               <X className="w-4 h-4" />
                             </button>
@@ -315,6 +306,7 @@ export const MovieScheduleTab: React.FC<MovieScheduleProps> = ({
           </Card>
         );
       })}
+
       <PaginationControls
         type="movies"
         totalPages={totalMoviePages}
@@ -322,147 +314,106 @@ export const MovieScheduleTab: React.FC<MovieScheduleProps> = ({
         setPages={setPages}
       />
 
-      {/* Add Showtime Modal */}
+      {/* MODAL */}
       <Dialog open={isAddModalOpen} onOpenChange={setIsAddModalOpen}>
-        <DialogContent className="sm:max-w-[425px] bg-card text-card-foreground border-border">
+        <DialogContent className="sm:max-w-[425px] rounded-2xl bg-white border border-rose-100 shadow-xl">
           <DialogHeader>
-            <DialogTitle>Add New Showtime</DialogTitle>
+            <DialogTitle className="text-xl font-bold text-rose-500">
+              Add New Showtime
+            </DialogTitle>
           </DialogHeader>
+
           <div className="grid gap-4 py-4">
-            {/* Date */}
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="date" className="text-right">
-                Date
-              </Label>
-              <Input
-                id="date"
-                type="date"
-                className="col-span-3 bg-secondary border-border"
-                value={newShowtime.date}
-                onChange={(e) =>
-                  setNewShowtime({ ...newShowtime, date: e.target.value })
-                }
-              />
-            </div>
-            {/* Time */}
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="time" className="text-right">
-                Time
-              </Label>
-              <Input
-                id="time"
-                type="time"
-                className="col-span-3 bg-secondary border-border"
-                value={newShowtime.time}
-                onChange={(e) =>
-                  setNewShowtime({ ...newShowtime, time: e.target.value })
-                }
-              />
-            </div>
-            {/* Format */}
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="format" className="text-right">
-                Format
-              </Label>
-              <Select
-                value={newShowtime.format}
-                onValueChange={(val) =>
-                  setNewShowtime({ ...newShowtime, format: val })
-                }
-              >
-                <SelectTrigger className="col-span-3 bg-secondary border-border">
-                  <SelectValue placeholder="Select format" />
-                </SelectTrigger>
-                <SelectContent>
-                  {/* Ideally fetch from movie details, but for now use common ones or fetch from selected movie */}
-                  {selectedMovieId &&
-                    branchData.movies
-                      .find((m) => m.movie_id === selectedMovieId)
-                      ?.formats.map((f) => (
-                        <SelectItem key={f} value={f}>
-                          {f}
-                        </SelectItem>
-                      ))}
-                </SelectContent>
-              </Select>
-            </div>
-            {/* Hall */}
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="hall" className="text-right">
-                Hall
-              </Label>
-              <Select
-                value={newShowtime.hall_number}
-                onValueChange={(val) =>
-                  setNewShowtime({
-                    ...newShowtime,
-                    hall_number: val,
-                  })
-                }
-                disabled={!newShowtime.format || isLoadingHalls}
-              >
-                <SelectTrigger className="col-span-3 bg-secondary border-border">
-                  <SelectValue
-                    placeholder={
-                      !newShowtime.format
-                        ? "Select format first"
-                        : isLoadingHalls
-                        ? "Loading halls..."
-                        : availableHalls.length === 0
-                        ? "No halls available for this format"
-                        : "Select hall"
-                    }
-                  />
-                </SelectTrigger>
-                <SelectContent>
-                  {availableHalls.map((hall) => (
-                    <SelectItem
-                      key={hall.hall_number}
-                      value={hall.hall_number.toString()}
-                    >
-                      Hall {hall.hall_number} ({hall.type}) - Capacity:{" "}
-                      {hall.capacity}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-            {/* Subtitle */}
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="subtitle" className="text-right">
-                Subtitle
-              </Label>
-              <Select
-                value={newShowtime.subtitle}
-                onValueChange={(val) =>
-                  setNewShowtime({ ...newShowtime, subtitle: val })
-                }
-              >
-                <SelectTrigger className="col-span-3 bg-secondary border-border">
-                  <SelectValue placeholder="Select subtitle" />
-                </SelectTrigger>
-                <SelectContent>
-                  {selectedMovieId &&
-                    branchData.movies
-                      .find((m) => m.movie_id === selectedMovieId)
-                      ?.subtitles.map((s) => (
-                        <SelectItem key={s} value={s}>
-                          {s}
-                        </SelectItem>
-                      ))}
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
-          <DialogFooter>
-            <Button
-              variant="outline"
-              onClick={() => setIsAddModalOpen(false)}
-              className="border-border text-foreground hover:bg-secondary"
+            <Input
+              type="date"
+              value={newShowtime.date}
+              onChange={(e) =>
+                setNewShowtime({ ...newShowtime, date: e.target.value })
+              }
+            />
+
+            <Input
+              type="time"
+              value={newShowtime.time}
+              onChange={(e) =>
+                setNewShowtime({ ...newShowtime, time: e.target.value })
+              }
+            />
+
+            <Select
+              value={newShowtime.format}
+              onValueChange={(v) =>
+                setNewShowtime({ ...newShowtime, format: v })
+              }
             >
+              <SelectTrigger>
+                <SelectValue placeholder="Format" />
+              </SelectTrigger>
+              <SelectContent>
+                {selectedMovieId &&
+                  branchData.movies
+                    .find((m) => m.movie_id === selectedMovieId)
+                    ?.formats.map((f) => (
+                      <SelectItem key={f} value={f}>
+                        {f}
+                      </SelectItem>
+                    ))}
+              </SelectContent>
+            </Select>
+
+            <Select
+              value={newShowtime.hall_number}
+              onValueChange={(v) =>
+                setNewShowtime({ ...newShowtime, hall_number: v })
+              }
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Hall" />
+              </SelectTrigger>
+              <SelectContent>
+                {availableHalls.map((h) => (
+                  <SelectItem
+                    key={h.hall_number}
+                    value={h.hall_number.toString()}
+                  >
+                    Hall {h.hall_number} ({h.type})
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+
+            <Select
+              value={newShowtime.subtitle}
+              onValueChange={(v) =>
+                setNewShowtime({ ...newShowtime, subtitle: v })
+              }
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Subtitle" />
+              </SelectTrigger>
+              <SelectContent>
+                {selectedMovieId &&
+                  branchData.movies
+                    .find((m) => m.movie_id === selectedMovieId)
+                    ?.subtitles.map((s) => (
+                      <SelectItem key={s} value={s}>
+                        {s}
+                      </SelectItem>
+                    ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setIsAddModalOpen(false)}>
               Cancel
             </Button>
-            <Button onClick={handleAddShowtimeSubmit}>Add Showtime</Button>
+            <Button
+              onClick={handleAddShowtimeSubmit}
+              className="bg-gradient-to-r from-rose-500 to-pink-500 text-white"
+            >
+              Add Showtime
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

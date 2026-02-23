@@ -258,7 +258,7 @@ export default function BranchManagementPage() {
         await updateHall(
           currentBranchForHalls.id,
           editingHall.hallNumber,
-          payload
+          payload,
         );
         toast.success("Hall updated successfully");
       } else {
@@ -430,7 +430,7 @@ export default function BranchManagementPage() {
                     <option value="">-- Select an Admin --</option>
                     {availableManagers.map((admin) => {
                       const managedBranch = branches.find(
-                        (b) => b.managerId === admin.id
+                        (b) => b.managerId === admin.id,
                       );
                       const isCurrentManager = formData.managerId === admin.id; // Currently selected in form
                       const isManagingOther =
@@ -460,8 +460,8 @@ export default function BranchManagementPage() {
                     {isLoading
                       ? "Saving..."
                       : isEditing
-                      ? "Save Changes"
-                      : "Create Branch"}
+                        ? "Save Changes"
+                        : "Create Branch"}
                   </Button>
                 </DialogFooter>
               </form>

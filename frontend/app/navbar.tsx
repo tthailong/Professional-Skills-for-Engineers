@@ -14,7 +14,7 @@ import {
   CreditCard,
   Clapperboard,
 } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useUserStore, API_BASE_URL } from "@/store/useUserStore";
 import { useAdminStore } from "@/store/useAdminStore";
 import { useRouter, usePathname } from "next/navigation";
@@ -25,40 +25,74 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 
 export function Navbar() {
-  const [isOpen, setIsOpen] = useState(false);
   const { user, logoutUser } = useUserStore();
-  // Assuming admin object contains role info, e.g., { name: "...", role: "primary" }
   const { admin, logoutAdmin } = useAdminStore();
   const router = useRouter();
   const pathname = usePathname();
-  const logout = () => {
-    if (user) {
-      logoutUser();
-    }
-    if (admin) {
-      logoutAdmin();
-    }
-    router.push("/");
-  };
 
-  // --- ADMIN CHANGE PASSWORD STATE ---
+  const [open, setOpen] = useState(false);
+  const [showNav, setShowNav] = useState(true);
+  const [lastScroll, setLastScroll] = useState(0);
+  const [scrolled, setScrolled] = useState(false);
+
   const [isAdminChangePasswordOpen, setIsAdminChangePasswordOpen] =
     useState(false);
+
   const [adminPasswordForm, setAdminPasswordForm] = useState({
     oldPassword: "",
     newPassword: "",
     confirmPassword: "",
   });
+
   const [adminPasswordError, setAdminPasswordError] = useState("");
 
+  /* ---------------- SCROLL LOGIC (SMOOTH + OPTIMIZED) ---------------- */
+
+  useEffect(() => {
+    let ticking = false;
+
+    const handleScroll = () => {
+      const current = window.scrollY;
+
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          setScrolled(current > 30);
+
+          if (current > lastScroll && current > 120) {
+            setShowNav(false);
+          } else {
+            setShowNav(true);
+          }
+
+          setLastScroll(current);
+          ticking = false;
+        });
+
+        ticking = true;
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [lastScroll]);
+
+  /* ---------------- AUTH ---------------- */
+
+  const logout = () => {
+    if (user) logoutUser();
+    if (admin) logoutAdmin();
+    router.push("/");
+  };
+
+  /* ---------------- PASSWORD CHANGE ---------------- */
+
   const handleAdminPasswordChangeInput = (
-    e: React.ChangeEvent<HTMLInputElement>
+    e: React.ChangeEvent<HTMLInputElement>,
   ) => {
     const { name, value } = e.target;
     setAdminPasswordForm((prev) => ({ ...prev, [name]: value }));
@@ -67,10 +101,12 @@ export function Navbar() {
 
   const handleAdminChangePasswordSubmit = async () => {
     if (!admin?.id) return;
+
     if (adminPasswordForm.newPassword !== adminPasswordForm.confirmPassword) {
       setAdminPasswordError("New passwords do not match.");
       return;
     }
+
     if (adminPasswordForm.newPassword.length < 8) {
       setAdminPasswordError("Password must be at least 8 characters.");
       return;
@@ -88,10 +124,7 @@ export function Navbar() {
       });
 
       const data = await res.json();
-
-      if (!res.ok) {
-        throw new Error(data.detail || "Failed to change password");
-      }
+      if (!res.ok) throw new Error(data.detail);
 
       toast.success("Password changed successfully!");
       setIsAdminChangePasswordOpen(false);
@@ -105,7 +138,7 @@ export function Navbar() {
     }
   };
 
-  // --- Navigation Configuration ---
+  /* ---------------- LINKS ---------------- */
 
   const userLinks = [
     { href: "/bookings", label: "My Booking", icon: Ticket },
@@ -120,29 +153,13 @@ export function Navbar() {
       label: "Dashboard",
       icon: LayoutDashboard,
     },
-    {
-      href: "/admin/primary/movies",
-      label: "Movies",
-      icon: Film,
-    },
-    {
-      href: "/admin/primary/events",
-      label: "Events",
-      icon: Calendar,
-    },
-    {
-      href: "/admin/primary/admins",
-      label: "Admin",
-      icon: Users,
-    }, // Manage other admins
-    {
-      href: "/admin/primary/branches",
-      label: "Branch (Admin)",
-      icon: MapPin,
-    },
+    { href: "/admin/primary/movies", label: "Movies", icon: Film },
+    { href: "/admin/primary/events", label: "Events", icon: Calendar },
+    { href: "/admin/primary/admins", label: "Admin", icon: Users },
+    { href: "/admin/primary/branches", label: "Branch", icon: MapPin },
     {
       href: "/admin/primary/product-voucher",
-      label: "Product & Voucher",
+      label: "Products",
       icon: ShoppingBag,
     },
   ];
@@ -150,7 +167,6 @@ export function Navbar() {
   const adminRegularLinks = [
     { href: "/admin/dashboard", label: "Dashboard", icon: LayoutDashboard },
     { href: "/admin/bookings", label: "Booking", icon: CreditCard },
-    // Grouping Showtime, Movie, Events under one Branch Manager link
     {
       href: "/admin/branch-manager",
       label: "Branch Manager",
@@ -158,201 +174,200 @@ export function Navbar() {
     },
   ];
 
-  // --- Logic to determine active links ---
-  const getActiveLinks = () => {
+  const getLinks = () => {
     if (!admin) return userLinks;
-
-    // CHECK: Adjust 'primary' to match your actual database role string
-    if (admin.role === "primary") {
-      return adminPrimaryLinks;
-    }
-
+    if (admin.role === "primary") return adminPrimaryLinks;
     return adminRegularLinks;
   };
 
-  const navLinks = getActiveLinks();
+  const navLinks = getLinks();
+
+  /* ---------------- UI ---------------- */
 
   return (
-    <nav className="bg-card border-b border-border sticky top-0 z-50">
-      <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-        {/* Logo */}
-        <Link href="/" className="flex items-center gap-2">
-          <Film className="w-6 h-6 text-primary" />
-          <span className="text-xl font-bold text-foreground">
-            HCMUT Cinema
-          </span>
-        </Link>
+    <>
+      {/* NAVBAR */}
+      <nav
+        className={`
+fixed top-4 left-1/2 -translate-x-1/2 z-50 w-[96%] max-w-7xl
+transition-all duration-500 ease-out
+${
+  showNav
+    ? "opacity-100 translate-y-0"
+    : "opacity-0 -translate-y-8 pointer-events-none"
+}
+`}
+      >
+        <div
+          className={`
+rounded-full px-6 py-3 flex items-center justify-between
+transition-all duration-500 backdrop-blur-xl
+${
+  scrolled
+    ? "bg-white/80 border border-rose-200 shadow-xl"
+    : "bg-white/40 border border-white/30"
+}
+`}
+        >
+          {/* LOGO */}
+          <Link
+            href="/"
+            className="flex items-center gap-2 font-bold text-lg text-rose-600"
+          >
+            <Film className="w-5 h-5" />
+            LDHK Cinema
+          </Link>
 
-        {/* Desktop Navigation */}
-        <div className="hidden md:flex items-center gap-6">
-          {/* Dynamic Links Mapping */}
-          {navLinks.map((link) => {
-            const isActive = pathname === link.href;
-            return (
-              <Link
-                key={link.href}
-                href={link.href}
-                className={`transition flex items-center gap-1.5 text-sm font-medium px-3 py-2 rounded-md ${
-                  isActive
-                    ? "text-primary bg-primary/10"
-                    : "text-foreground hover:text-primary hover:bg-secondary"
-                }`}
-              >
-                <link.icon className="w-4 h-4" />
-                {link.label}
-              </Link>
-            );
-          })}
+          {/* DESKTOP LINKS */}
+          <div className="hidden md:flex items-center gap-2">
+            {navLinks.map((link) => {
+              const active = pathname === link.href;
 
-          {/* Auth Section */}
-          <div className="flex items-center gap-3 ml-4 border-l pl-4 border-border/50">
-            {/* ... (Auth buttons) */}
-            {!admin && user && user.email && (
-              <span className="text-sm text-muted-foreground max-w-[100px] truncate">
-                <Link href={"/profile"}>{user.name}</Link>
-              </span>
-            )}
+              return (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  className={`flex items-center gap-2 px-5 py-2 rounded-full text-sm font-semibold transition-all duration-300
+                  ${
+                    active
+                      ? "bg-gradient-to-r from-rose-500 to-pink-500 text-white shadow-lg shadow-rose-300/40"
+                      : "hover:bg-rose-100 text-foreground"
+                  }`}
+                >
+                  <link.icon className="w-4 h-4" />
+                  {link.label}
+                </Link>
+              );
+            })}
 
-            {/* Show Admin Name */}
+            {/* USER / ADMIN INFO */}
             {admin && (
-              <span className="text-sm font-semibold text-primary">
+              <span className="ml-3 font-semibold text-rose-600">
                 {admin.name || "Admin"}
               </span>
             )}
 
-            {/* User Logout */}
-            {!admin && user && user.email && (
-              <Button
-                onClick={logout}
-                variant="ghost"
-                size="sm"
-                className="text-destructive hover:bg-destructive/10"
+            {!admin && user && (
+              <Link
+                href="/profile"
+                className="ml-3 text-sm font-medium hover:text-rose-600 transition"
               >
-                <LogOut className="w-4 h-4" />
-              </Button>
-            )}
-
-            {/* Admin Logout */}
-            {admin && (
-              <Button
-                // Assuming useAdminStore has a logout function, otherwise implement logic here
-                onClick={logout}
-                variant="ghost"
-                size="sm"
-                className="text-destructive hover:bg-destructive/10"
-              >
-                <LogOut className="w-4 h-4" />
-              </Button>
-            )}
-
-            {/* Sign In Button (Only show if no one is logged in) */}
-            {!user && !admin && (
-              <Link href="/auth/login">
-                <Button size="sm">Sign In</Button>
+                {user.name}
               </Link>
             )}
+
+            {/* AUTH BUTTON */}
+            {!user && !admin ? (
+              <Link href="/auth/login">
+                <Button className="ml-3 rounded-full bg-gradient-to-r from-rose-500 to-pink-500 text-white shadow hover:scale-105 transition">
+                  Sign In
+                </Button>
+              </Link>
+            ) : (
+              <Button
+                onClick={logout}
+                variant="ghost"
+                className="ml-3 rounded-full hover:bg-rose-100"
+              >
+                <LogOut className="w-4 h-4" />
+              </Button>
+            )}
           </div>
+
+          {/* MOBILE BUTTON */}
+          <button
+            onClick={() => setOpen(!open)}
+            className="md:hidden text-xl font-bold"
+          >
+            ☰
+          </button>
         </div>
 
-        {/* Mobile Menu Button */}
-        <button
-          className="md:hidden text-foreground p-2"
-          onClick={() => setIsOpen(!isOpen)}
+        {/* MOBILE MENU */}
+        <div
+          className={`
+md:hidden mt-3 rounded-2xl p-5 space-y-2 backdrop-blur-xl
+border border-rose-200 bg-white/90 shadow-xl
+transition-all duration-300
+${open ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-4 pointer-events-none"}
+`}
         >
-          <span className="text-2xl">☰</span>
-        </button>
-      </div>
-
-      {/* Mobile Menu */}
-      {isOpen && (
-        <div className="md:hidden bg-card border-t border-border p-4 flex flex-col gap-2">
           {navLinks.map((link) => (
             <Link
               key={link.href}
               href={link.href}
-              className="flex items-center gap-2 py-2 text-foreground hover:text-primary"
-              onClick={() => setIsOpen(false)}
+              onClick={() => setOpen(false)}
+              className="flex items-center gap-2 font-medium py-2 hover:text-rose-600 transition"
             >
               <link.icon className="w-4 h-4" />
               {link.label}
             </Link>
           ))}
 
-          <div className="border-t border-border my-2 pt-2">
+          <div className="pt-3 border-t">
             {!user && !admin ? (
-              <Link
-                href="/auth/login"
-                className="block py-2 text-primary font-medium"
-              >
-                Sign In
-              </Link>
+              <Link href="/auth/login">Sign In</Link>
             ) : (
-              <>
-                <button
-                  onClick={() => {
-                    if (admin && logoutAdmin) logoutAdmin();
-                    else logoutUser();
-                    setIsOpen(false);
-                  }}
-                  className="flex items-center gap-2 py-2 text-destructive w-full text-left"
-                >
-                  <LogOut className="w-4 h-4" />
-                  Sign Out
-                </button>
-              </>
+              <button
+                onClick={() => {
+                  logout();
+                  setOpen(false);
+                }}
+                className="flex items-center gap-2 text-red-500"
+              >
+                <LogOut className="w-4 h-4" />
+                Logout
+              </button>
             )}
           </div>
         </div>
-      )}
+      </nav>
 
-      {/* --- ADMIN CHANGE PASSWORD DIALOG --- */}
+      {/* CHANGE PASSWORD DIALOG */}
       <Dialog
         open={isAdminChangePasswordOpen}
         onOpenChange={setIsAdminChangePasswordOpen}
       >
-        <DialogContent className="sm:max-w-[425px]">
+        <DialogContent>
           <DialogHeader>
             <DialogTitle>Admin Change Password</DialogTitle>
             <DialogDescription>
               Update your administrative account password.
             </DialogDescription>
           </DialogHeader>
-          <div className="grid gap-4 py-4">
+
+          <div className="space-y-4">
             {adminPasswordError && (
-              <div className="text-sm text-destructive bg-destructive/10 p-2 rounded">
+              <div className="text-sm text-red-500 bg-red-100 p-2 rounded">
                 {adminPasswordError}
               </div>
             )}
-            <div className="space-y-2">
-              <label className="text-sm font-medium">Current Password</label>
-              <Input
-                name="oldPassword"
-                type="password"
-                value={adminPasswordForm.oldPassword}
-                onChange={handleAdminPasswordChangeInput}
-              />
-            </div>
-            <div className="space-y-2">
-              <label className="text-sm font-medium">New Password</label>
-              <Input
-                name="newPassword"
-                type="password"
-                value={adminPasswordForm.newPassword}
-                onChange={handleAdminPasswordChangeInput}
-              />
-            </div>
-            <div className="space-y-2">
-              <label className="text-sm font-medium">
-                Confirm New Password
-              </label>
-              <Input
-                name="confirmPassword"
-                type="password"
-                value={adminPasswordForm.confirmPassword}
-                onChange={handleAdminPasswordChangeInput}
-              />
-            </div>
+
+            <Input
+              placeholder="Current Password"
+              name="oldPassword"
+              type="password"
+              value={adminPasswordForm.oldPassword}
+              onChange={handleAdminPasswordChangeInput}
+            />
+
+            <Input
+              placeholder="New Password"
+              name="newPassword"
+              type="password"
+              value={adminPasswordForm.newPassword}
+              onChange={handleAdminPasswordChangeInput}
+            />
+
+            <Input
+              placeholder="Confirm Password"
+              name="confirmPassword"
+              type="password"
+              value={adminPasswordForm.confirmPassword}
+              onChange={handleAdminPasswordChangeInput}
+            />
           </div>
+
           <DialogFooter>
             <Button
               variant="outline"
@@ -360,12 +375,13 @@ export function Navbar() {
             >
               Cancel
             </Button>
+
             <Button onClick={handleAdminChangePasswordSubmit}>
               Update Password
             </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
-    </nav>
+    </>
   );
 }
