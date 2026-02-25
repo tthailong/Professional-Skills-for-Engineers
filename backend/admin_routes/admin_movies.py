@@ -228,3 +228,17 @@ def update_movie(
         session.rollback()
         print(f"Error updating movie: {e}")
         raise HTTPException(status_code=400, detail=str(e))
+@router.delete("/{movie_id}")
+def delete_movie(
+    movie_id: int,
+    session: Session = Depends(get_session)
+):
+    try:
+        stmt = text("CALL delete_movie(:p_movie_id)")
+        session.exec(stmt, params={"p_movie_id": movie_id})
+        session.commit()
+        return {"message": "Movie deleted successfully"}
+    except Exception as e:
+        session.rollback()
+        print(f"Error deleting movie: {e}")
+        raise HTTPException(status_code=400, detail=str(e))

@@ -24,6 +24,7 @@ import {
   Dialog,
   DialogContent,
   DialogHeader,
+  DialogOverlay,
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
@@ -749,6 +750,7 @@ export default function AdminManagementPage() {
 
       {/* --- EDIT ADMIN DIALOG (REGULAR) --- */}
       <Dialog open={isEditAdminOpen} onOpenChange={setIsEditAdminOpen}>
+        <DialogOverlay className="bg-card/100 backdrop-blur-sm" />
         <DialogContent className="sm:max-w-[425px]">
           <DialogHeader>
             <DialogTitle>Edit Admin</DialogTitle>

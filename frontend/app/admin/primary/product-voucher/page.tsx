@@ -250,7 +250,7 @@ export default function ProductVoucherPage() {
 
       <Navbar />
 
-      <main className="container mx-auto px-4 pt-16 pb-24 relative z-10">
+      <main className="container mx-auto px-4 pb-24 relative z-10">
         <header className="flex flex-col md:flex-row justify-between items-end mb-12 gap-6">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
