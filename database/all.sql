@@ -2886,7 +2886,8 @@ BEGIN
         c.FName AS Customer_name,
         r.Rating,
         r.Comment,
-        DATE_FORMAT(r.Date_comment, '%d/%m/%Y') AS Review_date
+        DATE_FORMAT(r.Date_comment, '%d/%m/%Y') AS Review_date,
+        r.spoiler_tag AS Spoiler_tag
     FROM Review r
     JOIN Customer c 
         ON c.Customer_id = r.Customer_id 

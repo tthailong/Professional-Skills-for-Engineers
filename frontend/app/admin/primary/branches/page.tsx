@@ -17,6 +17,7 @@ import {
   DialogDescription,
   DialogFooter,
   DialogHeader,
+  DialogOverlay,
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
@@ -349,6 +350,7 @@ export default function BranchManagementPage() {
                 <Plus className="w-4 h-4" /> Add New Branch
               </Button>
             </DialogTrigger>
+            <DialogOverlay className="bg-card/100 backdrop-blur-sm" />
             <DialogContent className="sm:max-w-[500px] bg-card border-border">
               <DialogHeader>
                 <DialogTitle>

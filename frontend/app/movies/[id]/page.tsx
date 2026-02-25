@@ -42,6 +42,7 @@ interface Review {
   Rating: number;
   Comment: string;
   Review_date: string; // DD/MM/YYYY HH:MM:SS
+  Spoiler_tag: string | null;
 }
 
 interface Showtime {
@@ -168,7 +169,8 @@ export default function MovieDetailsPage() {
   const searchParams = useSearchParams();
   const movieId = params.id ? Number(params.id) : null;
 
-  const [tag, setTag] = useState<SpoilerTag>(SpoilerTag.NON_SPOILER);
+  const [tag, setTag] = useState<SpoilerTag | null>(null); // null = show all reviews
+  const [submitSpoilerTag, setSubmitSpoilerTag] = useState<SpoilerTag>(SpoilerTag.NON_SPOILER); // for review form
 
   // --- State for API Data ---
   const [movieData, setMovieData] = useState<MovieData | null>(null);
@@ -336,12 +338,13 @@ export default function MovieDetailsPage() {
   };
 
 
+  // Initial load: fetch all data
   useEffect(() => {
     if (movieId) {
       fetchMovieDetails(movieId, tag);
       fetchMoodOptions();
       fetchMoodVotes(movieId);
-      
+
       // If user is logged in, fetch their votes and purchase status
       if (user) {
         fetchUserMoodVotes(parseInt(user.id), movieId);
@@ -351,7 +354,16 @@ export default function MovieDetailsPage() {
       setError("Invalid Movie ID provided.");
       setIsLoading(false);
     }
-  }, [movieId, user, fetchMovieDetails, fetchMoodOptions, fetchMoodVotes, fetchUserMoodVotes, checkPurchaseStatus]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [movieId, user]);
+
+  // Re-fetch reviews only when the spoiler filter tag changes
+  useEffect(() => {
+    if (movieId) {
+      fetchMovieDetails(movieId, tag);
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [tag]);
 
   const isLoggedIn = !!user;
 
@@ -440,7 +452,7 @@ export default function MovieDetailsPage() {
             customer_id: parseInt(user.id),
             rating: newReviewData.rating,
             comment: newReviewData.comment,
-            spoiler: tag,
+            spoiler: submitSpoilerTag,
           }),
         },
       );
@@ -787,7 +799,12 @@ export default function MovieDetailsPage() {
                     </Link>
                   </div>
                 ) : (
-                  <AddReviewForm onSubmit={handleAddReview} disabled={!hasPurchased} />
+                  <AddReviewForm
+                    onSubmit={handleAddReview}
+                    disabled={!hasPurchased}
+                    spoilerTag={submitSpoilerTag}
+                    onSpoilerTagChange={setSubmitSpoilerTag}
+                  />
                 )}
 
               </CardContent>
@@ -879,9 +896,35 @@ export default function MovieDetailsPage() {
             {/* User Reviews Section - BOTTOM */}
             <Card className="bg-card border-border">
               <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <User className="w-5 h-5 text-primary" /> User Reviews
-                </CardTitle>
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                  <CardTitle className="flex items-center gap-2">
+                    <User className="w-5 h-5 text-primary" /> User Reviews
+                    <Badge variant="secondary" className="ml-1 text-xs">
+                      {reviewsData.length}
+                    </Badge>
+                  </CardTitle>
+                  {/* Spoiler filter toggle */}
+                  <div className="flex items-center gap-1 bg-secondary/40 rounded-lg p-1">
+                    {([
+                      { label: "All", value: null },
+                      { label: "🚫 No Spoilers", value: SpoilerTag.NON_SPOILER },
+                      { label: "⚠️ Spoilers", value: SpoilerTag.SPOILER },
+                    ] as { label: string; value: SpoilerTag | null }[]).map((opt) => (
+                      <button
+                        key={opt.label}
+                        onClick={() => setTag(opt.value)}
+                        className={cn(
+                          "px-3 py-1.5 rounded-md text-sm font-semibold transition-all",
+                          tag === opt.value
+                            ? "bg-primary text-primary-foreground shadow"
+                            : "text-muted-foreground hover:text-foreground"
+                        )}
+                      >
+                        {opt.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
               </CardHeader>
               <CardContent className="space-y-6">
                 {reviewsData.length === 0 ? (
@@ -895,9 +938,20 @@ export default function MovieDetailsPage() {
                       className="border-b border-border pb-6 last:border-b-0 last:pb-0"
                     >
                       <div className="flex justify-between items-start mb-2">
-                        <span className="font-bold text-foreground">
-                          {review.Customer_name}
-                        </span>
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <span className="font-bold text-foreground">
+                            {review.Customer_name}
+                          </span>
+                          {review.Spoiler_tag === "spoiler" ? (
+                            <span className="text-xs px-2 py-0.5 rounded-full bg-amber-500/15 text-amber-500 border border-amber-500/30 font-semibold">
+                              ⚠️ Spoiler
+                            </span>
+                          ) : (
+                            <span className="text-xs px-2 py-0.5 rounded-full bg-green-500/15 text-green-500 border border-green-500/30 font-semibold">
+                              🚫 No Spoiler
+                            </span>
+                          )}
+                        </div>
                         <div className="flex items-center gap-0.5 text-yellow-500">
                           {Array.from({ length: 5 }).map((_, i) => (
                             <Star
@@ -934,9 +988,13 @@ export default function MovieDetailsPage() {
 function AddReviewForm({
   onSubmit,
   disabled = false,
+  spoilerTag,
+  onSpoilerTagChange,
 }: {
   onSubmit: (data: { rating: number; comment: string }) => void;
   disabled?: boolean;
+  spoilerTag: SpoilerTag;
+  onSpoilerTagChange: (tag: SpoilerTag) => void;
 }) {
   const [rating, setRating] = useState(0);
   const [comment, setComment] = useState("");
@@ -996,6 +1054,38 @@ function AddReviewForm({
           className="w-full p-3 bg-background border border-input rounded-lg text-foreground focus:ring-2 focus:ring-primary focus:border-primary transition-all resize-none"
           placeholder="Tell us what you liked or disliked..."
         />
+      </div>
+      {/* Spoiler tag selector */}
+      <div>
+        <label className="block text-sm font-bold text-foreground mb-2">
+          Tag this review
+        </label>
+        <div className="flex gap-2">
+          <button
+            type="button"
+            onClick={() => onSpoilerTagChange(SpoilerTag.NON_SPOILER)}
+            className={cn(
+              "flex-1 py-2 rounded-lg border-2 text-sm font-semibold transition-all",
+              spoilerTag === SpoilerTag.NON_SPOILER
+                ? "border-green-500 bg-green-500/10 text-green-500"
+                : "border-border text-muted-foreground hover:border-green-500/50"
+            )}
+          >
+            🚫 No Spoiler
+          </button>
+          <button
+            type="button"
+            onClick={() => onSpoilerTagChange(SpoilerTag.SPOILER)}
+            className={cn(
+              "flex-1 py-2 rounded-lg border-2 text-sm font-semibold transition-all",
+              spoilerTag === SpoilerTag.SPOILER
+                ? "border-amber-500 bg-amber-500/10 text-amber-500"
+                : "border-border text-muted-foreground hover:border-amber-500/50"
+            )}
+          >
+            ⚠️ Contains Spoiler
+          </button>
+        </div>
       </div>
       <div title={disabled ? "You must purchase a ticket for this movie before leaving a review." : undefined}>
         <Button

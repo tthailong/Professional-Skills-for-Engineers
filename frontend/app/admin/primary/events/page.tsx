@@ -207,7 +207,7 @@ export default function EventsManagementPage() {
 
       <Navbar />
 
-      <main className="container mx-auto px-4 pt-16 pb-24 relative z-10">
+      <main className="container mx-auto px-4 pb-24 relative z-10">
         {/* Header */}
         <header className="flex flex-col md:flex-row justify-between items-end mb-12 gap-8">
           <motion.div

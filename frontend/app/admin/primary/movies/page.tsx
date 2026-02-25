@@ -4,6 +4,17 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { Navbar } from "@/app/navbar";
 import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import {
   Card,
   CardContent,
   CardDescription,
@@ -16,6 +27,7 @@ import {
   DialogDescription,
   DialogFooter,
   DialogHeader,
+  DialogOverlay,
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -80,9 +92,24 @@ export default function AdminMoviesPage() {
   );
 
   // 4. Handlers
-  const handleDelete = (id: number) => {
-    // User requested no delete functionality
-    alert("Delete functionality is disabled.");
+  const handleDelete = async (id: number) => {
+    try {
+      const res = await fetch(`${API_BASE_URL}/admin/movies/${id}`, {
+        method: "DELETE",
+      });
+
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData.detail || "Failed to delete movie");
+      }
+
+      // Refresh list
+      fetchMovies();
+      alert("Movie deleted successfully!");
+    } catch (error: any) {
+      console.error("Error deleting movie:", error);
+      alert(`Error: ${error.message}`);
+    }
   };
 
   const handleEditClick = (movie: any) => {
@@ -284,7 +311,40 @@ export default function AdminMoviesPage() {
                             >
                               <Edit className="w-4 h-4" />
                             </Button>
-                            {/* Delete Disabled */}
+                            <AlertDialog>
+                              <AlertDialogTrigger asChild>
+                                <Button
+                                  size="sm"
+                                  variant="destructive"
+                                  className="bg-red-500 hover:bg-red-600 border-none"
+                                >
+                                  <Trash2 className="w-4 h-4" />
+                                </Button>
+                              </AlertDialogTrigger>
+                              <AlertDialogContent className="bg-white border-border shadow-2xl">
+                                <AlertDialogHeader>
+                                  <AlertDialogTitle>
+                                    Are you absolutely sure?
+                                  </AlertDialogTitle>
+                                  <AlertDialogDescription>
+                                    This action cannot be undone. This will
+                                    permanently delete the movie "
+                                    {movie.title}" from the catalog.
+                                  </AlertDialogDescription>
+                                </AlertDialogHeader>
+                                <AlertDialogFooter>
+                                  <AlertDialogCancel className="bg-secondary">
+                                    Cancel
+                                  </AlertDialogCancel>
+                                  <AlertDialogAction
+                                    onClick={() => handleDelete(movie.id)}
+                                    className="bg-red-500 hover:bg-red-600"
+                                  >
+                                    Delete
+                                  </AlertDialogAction>
+                                </AlertDialogFooter>
+                              </AlertDialogContent>
+                            </AlertDialog>
                           </div>
                         </td>
                       </tr>
@@ -299,7 +359,8 @@ export default function AdminMoviesPage() {
 
       {/* Edit Movie Modal */}
       <Dialog open={isEditOpen} onOpenChange={setIsEditOpen}>
-        <DialogContent className="sm:max-w-[600px] bg-card border-border text-foreground max-h-[80vh] overflow-y-auto">
+        <DialogOverlay className="bg-card/100 backdrop-blur-sm" />
+        <DialogContent className="sm:max-w-[600px] bg-card/100 border-border text-foreground max-h-[80vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>Edit Movie</DialogTitle>
             <DialogDescription>

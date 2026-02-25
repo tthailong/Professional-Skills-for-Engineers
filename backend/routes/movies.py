@@ -49,6 +49,7 @@ class ReviewOut(BaseModel):
     Rating: float
     Comment: str
     Review_date: str
+    Spoiler_tag: Optional[str] = None
 
 class MovieDetailOut(BaseModel):
     movie: MovieOut

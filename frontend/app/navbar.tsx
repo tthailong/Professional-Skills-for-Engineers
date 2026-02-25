@@ -186,6 +186,10 @@ export function Navbar() {
 
   return (
     <>
+      {/* Spacer — keeps content below the fixed navbar on page load.
+          Height matches: top-4 (16px) + pill (~48px) + some gap = ~72px */}
+      <div className="h-[72px] w-full flex-shrink-0" aria-hidden="true" />
+
       {/* NAVBAR */}
       <nav
         className={`
