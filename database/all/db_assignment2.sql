@@ -759,8 +759,8 @@ CREATE TABLE Mood (
 INSERT INTO Mood (Name, Symbol)
 VALUES
 ('Boring', 'https://raw.githubusercontent.com/googlefonts/noto-emoji/main/svg/emoji_u1f634.svg'),
-('Mind-blowing', 'https://raw.githubusercontent.com/googlefonts/noto-emoji/main/svg/emoji_u1f92f.svg'),
-('Scared', 'https://raw.githubusercontent.com/googlefonts/noto-emoji/main/svg/emoji_u1f628.svg'),
+('Surprise', 'https://raw.githubusercontent.com/googlefonts/noto-emoji/main/svg/emoji_u1f62f.svg'),
+('Scary', 'https://raw.githubusercontent.com/googlefonts/noto-emoji/main/svg/emoji_u1f628.svg'),
 ('Funny', 'https://raw.githubusercontent.com/googlefonts/noto-emoji/main/svg/emoji_u1f602.svg'),
 ('Sad', 'https://raw.githubusercontent.com/googlefonts/noto-emoji/main/svg/emoji_u1f62d.svg'),
 ('Epic', 'https://raw.githubusercontent.com/googlefonts/noto-emoji/main/svg/emoji_u1f525.svg');

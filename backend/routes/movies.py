@@ -11,6 +11,12 @@ router = APIRouter(
     tags =["movies - publics"]
 )
 
+class MoodOut(BaseModel):
+    mood_id: int
+    name: str
+    symbol: str
+    count: int
+
 class MovieOut(BaseModel):
     Movie_id: int
     Director: str
@@ -27,6 +33,8 @@ class MovieOut(BaseModel):
     Formats: List[str] = []
     Subtitles: List[str] = []
     Genres: List[str] = []
+    Average_rating: float = 0.0
+    Top_moods: List[MoodOut] = []
 
 class ShowtimeOut(BaseModel):
     Showtime_id: int
@@ -114,6 +122,26 @@ def get_movies(
         # Transform rows to match MovieOut (split strings to lists)
         movies = []
         for row in rows:
+            # Fetch average rating
+            rating_query = text("SELECT AVG(Rating) FROM Review WHERE Movie_id = :mid")
+            avg_rating = session.exec(rating_query, params={"mid": row['Movie_id']}).first()[0] or 0.0
+
+            # Fetch top 2 moods
+            mood_query = text("""
+                SELECT m.Mood_id, m.Name, m.Symbol, COUNT(v.Mood_id) as count
+                FROM Mood m
+                JOIN Vote v ON m.Mood_id = v.Mood_id
+                WHERE v.Movie_id = :mid
+                GROUP BY m.Mood_id, m.Name, m.Symbol
+                ORDER BY count DESC
+                LIMIT 2
+            """)
+            mood_rows = session.exec(mood_query, params={"mid": row['Movie_id']}).all()
+            top_moods = [
+                MoodOut(mood_id=m[0], name=m[1], symbol=m[2], count=m[3])
+                for m in mood_rows
+            ]
+
             movies.append(MovieOut(
                 Movie_id=row['Movie_id'],
                 Director=row['Director'],
@@ -127,7 +155,9 @@ def get_movies(
                 Actors=row['Actors'].split(", ") if row['Actors'] else [],
                 Formats=row['Formats'].split(", ") if row['Formats'] else [],
                 Subtitles=row['Subtitles'].split(", ") if row['Subtitles'] else [],
-                Genres=row['Genres'].split(", ") if row['Genres'] else []
+                Genres=row['Genres'].split(", ") if row['Genres'] else [],
+                Average_rating=float(avg_rating),
+                Top_moods=top_moods
             ))
 
         return movies

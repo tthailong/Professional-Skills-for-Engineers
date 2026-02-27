@@ -19,6 +19,13 @@ import { API_BASE_URL } from "@/store/useUserStore";
 
 // --- API Type Definitions (Matching FastAPI MovieOut) ---
 // Note: We use MovieResponse to match the API's snake_case keys for fetching.
+export interface MoodResponse {
+  mood_id: number;
+  name: string;
+  symbol: string;
+  count: number;
+}
+
 export interface MovieResponse {
   Movie_id: number;
   Director: string;
@@ -29,6 +36,8 @@ export interface MovieResponse {
   Age_rating: string;
   Duration: number | null;
   Description: string | null;
+  Average_rating: number;
+  Top_moods: MoodResponse[];
 }
 
 // Movie type for component state (camelCase for front-end usage consistency)
@@ -42,7 +51,9 @@ export interface Movie {
   ageRating: string;
   duration: number | null;
   description: string | null;
-  // Note: The API does not provide rating, genre, actor, or category directly,
+  averageRating: number;
+  topMoods: MoodResponse[];
+  // Note: The API does not provide genre, actor, or category directly,
   // so we will default/mock these for the UI unless the API is extended.
   genre: string; // Placeholder/default
   actor: string; // Placeholder/default
@@ -51,7 +62,7 @@ export interface Movie {
 
 // Helper to transform API data to component state data
 const transformApiMovie = (apiMovie: MovieResponse): Movie => {
-  // Note: The API response doesn't provide rating, genre, actor, or category.
+  // Note: The API response doesn't provide genre, actor, or category.
   // We are setting placeholders here to keep the component rendering logic intact.
   return {
     id: apiMovie.Movie_id,
@@ -63,6 +74,8 @@ const transformApiMovie = (apiMovie: MovieResponse): Movie => {
     ageRating: apiMovie.Age_rating,
     duration: apiMovie.Duration,
     description: apiMovie.Description,
+    averageRating: apiMovie.Average_rating || 0,
+    topMoods: apiMovie.Top_moods || [],
     genre: apiMovie.Language === "English" ? "Action" : "Local", // Simple mock genre
     actor: apiMovie.Director || "N/A", // Using director as actor placeholder
     category: apiMovie.Age_rating.includes("18") ? "adult" : "blockbuster", // Simple mock category
@@ -225,10 +238,30 @@ export default function MoviesPage() {
                           alt={movie.title}
                           className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                         />
-                        <div className="absolute top-4 left-4">
+                        <div className="absolute top-4 left-4 flex flex-col gap-2">
                           <CustomBadge className="bg-white/90 backdrop-blur text-slate-900 border-none shadow-sm">
                             {movie.ageRating}
                           </CustomBadge>
+                          {movie.averageRating > 0 && (
+                            <CustomBadge className="bg-black/70 backdrop-blur text-white border-none shadow-sm flex items-center gap-1">
+                              <Star className="w-3 h-3 text-yellow-400 fill-yellow-400" />
+                              {movie.averageRating.toFixed(1)}
+                            </CustomBadge>
+                          )}
+                        </div>
+                        <div className="absolute bottom-4 right-4 flex gap-2">
+                          {movie.topMoods.map((mood) => (
+                            <div
+                              key={mood.mood_id}
+                              className="bg-white/90 backdrop-blur px-2 py-1 rounded-full shadow-sm flex items-center gap-1.5 border border-white/20"
+                              title={mood.name}
+                            >
+                              <img src={mood.symbol} alt={mood.name} className="w-4 h-4" />
+                              <span className="text-[10px] font-bold text-slate-700">
+                                {mood.count}
+                              </span>
+                            </div>
+                          ))}
                         </div>
                       </div>
 

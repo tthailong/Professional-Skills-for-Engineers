@@ -413,6 +413,17 @@ export default function MovieDetailsPage() {
     return grouped;
   }, [filteredShowtimes]);
 
+  const top2Moods = useMemo(() => {
+    return [...moodVotes]
+      .sort((a, b) => b.count - a.count)
+      .slice(0, 2)
+      .map((mv) => {
+        const option = moodOptions.find((mo) => mo.mood_id === mv.mood_id);
+        return { ...mv, symbol: option?.symbol };
+      })
+      .filter((m) => m.symbol);
+  }, [moodVotes, moodOptions]);
+
   // --- Date Picker Handler ---
   const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const dateValue = e.target.value; // format: YYYY-MM-DD
@@ -594,6 +605,24 @@ export default function MovieDetailsPage() {
                   </Badge>
                 ))}
               </div>
+
+              {/* Top Community Moods Display */}
+              {top2Moods.length > 0 && (
+                <div className="flex flex-wrap items-center gap-2 mb-8">
+                  {top2Moods.map((mood) => (
+                    <div
+                      key={mood.mood_id}
+                      className="px-2.5 py-1 rounded-lg flex items-center gap-1.5 border border-slate-900 transition-colors hover:bg-slate-50"
+                      title={mood.mood_name}
+                    >
+                      <img src={mood.symbol} alt={mood.mood_name} className="w-4 h-4" />
+                      <span className="text-sm font-bold text-slate-900">
+                        {mood.count}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              )}
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-4 mb-8 text-sm">
                 <div className="flex items-start gap-3">
