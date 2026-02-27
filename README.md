@@ -1,5 +1,5 @@
-# database-systems-assignment2
-HCMUT - Database Systems Assignment 2 (MySQL + App)
+# professional-skills-for-engineers
+HCMUT - Professional Skills for Engineers (MySQL + App)
 
 
 How to set up:
