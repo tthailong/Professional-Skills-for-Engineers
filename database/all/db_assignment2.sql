@@ -1,3 +1,4 @@
+SET NAMES 'utf8mb4';
 DROP DATABASE IF EXISTS db_assignment2;
 
 create database db_assignment2

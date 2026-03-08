@@ -35,10 +35,10 @@ export const ProductsVouchersTab: React.FC<ProductsVouchersProps> = ({
 }) => (
   <div className="space-y-6">
     <div className="relative max-w-md mb-4">
-      <Search className="absolute left-3 top-3 w-4 h-4 text-muted-foreground" />
+      <Search className="absolute left-3 top-3 w-4 h-4 text-primary" />
       <Input
         placeholder="Search products & vouchers..."
-        className="pl-10 bg-card border-border"
+        className="pl-10 bg-muted border-border text-foreground placeholder-muted-foreground"
         value={searchQueries.products}
         onChange={(e) =>
           setSearchQueries((prev) => ({
@@ -55,18 +55,18 @@ export const ProductsVouchersTab: React.FC<ProductsVouchersProps> = ({
         return (
           <Card
             key={product.id}
-            className={`border-border bg-card transition-colors ${
-              isActive ? "border-primary/50" : ""
+            className={`border border-border/50 bg-card/80 backdrop-blur-xl transition-colors ${
+              isActive ? "border-primary/50 ring-1 ring-primary/20" : ""
             }`}
           >
             <CardHeader className="pb-2">
               <div className="flex justify-between items-start">
-                <span className="text-xs font-semibold bg-secondary px-2 py-1 rounded text-muted-foreground uppercase">
+                <span className="text-xs font-semibold bg-muted px-2 py-1 rounded text-muted-foreground uppercase">
                   {product.type}
                 </span>
                 <div
                   className={`w-3 h-3 rounded-full ${
-                    isActive ? "bg-green-500" : "bg-red-500"
+                    isActive ? "bg-emerald-500" : "bg-destructive"
                   }`}
                 />
               </div>
@@ -78,7 +78,7 @@ export const ProductsVouchersTab: React.FC<ProductsVouchersProps> = ({
                 className={`w-full h-8 ${
                   isActive
                     ? ""
-                    : "bg-secondary text-foreground hover:bg-secondary/80"
+                    : "bg-muted text-foreground hover:bg-muted/80"
                 }`}
                 onClick={() => toggleItem("activeProductIds", product.id)}
               >

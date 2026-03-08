@@ -137,28 +137,31 @@ export default function EventsManagementPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-white via-rose-50 to-white">
+    <div className="min-h-screen bg-background relative overflow-hidden text-foreground">
+      {/* Aurora Blurs */}
+      <div className="absolute top-[-10%] right-[-10%] w-[40%] h-[40%] rounded-full bg-primary/10 blur-[120px] -z-10" />
+      <div className="absolute bottom-[-10%] left-[-10%] w-[40%] h-[40%] rounded-full bg-accent/5 blur-[120px] -z-10" />
       <Navbar />
 
       <main className="container mx-auto px-4 py-10">
         {/* HEADER */}
         <div className="flex justify-between items-center mb-10">
           <div>
-            <h1 className="text-4xl font-bold flex items-center gap-3 bg-gradient-to-r from-rose-500 to-pink-500 bg-clip-text text-transparent">
-              <Calendar className="w-9 h-9 text-rose-500" />
+            <h1 className="text-4xl font-bold flex items-center gap-3 bg-gradient-to-r from-[var(--primary)] to-[var(--accent)] bg-clip-text text-transparent">
+              <Calendar className="w-9 h-9 text-primary" />
               Event Management
             </h1>
-            <p className="text-gray-500 mt-2">
+            <p className="text-muted-foreground mt-2">
               Manage cinema events and screenings
             </p>
           </div>
         </div>
 
         {/* SEARCH */}
-        <Card className="mb-8 rounded-2xl border border-rose-100 bg-white/70 backdrop-blur-xl shadow-lg">
+        <Card className="mb-8 rounded-2xl border border-border/50 bg-card/70 backdrop-blur-xl shadow-lg">
           <CardContent className="pt-6">
             <div className="relative">
-              <Search className="absolute left-3 top-3 w-5 h-5 text-rose-400" />
+              <Search className="absolute left-3 top-3 w-5 h-5 text-primary" />
               <Input
                 placeholder="Search events..."
                 value={searchQuery}
@@ -166,7 +169,7 @@ export default function EventsManagementPage() {
                   setSearchQuery(e.target.value);
                   setCurrentPage(1);
                 }}
-                className="pl-10 bg-white border-rose-200 focus-visible:ring-rose-400"
+                className="pl-10 bg-muted border-border focus-visible:ring-primary text-foreground placeholder:text-muted-foreground"
               />
             </div>
           </CardContent>
@@ -174,7 +177,7 @@ export default function EventsManagementPage() {
 
         {/* LOADING */}
         {isLoading && (
-          <div className="py-16 flex justify-center items-center gap-3 text-rose-500 font-medium">
+          <div className="py-16 flex justify-center items-center gap-3 text-primary font-medium">
             <RotateCw className="animate-spin w-5 h-5" />
             Loading events...
           </div>
@@ -191,28 +194,28 @@ export default function EventsManagementPage() {
         {!isLoading && !error && (
           <div className="grid gap-6 mb-8">
             {paginatedEvents.length === 0 ? (
-              <div className="text-center text-gray-400 py-16">
+              <div className="text-center text-muted-foreground py-16">
                 No events found.
               </div>
             ) : (
               paginatedEvents.map((event) => {
                 const statusColor =
                   event.status === "Upcoming"
-                    ? "bg-blue-100 text-blue-600"
+                    ? "bg-blue-500/10 text-blue-500"
                     : event.status === "Ongoing"
-                      ? "bg-green-100 text-green-600"
-                      : "bg-gray-200 text-gray-600";
+                      ? "bg-emerald-500/10 text-emerald-500"
+                      : "bg-muted text-muted-foreground";
 
                 return (
                   <Card
                     key={event.id}
-                    className="group rounded-2xl border border-rose-100 bg-white/80 backdrop-blur-xl shadow-md hover:shadow-xl transition-all duration-300 hover:-translate-y-1"
+                    className="group rounded-2xl border border-border/50 bg-card/80 backdrop-blur-xl shadow-md hover:shadow-xl transition-all duration-300 hover:-translate-y-1"
                   >
                     <CardContent className="p-5 flex flex-col md:flex-row gap-6 items-center">
                       {/* POSTER */}
-                      <div className="w-full md:w-28 h-28 rounded-xl overflow-hidden bg-rose-50 flex items-center justify-center">
+                      <div className="w-full md:w-28 h-28 rounded-xl overflow-hidden bg-muted flex items-center justify-center">
                         {event.poster.includes("placeholder") ? (
-                          <Film className="w-10 h-10 text-rose-300" />
+                          <Film className="w-10 h-10 text-muted-foreground/30" />
                         ) : (
                           <img
                             src={event.poster}
@@ -225,7 +228,7 @@ export default function EventsManagementPage() {
                       {/* INFO */}
                       <div className="flex-1 space-y-2">
                         <div className="flex items-center gap-3">
-                          <h3 className="font-semibold text-lg group-hover:text-rose-500 transition">
+                          <h3 className="font-semibold text-lg group-hover:text-primary transition">
                             {event.title}
                           </h3>
                           <span
@@ -235,18 +238,18 @@ export default function EventsManagementPage() {
                           </span>
                         </div>
 
-                        <p className="text-sm text-gray-500 line-clamp-1">
+                        <p className="text-sm text-muted-foreground line-clamp-1">
                           {event.description}
                         </p>
 
-                        <div className="flex items-center gap-4 text-xs text-gray-400 mt-2">
+                        <div className="flex items-center gap-4 text-xs text-muted-foreground mt-2">
                           <span className="flex items-center gap-1">
                             <Calendar className="w-3 h-3" />
                             {formatDateDisplay(event.startDate)} –{" "}
                             {formatDateDisplay(event.endDate)}
                           </span>
 
-                          <span className="bg-gradient-to-r from-rose-500 to-pink-500 text-white px-2 py-0.5 rounded-full text-xs">
+                          <span className="bg-gradient-to-r from-[var(--primary)] to-[var(--accent)] text-white px-2 py-0.5 rounded-full text-xs">
                             {event.Type}
                           </span>
                         </div>
@@ -256,7 +259,7 @@ export default function EventsManagementPage() {
                       <Link href={`/events/${event.id}`}>
                         <Button
                           size="sm"
-                          className="bg-gradient-to-r from-rose-500 to-pink-500 text-white hover:opacity-90 shadow-md"
+                          className="bg-primary hover:bg-primary/90 text-white hover:opacity-90 shadow-md"
                         >
                           <Eye className="w-4 h-4 mr-2" />
                           View
@@ -272,8 +275,8 @@ export default function EventsManagementPage() {
 
         {/* PAGINATION */}
         {filteredEvents.length > 0 && !isLoading && !error && (
-          <div className="flex items-center justify-between pt-6 border-t border-rose-100">
-            <div className="text-sm text-gray-400">
+          <div className="flex items-center justify-between pt-6 border-t border-border/50">
+            <div className="text-sm text-muted-foreground">
               Showing {startIndex + 1}–
               {Math.min(startIndex + itemsPerPage, filteredEvents.length)} of{" "}
               {filteredEvents.length}
@@ -285,12 +288,12 @@ export default function EventsManagementPage() {
                 variant="outline"
                 onClick={handlePrevious}
                 disabled={currentPage === 1}
-                className="border-rose-200 hover:bg-rose-50"
+                className="border-border hover:bg-muted"
               >
                 <ChevronLeft />
               </Button>
 
-              <span className="font-medium text-gray-600">
+              <span className="font-medium text-foreground">
                 Page {currentPage} / {totalPages}
               </span>
 
@@ -299,7 +302,7 @@ export default function EventsManagementPage() {
                 variant="outline"
                 onClick={handleNext}
                 disabled={currentPage === totalPages}
-                className="border-rose-200 hover:bg-rose-50"
+                className="border-border hover:bg-muted"
               >
                 <ChevronRight />
               </Button>

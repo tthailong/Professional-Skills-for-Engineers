@@ -163,10 +163,10 @@ export default function ProfilePage() {
     }
   };
   return (
-    <div className="min-h-screen bg-white relative overflow-hidden text-slate-900">
+    <div className="min-h-screen bg-background relative overflow-hidden text-foreground">
       {/* Background Aurora Blurs */}
-      <div className="absolute top-[-10%] left-[-5%] w-[40%] h-[40%] rounded-full bg-blue-50/50 blur-[120px] -z-10" />
-      <div className="absolute bottom-[10%] right-[-5%] w-[30%] h-[40%] rounded-full bg-indigo-50/60 blur-[120px] -z-10" />
+      <div className="absolute top-[-10%] left-[-5%] w-[40%] h-[40%] rounded-full bg-primary/10 blur-[120px] -z-10" />
+      <div className="absolute bottom-[10%] right-[-5%] w-[30%] h-[40%] rounded-full bg-accent/5 blur-[120px] -z-10" />
 
       <Navbar />
 
@@ -176,32 +176,32 @@ export default function ProfilePage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
           >
-            <h1 className="text-5xl font-black tracking-tighter mb-2 bg-gradient-to-r from-rose-500 to-rose-500 bg-clip-text text-transparent">
+            <h1 className="text-5xl font-black tracking-tighter mb-2 bg-gradient-to-r from-[var(--primary)] via-[var(--accent)] to-[var(--primary)] bg-clip-text text-transparent">
               Account Hub
             </h1>
-            <p className="text-slate-500 font-medium text-lg">
+            <p className="text-muted-foreground font-medium text-lg">
               Manage your identity, rewards, and security.
             </p>
           </motion.div>
         </header>
 
         <Tabs defaultValue="profile" className="space-y-10">
-          <TabsList className="bg-slate-100/50 backdrop-blur-md p-1 rounded-2xl border border-slate-200 w-fit">
+          <TabsList className="bg-muted p-1 rounded-2xl border border-border/50 w-fit">
             <TabsTrigger
               value="profile"
-              className="rounded-xl px-8 py-3 data-[state=active]:bg-white data-[state=active]:shadow-sm font-bold transition-all"
+              className="rounded-xl px-8 py-3 data-[state=active]:bg-card data-[state=active]:text-primary data-[state=active]:shadow-sm font-bold transition-all"
             >
               Identity
             </TabsTrigger>
             <TabsTrigger
               value="loyalty"
-              className="rounded-xl px-8 py-3 data-[state=active]:bg-white data-[state=active]:shadow-sm font-bold transition-all"
+              className="rounded-xl px-8 py-3 data-[state=active]:bg-card data-[state=active]:text-primary data-[state=active]:shadow-sm font-bold transition-all"
             >
               Rewards
             </TabsTrigger>
             <TabsTrigger
               value="vouchers"
-              className="rounded-xl px-8 py-3 data-[state=active]:bg-white data-[state=active]:shadow-sm font-bold transition-all"
+              className="rounded-xl px-8 py-3 data-[state=active]:bg-card data-[state=active]:text-primary data-[state=active]:shadow-sm font-bold transition-all"
             >
               Vouchers
             </TabsTrigger>
@@ -212,42 +212,42 @@ export default function ProfilePage() {
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
               {/* Profile Sidebar */}
               <div className="lg:col-span-4 space-y-6">
-                <Card className="border-none bg-white/60 backdrop-blur-md shadow-[0_8px_30px_rgb(0,0,0,0.04)] rounded-[2.5rem] overflow-hidden">
+                <Card className="border border-border/50 bg-card/60 backdrop-blur-md shadow-[0_8px_30px_rgb(0,0,0,0.04)] rounded-[2.5rem] overflow-hidden">
                   <CardContent className="pt-12 pb-8 flex flex-col items-center text-center">
                     <div className="relative group">
-                      <div className="w-32 h-32 rounded-[2.5rem] bg-gradient-to-tr from-indigo-500 to-rose-500 p-1 shadow-2xl shadow-indigo-100 transition-transform duration-500 group-hover:rotate-6">
-                        <div className="w-full h-full rounded-[2.3rem] bg-white flex items-center justify-center overflow-hidden">
-                          <span className="text-5xl font-black text-indigo-600">
+                      <div className="w-32 h-32 rounded-[2.5rem] bg-gradient-to-tr from-[var(--primary)] to-[var(--accent)] p-1 shadow-2xl shadow-primary/10 transition-transform duration-500 group-hover:rotate-6">
+                        <div className="w-full h-full rounded-[2.3rem] bg-card flex items-center justify-center overflow-hidden">
+                          <span className="text-5xl font-black text-primary">
                             {formData.name?.charAt(0) || "U"}
                           </span>
                         </div>
                       </div>
-                      <div className="absolute -bottom-2 -right-2 bg-white p-2 rounded-2xl shadow-lg border border-slate-100">
-                        <Zap className="w-4 h-4 text-amber-500 fill-amber-500" />
+                      <div className="absolute -bottom-2 -right-2 bg-card p-2 rounded-2xl shadow-lg border border-border">
+                        <Zap className="w-4 h-4 text-primary fill-primary" />
                       </div>
                     </div>
 
-                    <h2 className="mt-8 text-2xl font-black text-slate-900 leading-tight">
+                    <h2 className="mt-8 text-2xl font-black text-foreground leading-tight">
                       {formData.name || "Cinema Guest"}
                     </h2>
-                    <p className="text-indigo-600 font-bold text-sm tracking-widest uppercase mt-1">
+                    <p className="text-primary font-bold text-sm tracking-widest uppercase mt-1">
                       {membershipData?.membership.type || "New"} Tier
                     </p>
 
-                    <div className="w-full grid grid-cols-2 gap-4 mt-10 pt-8 border-t border-slate-100">
+                    <div className="w-full grid grid-cols-2 gap-4 mt-10 pt-8 border-t border-border/50">
                       <div>
-                        <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+                        <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">
                           Points
                         </p>
-                        <p className="text-2xl font-black text-slate-900">
+                        <p className="text-2xl font-black text-foreground">
                           {membershipData?.membership.points || 0}
                         </p>
                       </div>
                       <div>
-                        <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+                        <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">
                           Saved
                         </p>
-                        <p className="text-2xl font-black text-slate-900">
+                        <p className="text-2xl font-black text-foreground">
                           {vouchers.length}
                         </p>
                       </div>
@@ -255,9 +255,9 @@ export default function ProfilePage() {
                   </CardContent>
                 </Card>
 
-                <Button
+                 <Button
                   variant="outline"
-                  className="w-full h-14 rounded-2xl border-rose-100 text-rose-600 hover:bg-rose-50 hover:text-rose-700 font-bold transition-all"
+                  className="w-full h-14 rounded-2xl border-primary/20 text-primary hover:bg-primary/10 font-bold transition-all"
                   onClick={() => setIsChangePasswordOpen(true)}
                 >
                   <Lock className="w-4 h-4 mr-2" /> Change Security Key
@@ -265,13 +265,13 @@ export default function ProfilePage() {
               </div>
 
               {/* Personal Details Form */}
-              <Card className="lg:col-span-8 border-none bg-white/60 backdrop-blur-md shadow-[0_8px_30px_rgb(0,0,0,0.04)] rounded-[2.5rem]">
+               <Card className="lg:col-span-8 border border-border/50 bg-card/60 backdrop-blur-md shadow-[0_8px_30px_rgb(0,0,0,0.04)] rounded-[2.5rem]">
                 <CardHeader className="p-10 pb-0 flex flex-row items-center justify-between">
                   <div>
                     <CardTitle className="text-2xl font-black">
                       Personal Info
                     </CardTitle>
-                    <CardDescription className="text-slate-500 font-medium">
+                    <CardDescription className="text-muted-foreground font-medium">
                       Keep your contact details up to date.
                     </CardDescription>
                   </div>
@@ -288,7 +288,7 @@ export default function ProfilePage() {
                 <CardContent className="p-10 pt-8">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-10">
                     <div className="space-y-3">
-                      <label className="flex items-center gap-2 text-xs font-bold text-slate-400 uppercase tracking-widest">
+                      <label className="flex items-center gap-2 text-xs font-bold text-muted-foreground uppercase tracking-widest">
                         <User className="w-3 h-3" /> Name
                       </label>
                       <Input
@@ -296,21 +296,21 @@ export default function ProfilePage() {
                         value={formData.name}
                         onChange={handleProfileChange}
                         disabled={!isEditing}
-                        className={`h-12 rounded-xl border-slate-200 ${!isEditing && "bg-slate-50/50 border-transparent font-bold"}`}
+                        className={`h-12 rounded-xl border-border bg-card text-foreground ${!isEditing && "bg-muted border-transparent font-bold"}`}
                       />
                     </div>
                     <div className="space-y-3">
-                      <label className="flex items-center gap-2 text-xs font-bold text-slate-400 uppercase tracking-widest">
+                      <label className="flex items-center gap-2 text-xs font-bold text-muted-foreground uppercase tracking-widest">
                         <Mail className="w-3 h-3" /> Email
                       </label>
                       <Input
                         value={formData.email}
                         disabled
-                        className="h-12 rounded-xl border-transparent bg-slate-50/50 font-bold opacity-60"
+                        className="h-12 rounded-xl border-transparent bg-muted font-bold opacity-60 text-foreground"
                       />
                     </div>
                     <div className="space-y-3">
-                      <label className="flex items-center gap-2 text-xs font-bold text-slate-400 uppercase tracking-widest">
+                      <label className="flex items-center gap-2 text-xs font-bold text-muted-foreground uppercase tracking-widest">
                         <Phone className="w-3 h-3" /> Phone
                       </label>
                       <Input
@@ -318,17 +318,17 @@ export default function ProfilePage() {
                         value={formData.phone}
                         onChange={handleProfileChange}
                         disabled={!isEditing}
-                        className={`h-12 rounded-xl border-slate-200 ${!isEditing && "bg-slate-50/50 border-transparent font-bold"}`}
+                        className={`h-12 rounded-xl border-border bg-card text-foreground ${!isEditing && "bg-muted border-transparent font-bold"}`}
                       />
                     </div>
                     <div className="space-y-3">
-                      <label className="flex items-center gap-2 text-xs font-bold text-slate-400 uppercase tracking-widest">
+                      <label className="flex items-center gap-2 text-xs font-bold text-muted-foreground uppercase tracking-widest">
                         <Calendar className="w-3 h-3" /> Birth Date
                       </label>
                       <Input
                         value={formData.dob ? formatDDMMYYYY(formData.dob) : ""}
                         disabled
-                        className="h-12 rounded-xl border-transparent bg-slate-50/50 font-bold opacity-60"
+                        className="h-12 rounded-xl border-transparent bg-muted font-bold opacity-60 text-foreground"
                       />
                     </div>
                   </div>
@@ -339,12 +339,12 @@ export default function ProfilePage() {
                       animate={{ opacity: 1, y: 0 }}
                       className="mt-12 flex justify-end"
                     >
-                      <Button
+                       <Button
                         onClick={() => {
                           setIsEditing(false);
                           toast.success("Simulated: Profile saved!");
                         }}
-                        className="bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl px-10 h-12 font-bold shadow-lg shadow-indigo-100"
+                        className="bg-primary hover:bg-primary/90 text-white rounded-xl px-10 h-12 font-bold shadow-lg shadow-primary/20"
                       >
                         Save Changes
                       </Button>
@@ -357,29 +357,29 @@ export default function ProfilePage() {
 
           {/* --- TAB 2: LOYALTY (REUSING YOUR PREMIUM STYLE) --- */}
           <TabsContent value="loyalty" className="focus-visible:ring-0">
-            <Card className="border-none bg-gradient-to-br from-rose-600 to-tomato-600 text-white rounded-[2.5rem] shadow-2xl shadow-indigo-200 overflow-hidden relative mb-10">
+             <Card className="border-none bg-gradient-to-br from-[var(--primary)] to-[var(--accent)] text-white rounded-[2.5rem] shadow-2xl shadow-primary/20 overflow-hidden relative mb-10">
               <div className="absolute top-[-20%] right-[-10%] w-64 h-64 bg-white/10 rounded-full blur-3xl" />
               <CardContent className="p-10 md:p-14 relative z-10">
                 <div className="flex flex-col md:flex-row justify-between items-center gap-8 text-center md:text-left">
-                  <div>
+                   <div>
                     <div className="flex items-center justify-center md:justify-start gap-3 mb-4">
                       <div className="p-2 bg-white/20 rounded-xl backdrop-blur-md">
-                        <Star className="w-6 h-6 text-amber-300 fill-amber-300" />
+                        <Star className="w-6 h-6 text-white fill-white" />
                       </div>
-                      <span className="uppercase tracking-[0.3em] text-[10px] font-black text-indigo-100">
+                      <span className="uppercase tracking-[0.3em] text-[10px] font-black text-white/80">
                         Membership Program
                       </span>
                     </div>
                     <h2 className="text-5xl font-black">
                       {membershipData?.membership.type || "Bronze"} Tier
                     </h2>
-                    <p className="text-indigo-100/70 mt-3 font-medium">
+                    <p className="text-white/70 mt-3 font-medium">
                       Earn more points to unlock exclusive screenings and VIP
                       lounges.
                     </p>
                   </div>
                   <div className="bg-white/10 backdrop-blur-xl border border-white/20 p-10 rounded-[3rem] min-w-[220px]">
-                    <p className="text-xs uppercase font-black text-indigo-100 mb-2">
+                    <p className="text-xs uppercase font-black text-white/80 mb-2">
                       Total Points
                     </p>
                     <p className="text-6xl font-black">
@@ -394,14 +394,14 @@ export default function ProfilePage() {
               {membershipData?.membership.privileges?.map((p: any) => (
                 <Card
                   key={p.privilege_id}
-                  className="border-none bg-slate-50/50 rounded-3xl p-6 flex items-start gap-4 transition-all hover:bg-white hover:shadow-xl hover:shadow-slate-100 group"
+                  className="border border-border/50 bg-card rounded-3xl p-6 flex items-start gap-4 transition-all hover:shadow-xl hover:shadow-primary/5 group"
                 >
-                  <div className="p-3 bg-white rounded-2xl shadow-sm text-indigo-600 group-hover:bg-indigo-600 group-hover:text-white transition-all">
+                  <div className="p-3 bg-muted rounded-2xl shadow-sm text-primary group-hover:bg-primary group-hover:text-white transition-all">
                     <ShieldCheck className="w-6 h-6" />
                   </div>
                   <div>
-                    <h4 className="font-bold text-slate-900">{p.name}</h4>
-                    <p className="text-sm text-slate-500 mt-1 leading-relaxed">
+                    <h4 className="font-bold text-foreground">{p.name}</h4>
+                    <p className="text-sm text-muted-foreground mt-1 leading-relaxed">
                       {p.description}
                     </p>
                   </div>
@@ -415,7 +415,7 @@ export default function ProfilePage() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {vouchers.map((voucher) => (
                 <motion.div key={voucher.CV_id} whileHover={{ scale: 1.02 }}>
-                  <Card className="border-none bg-white shadow-sm hover:shadow-xl transition-all rounded-[2rem] overflow-hidden flex h-48 group">
+                   <Card className="border border-border/50 bg-card shadow-sm hover:shadow-xl transition-all rounded-[2rem] overflow-hidden flex h-48 group">
                     {/* Voucher Edge - "Coupon Style" */}
                     <div className="w-1/3 bg-green-500 flex flex-col items-center justify-center text-white relative">
                       <div className="absolute top-0 bottom-0 -right-2 flex flex-col justify-around py-2">
@@ -438,35 +438,35 @@ export default function ProfilePage() {
                     <div className="w-2/3 p-8 flex flex-col justify-between">
                       <div>
                         <div className="flex justify-between items-center mb-1">
-                          <h3 className="font-black text-slate-900 truncate pr-2">
+                          <h3 className="font-black text-foreground truncate pr-2">
                             {voucher.Description || "Movie Reward"}
                           </h3>
                           <CustomBadge
                             className={
                               voucher.Status === "Active"
-                                ? "bg-emerald-50 text-emerald-600 border-emerald-100"
-                                : "bg-slate-50 text-slate-400 border-slate-100"
+                                ? "bg-emerald-500/10 text-emerald-500 border-emerald-500/20"
+                                : "bg-muted text-muted-foreground border-border"
                             }
                           >
                             {voucher.Status}
                           </CustomBadge>
                         </div>
-                        <p className="text-xs text-slate-500 line-clamp-2">
+                        <p className="text-xs text-muted-foreground line-clamp-2">
                           {voucher.Condition}
                         </p>
                       </div>
 
                       <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2 text-slate-400">
+                        <div className="flex items-center gap-2 text-muted-foreground">
                           <Clock className="w-3.5 h-3.5" />
                           <span className="text-[10px] font-bold">
                             {formatDDMMYYYY(voucher.Expiration)}
                           </span>
                         </div>
-                        <Button
+                         <Button
                           variant="secondary"
                           size="sm"
-                          className="rounded-xl h-9 px-4 text-xs font-bold group-hover:bg-indigo-600 group-hover:text-white transition-colors"
+                          className="rounded-xl h-9 px-4 text-xs font-bold group-hover:bg-primary group-hover:text-white transition-colors"
                           onClick={() =>
                             copyToClipboard(`SAVE${voucher.Voucher_id}`)
                           }
@@ -488,18 +488,18 @@ export default function ProfilePage() {
         open={isChangePasswordOpen}
         onOpenChange={setIsChangePasswordOpen}
       >
-        <DialogContent className="rounded-[2.5rem] border-none shadow-2xl p-8 max-w-md">
+         <DialogContent className="rounded-[2.5rem] border border-border bg-card text-foreground shadow-2xl p-8 max-w-md">
           <DialogHeader>
             <DialogTitle className="text-2xl font-black">
               Change Security Key
             </DialogTitle>
-            <DialogDescription className="font-medium">
+            <DialogDescription className="font-medium text-muted-foreground">
               Safeguard your account with a new password.
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4 py-4">
             <div className="space-y-2">
-              <label className="text-xs font-bold text-slate-400 uppercase tracking-widest">
+              <label className="text-xs font-bold text-muted-foreground uppercase tracking-widest">
                 Current Password
               </label>
               <Input
@@ -515,8 +515,8 @@ export default function ProfilePage() {
                 className="rounded-xl h-12"
               />
             </div>
-            <div className="space-y-2">
-              <label className="text-xs font-bold text-slate-400 uppercase tracking-widest">
+             <div className="space-y-2">
+              <label className="text-xs font-bold text-muted-foreground uppercase tracking-widest">
                 New Password
               </label>
               <Input
@@ -542,7 +542,7 @@ export default function ProfilePage() {
               Cancel
             </Button>
             <Button
-              className="bg-slate-900 text-white hover:bg-slate-800 rounded-xl px-8 font-bold"
+              className="bg-foreground text-background hover:opacity-90 rounded-xl px-8 font-bold"
               onClick={handleChangePasswordSubmit}
             >
               Update Key

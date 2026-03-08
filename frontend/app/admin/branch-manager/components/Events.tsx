@@ -34,10 +34,10 @@ export const EventsTab: React.FC<EventsProps> = ({
 }) => (
   <div className="space-y-6">
     <div className="relative max-w-md mb-4">
-      <Search className="absolute left-3 top-3 w-4 h-4 text-muted-foreground" />
+      <Search className="absolute left-3 top-3 w-4 h-4 text-primary" />
       <Input
         placeholder="Search events..."
-        className="pl-10 bg-card border-border"
+        className="pl-10 bg-muted border-border text-foreground placeholder-muted-foreground"
         value={searchQueries.events}
         onChange={(e) =>
           setSearchQueries((prev) => ({
@@ -54,7 +54,7 @@ export const EventsTab: React.FC<EventsProps> = ({
         return (
           <Card
             key={event.id}
-            className={`border-border bg-card cursor-pointer transition-all hover:shadow-md ${
+            className={`border border-border/50 bg-card/80 backdrop-blur-xl cursor-pointer transition-all hover:shadow-md ${
               isActive ? "ring-2 ring-primary bg-primary/5" : ""
             }`}
             onClick={() => toggleItem("activeEventIds", event.id)}
@@ -75,18 +75,18 @@ export const EventsTab: React.FC<EventsProps> = ({
                 </div>
               </div>
               <p className="text-sm text-primary font-medium flex items-center gap-1 mb-3">
-                <Calendar className="w-4 h-4" /> {event.date}
+                <Calendar className="w-4 h-4 text-primary" /> {event.date}
               </p>
               <p className="text-sm text-muted-foreground">
                 {event.description}
               </p>
 
               <div className="mt-auto pt-4 flex justify-end">
-                <span
+                 <span
                   className={`text-xs px-2 py-1 rounded-full ${
                     isActive
-                      ? "bg-green-100 text-green-700"
-                      : "bg-secondary text-muted-foreground"
+                      ? "bg-emerald-500/10 text-emerald-500"
+                      : "bg-muted text-muted-foreground"
                   }`}
                 >
                   {isActive ? "Active at Branch" : "Inactive"}

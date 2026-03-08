@@ -15,6 +15,7 @@ import {
   Users,
   Edit2,
   Edit,
+  Building,
 } from "lucide-react";
 
 // Assuming you have these components:
@@ -363,23 +364,29 @@ export default function AdminManagementPage() {
     }
   }, [admin, router]);
   return (
-    <div className="p-6 pt-0 space-y-6">
+    <div className="min-h-screen bg-background relative overflow-hidden text-foreground">
+      {/* Aurora Blurs */}
+      <div className="absolute top-[-10%] right-[-5%] w-[40%] h-[40%] rounded-full bg-primary/10 blur-[120px] -z-10" />
+      <div className="absolute bottom-[-10%] left-[-5%] w-[30%] h-[40%] rounded-full bg-accent/5 blur-[120px] -z-10" />
+      
       <Navbar />
-      <h1 className="text-3xl font-bold flex items-center gap-2">
-        <Users className="w-7 h-7 text-primary" /> Admin Management
-      </h1>
+      <div className="container mx-auto px-4 py-8">
+        <h1 className="text-4xl font-black bg-gradient-to-r from-[var(--foreground)] to-[var(--primary)] bg-clip-text text-transparent mb-6 flex items-center gap-3">
+          <Users className="w-9 h-9 text-primary" /> Admin Management
+        </h1>
 
       {/* --- PRIMARY ADMIN PROFILE CARD --- */}
       {admin && (
-        <Card className="bg-primary/5 border-primary/20">
-          <CardHeader className="pb-2">
+        <Card className="border border-border/50 bg-card/80 backdrop-blur-xl rounded-2xl shadow-xl mb-8 overflow-hidden">
+          <CardHeader className="pb-4 border-b border-border/50 bg-muted/30">
             <div className="flex justify-between items-center">
-              <CardTitle className="text-lg flex items-center gap-2">
-                <User className="w-5 h-5" /> My Profile (Primary Admin)
+              <CardTitle className="text-xl font-bold flex items-center gap-2 text-foreground">
+                <User className="w-5 h-5 text-primary" /> My Profile (Primary Admin)
               </CardTitle>
               <Button
                 variant="outline"
                 size="sm"
+                className="border-primary/20 text-primary hover:bg-primary/10 rounded-xl"
                 onClick={() => setIsEditProfileOpen(true)}
               >
                 <Edit2 className="w-4 h-4 mr-2" /> Edit Profile
@@ -435,46 +442,50 @@ export default function AdminManagementPage() {
                 <Lock className="mr-2 h-4 w-4" /> Change My Password
               </Button>
             </DialogTrigger>
-            <DialogContent className="sm:max-w-[425px]">
+            <DialogContent className="sm:max-w-[425px] rounded-2xl bg-card border border-border/50 shadow-xl">
               <DialogHeader>
-                <DialogTitle>Change My Password</DialogTitle>
+                <DialogTitle className="text-xl font-bold text-primary">Change My Password</DialogTitle>
               </DialogHeader>
               <div className="grid gap-4 py-4">
                 {passwordError && (
-                  <div className="text-sm text-destructive bg-destructive/10 p-2 rounded">
+                  <div className="text-sm text-destructive bg-destructive/10 p-3 rounded-xl border border-destructive/20 flex items-center gap-2">
+                    <AlertTriangle className="w-4 h-4" />
                     {passwordError}
                   </div>
                 )}
                 <div className="space-y-2">
-                  <Label>Current Password</Label>
+                  <Label className="text-foreground">Current Password</Label>
                   <Input
                     name="oldPassword"
                     type="password"
                     value={passwordForm.oldPassword}
                     onChange={handlePasswordChangeInput}
+                    className="bg-muted border-border text-foreground rounded-xl"
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label>New Password</Label>
+                  <Label className="text-foreground">New Password</Label>
                   <Input
                     name="newPassword"
                     type="password"
                     value={passwordForm.newPassword}
                     onChange={handlePasswordChangeInput}
+                    className="bg-muted border-border text-foreground rounded-xl"
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label>Confirm New Password</Label>
+                  <Label className="text-foreground">Confirm New Password</Label>
                   <Input
                     name="confirmPassword"
                     type="password"
                     value={passwordForm.confirmPassword}
                     onChange={handlePasswordChangeInput}
+                    className="bg-muted border-border text-foreground rounded-xl"
                   />
                 </div>
                 <Button
                   onClick={handleChangePasswordSubmit}
-                  className="w-full mt-2"
+                  className="w-full mt-2 bg-primary hover:bg-primary/90 text-white rounded-xl h-11"
                 >
                   Update Password
                 </Button>
@@ -489,200 +500,173 @@ export default function AdminManagementPage() {
                 <PlusCircle className="mr-2 h-4 w-4" /> New Admin
               </Button>
             </DialogTrigger>
-            <DialogContent className="sm:max-w-[425px]">
-              <DialogHeader>
-                <DialogTitle>Create New Admin Account</DialogTitle>
-              </DialogHeader>
-              <form onSubmit={handleCreateAdmin} className="grid gap-4 py-4">
-                {/* Name and Email */}
-                <div className="grid grid-cols-4 items-center gap-4">
-                  <Label htmlFor="name" className="text-right">
-                    Name
-                  </Label>
-                  <Input
-                    name="name"
-                    value={newAdminData.name}
-                    onChange={handleInputChange}
-                    placeholder="Full Name"
-                    className="col-span-3"
-                    required
-                  />
-                </div>
-                <div className="grid grid-cols-4 items-center gap-4">
-                  <Label htmlFor="email" className="text-right">
-                    Email
-                  </Label>
-                  <Input
-                    name="email"
-                    type="email"
-                    value={newAdminData.email}
-                    onChange={handleInputChange}
-                    placeholder="admin@cinema.com"
-                    className="col-span-3"
-                    required
-                  />
-                </div>
-
-                <div className="grid grid-cols-4 items-center gap-4">
-                  <Label htmlFor="phone" className="text-right">
-                    Phone
-                  </Label>
-                  <Input
-                    name="phone"
-                    value={newAdminData.phone}
-                    onChange={handleInputChange}
-                    placeholder="090..."
-                    className="col-span-3"
-                  />
-                </div>
-
-                <div className="grid grid-cols-4 items-center gap-4">
-                  <Label htmlFor="gender" className="text-right">
-                    Gender
-                  </Label>
-                  <select
-                    name="gender"
-                    value={newAdminData.gender}
-                    onChange={handleInputChange}
-                    className="col-span-3 border p-2 rounded h-10"
-                    required
-                  >
-                    <option value="">Select Gender</option>
-                    <option value="Male">Male</option>
-                    <option value="Female">Female</option>
-                    <option value="Other">Other</option>
-                  </select>
-                </div>
-
-                <div className="grid grid-cols-4 items-center gap-4">
-                  <Label htmlFor="dob" className="text-right">
-                    Date of Birth
-                  </Label>
-                  <Input
-                    name="dob"
-                    type="date"
-                    value={newAdminData.dob}
-                    onChange={handleInputChange}
-                    className="col-span-3"
-                    required
-                  />
-                </div>
-
-                {/* Password and Role */}
-                <div className="grid grid-cols-4 items-center gap-4">
-                  <Label htmlFor="password" className="text-right">
-                    Password
-                  </Label>
-                  <Input
-                    name="password"
-                    type="password"
-                    value={newAdminData.password}
-                    onChange={handleInputChange}
-                    placeholder="••••••••"
-                    className="col-span-3"
-                    required
-                  />
-                </div>
-                <div className="grid grid-cols-4 items-center gap-4">
-                  <Label htmlFor="role" className="text-right">
-                    Role
-                  </Label>
-                  <select
-                    name="role"
-                    value={newAdminData.role}
-                    onChange={handleInputChange}
-                    className="col-span-3 border p-2 rounded h-10"
-                    required
-                  >
-                    <option value="regular">Regular</option>
-                    <option value="primary">Primary (Full Access)</option>
-                  </select>
-                </div>
-
-                {/* Branch ID (Conditional) */}
-                <div className="grid grid-cols-4 items-center gap-4">
-                  <Label htmlFor="branchId" className="text-right">
-                    Branch
-                  </Label>
-                  <select
-                    name="branchId"
-                    value={newAdminData.branchId}
-                    onChange={handleInputChange}
-                    className="col-span-3 border p-2 rounded h-10 bg-background"
-                    disabled={newAdminData.role === "primary"}
-                  >
-                    <option value="">No Branch (Optional)</option>
-                    {branches.map((branch) => (
-                      <option key={branch.id} value={branch.id}>
-                        {branch.id} - {branch.name}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                {/* Error Display */}
-                {(localError || error) && (
-                  <div className="p-2 bg-red-100 text-red-600 border border-red-300 rounded text-sm">
-                    <AlertTriangle className="inline h-4 w-4 mr-1" />{" "}
-                    {localError || error}
+            <DialogContent className="sm:max-w-[425px] rounded-2xl bg-card border border-border/50 shadow-xl overflow-hidden p-0">
+               <div className="p-6 bg-muted/30 border-b border-border/50">
+                  <DialogHeader>
+                    <DialogTitle className="text-xl font-bold text-primary">Create New Admin Account</DialogTitle>
+                  </DialogHeader>
+               </div>
+               <div className="p-6">
+                <form onSubmit={handleCreateAdmin} className="grid gap-4">
+                  <div className="grid grid-cols-4 items-center gap-4">
+                    <Label htmlFor="name" className="text-right text-foreground">Name</Label>
+                    <Input
+                      name="name"
+                      value={newAdminData.name}
+                      onChange={handleInputChange}
+                      placeholder="Full Name"
+                      className="col-span-3 bg-muted border-border text-foreground rounded-xl"
+                      required
+                    />
                   </div>
-                )}
-
-                <Button type="submit" disabled={isLoading} className="mt-4">
-                  {isLoading ? (
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  ) : (
-                    "Create Admin Account"
+                  <div className="grid grid-cols-4 items-center gap-4">
+                    <Label htmlFor="email" className="text-right text-foreground">Email</Label>
+                    <Input
+                      name="email"
+                      type="email"
+                      value={newAdminData.email}
+                      onChange={handleInputChange}
+                      placeholder="admin@cinema.com"
+                      className="col-span-3 bg-muted border-border text-foreground rounded-xl"
+                      required
+                    />
+                  </div>
+                  <div className="grid grid-cols-4 items-center gap-4">
+                    <Label htmlFor="phone" className="text-right text-foreground">Phone</Label>
+                    <Input
+                      name="phone"
+                      value={newAdminData.phone}
+                      onChange={handleInputChange}
+                      placeholder="090..."
+                      className="col-span-3 bg-muted border-border text-foreground rounded-xl"
+                    />
+                  </div>
+                  <div className="grid grid-cols-4 items-center gap-4">
+                    <Label htmlFor="gender" className="text-right text-foreground">Gender</Label>
+                    <select
+                      name="gender"
+                      value={newAdminData.gender}
+                      onChange={handleInputChange}
+                      className="col-span-3 border border-border bg-muted p-2 rounded-xl h-10 text-foreground"
+                      required
+                    >
+                      <option value="">Select Gender</option>
+                      <option value="Male">Male</option>
+                      <option value="Female">Female</option>
+                      <option value="Other">Other</option>
+                    </select>
+                  </div>
+                  <div className="grid grid-cols-4 items-center gap-4">
+                    <Label htmlFor="dob" className="text-right text-foreground">Date of Birth</Label>
+                    <Input
+                      name="dob"
+                      type="date"
+                      value={newAdminData.dob}
+                      onChange={handleInputChange}
+                      className="col-span-3 bg-muted border-border text-foreground rounded-xl"
+                      required
+                    />
+                  </div>
+                  <div className="grid grid-cols-4 items-center gap-4">
+                    <Label htmlFor="password" className="text-right text-foreground">Password</Label>
+                    <Input
+                      name="password"
+                      type="password"
+                      value={newAdminData.password}
+                      onChange={handleInputChange}
+                      placeholder="••••••••"
+                      className="col-span-3 bg-muted border-border text-foreground rounded-xl"
+                      required
+                    />
+                  </div>
+                  <div className="grid grid-cols-4 items-center gap-4">
+                    <Label htmlFor="role" className="text-right text-foreground">Role</Label>
+                    <select
+                      name="role"
+                      value={newAdminData.role}
+                      onChange={handleInputChange}
+                      className="col-span-3 border border-border bg-muted p-2 rounded-xl h-10 text-foreground"
+                      required
+                    >
+                      <option value="regular">Regular Admin (Branch Restricted)</option>
+                      <option value="primary">Primary Admin (System-wide)</option>
+                    </select>
+                  </div>
+                  <div className="grid grid-cols-4 items-center gap-4">
+                    <Label htmlFor="branchId" className="text-right text-foreground">Branch</Label>
+                    <select
+                      name="branchId"
+                      value={newAdminData.branchId}
+                      onChange={handleInputChange}
+                      className="col-span-3 border border-border bg-muted p-2 rounded-xl h-10 text-foreground disabled:opacity-50"
+                      disabled={newAdminData.role === "primary"}
+                    >
+                      <option value="">No Branch (Shared)</option>
+                      {branches.map((branch) => (
+                        <option key={branch.id} value={branch.id}>
+                          {branch.name}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                  {(localError || error) && (
+                    <div className="p-3 bg-destructive/10 text-destructive border border-destructive/20 rounded-xl text-sm flex items-center gap-2">
+                      <AlertTriangle className="inline h-4 w-4 shrink-0" />
+                      {localError || error}
+                    </div>
                   )}
-                </Button>
-              </form>
+                  <Button type="submit" disabled={isLoading} className="mt-4 bg-primary hover:bg-primary/90 text-white rounded-xl h-11">
+                    {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : "Create Admin Account"}
+                  </Button>
+                </form>
+               </div>
             </DialogContent>
           </Dialog>
         </div>
       </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>System Admin List ({admins.length})</CardTitle>
-        </CardHeader>
-        <CardContent>
-          {/* --------------------- LOADING/ERROR STATES --------------------- */}
-          {isLoading && admins.length === 0 ? (
-            <div className="text-center p-8 text-muted-foreground flex justify-center items-center gap-2">
-              <Loader2 className="h-5 w-5 animate-spin" /> Loading admin data...
-            </div>
-          ) : error && admins.length === 0 ? (
-            <div className="p-4 bg-red-100 text-red-800 rounded flex items-center gap-2">
-              <AlertTriangle className="h-5 w-5" /> Error: {error}
-            </div>
-          ) : admins.length === 0 ? (
-            <div className="text-center p-8 text-muted-foreground">
-              No administrators found.
-            </div>
-          ) : (
-            // --------------------- ADMIN TABLE ---------------------
-            <div className="overflow-x-auto border rounded-lg">
-              <table className="min-w-full divide-y divide-border">
-                <thead>
-                  <tr className="bg-secondary/50 text-left text-xs font-semibold uppercase text-muted-foreground tracking-wider">
-                    <th className="p-3">Name</th>
-                    <th className="p-3">Email</th>
-                    <th className="p-3">Phone</th>
-                    <th className="p-3">Gender</th>
-                    <th className="p-3">DOB</th>
-                    <th className="p-3">Role</th>
-                    <th className="p-3">Branch</th>
-                    <th className="p-3 text-right">Actions</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-border">
-                  {renderAdminRows(admins)}
-                </tbody>
-              </table>
-            </div>
-          )}
-        </CardContent>
-      </Card>
+        <Card className="border border-border/50 bg-card/80 backdrop-blur-xl rounded-2xl shadow-xl overflow-hidden mt-8">
+          <CardHeader className="bg-muted/30 border-b border-border/50 pb-4">
+            <CardTitle className="text-xl font-bold flex items-center gap-2 text-foreground">
+              <Users className="w-5 h-5 text-primary" /> System Admin List ({admins.length})
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="p-0">
+            {isLoading && admins.length === 0 ? (
+              <div className="text-center p-12 text-muted-foreground flex justify-center items-center gap-3">
+                <Loader2 className="h-6 w-6 animate-spin text-primary" /> Loading admin data...
+              </div>
+            ) : error && admins.length === 0 ? (
+              <div className="m-6 p-4 bg-destructive/10 text-destructive border border-destructive/20 rounded-xl flex items-center gap-3">
+                <AlertTriangle className="h-5 w-5" /> Error: {error}
+              </div>
+            ) : admins.length === 0 ? (
+              <div className="text-center p-12 text-muted-foreground italic">
+                No administrators found in the system.
+              </div>
+            ) : (
+              <div className="overflow-x-auto">
+                <table className="min-w-full">
+                  <thead>
+                    <tr className="bg-muted/50 text-left text-xs font-bold uppercase text-muted-foreground tracking-wider border-b border-border/50">
+                      <th className="p-4">Name</th>
+                      <th className="p-4">Email</th>
+                      <th className="p-4">Phone</th>
+                      <th className="p-4">Gender</th>
+                      <th className="p-4">DOB</th>
+                      <th className="p-4">Role</th>
+                      <th className="p-4">Branch</th>
+                      <th className="p-4 text-right">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-border/50">
+                    {renderAdminRows(admins)}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </CardContent>
+        </Card>
 
       {/* --- EDIT PROFILE DIALOG (PRIMARY) --- */}
       <Dialog open={isEditProfileOpen} onOpenChange={setIsEditProfileOpen}>
@@ -827,7 +811,8 @@ export default function AdminManagementPage() {
             </Button>
           </div>
         </DialogContent>
-      </Dialog>
+        </Dialog>
+      </div>
     </div>
   );
 }

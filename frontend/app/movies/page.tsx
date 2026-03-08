@@ -142,11 +142,11 @@ export default function MoviesPage() {
 
   return (
     // THE NEW GRADIENT BACKGROUND: White base with soft indigo/rose/amber blurs
-    <div className="min-h-screen bg-white relative overflow-hidden text-slate-900">
+    <div className="min-h-screen bg-background relative overflow-hidden text-foreground">
       {/* Aurora Effects */}
-      <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] rounded-full bg-blue-100/50 blur-[120px] -z-10" />
-      <div className="absolute top-[20%] right-[-5%] w-[30%] h-[30%] rounded-full bg-rose-100/40 blur-[120px] -z-10" />
-      <div className="absolute bottom-[-10%] left-[20%] w-[50%] h-[40%] rounded-full bg-indigo-50/60 blur-[120px] -z-10" />
+      <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] rounded-full bg-primary/10 blur-[120px] -z-10" />
+      <div className="absolute top-[20%] right-[-5%] w-[30%] h-[30%] rounded-full bg-accent/10 blur-[120px] -z-10" />
+      <div className="absolute bottom-[-10%] left-[20%] w-[50%] h-[40%] rounded-full bg-primary/5 blur-[120px] -z-10" />
 
       <Navbar />
 
@@ -157,28 +157,28 @@ export default function MoviesPage() {
           animate={{ opacity: 1, y: 0 }}
           className="mb-12 text-center"
         >
-          <h1 className="text-5xl md:text-7xl font-black tracking-tighter mb-4 bg-gradient-to-br from-rose-500 via-rose-500 to-rose-500 bg-clip-text text-transparent">
+          <h1 className="text-5xl md:text-7xl font-black tracking-tighter mb-4 bg-gradient-to-br from-[var(--primary)] via-[var(--accent)] to-[var(--primary)] bg-clip-text text-transparent">
             Now Showing
           </h1>
-          <p className="text-slate-500 text-lg md:text-xl font-medium max-w-2xl mx-auto">
+          <p className="text-muted-foreground text-lg md:text-xl font-medium max-w-2xl mx-auto">
             Discover the latest cinematic masterpieces and book your experience.
           </p>
         </motion.div>
 
         {/* Modern Floating Search Bar */}
         <div className="max-w-4xl mx-auto mb-16">
-          <div className="p-2 rounded-3xl bg-white/40 backdrop-blur-2xl border border-white/20 shadow-[0_8px_32px_0_rgba(31,38,135,0.07)]">
+          <div className="p-2 rounded-3xl bg-card/40 backdrop-blur-2xl border border-border/20 shadow-[0_8px_32px_0_rgba(0,0,0,0.07)]">
             <div className="flex flex-col md:flex-row gap-2">
               <div className="relative flex-1">
-                <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
+                <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
                 <Input
                   placeholder="Search for movies..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-12 bg-transparent border-none focus-visible:ring-0 h-14 text-lg placeholder:text-slate-400"
+                  className="pl-12 bg-transparent border-none focus-visible:ring-0 h-14 text-lg placeholder:text-muted-foreground"
                 />
               </div>
-              <div className="h-10 w-[1px] bg-slate-200 hidden md:block self-center" />
+              <div className="h-10 w-[1px] bg-border hidden md:block self-center" />
               <div className="flex gap-2 p-1 overflow-x-auto no-scrollbar">
                 {uniqueLanguages.map((lang) => (
                   <Button
@@ -187,8 +187,8 @@ export default function MoviesPage() {
                     onClick={() => setSelectedLanguage(lang)}
                     className={`rounded-2xl px-5 h-12 transition-all duration-300 ${
                       selectedLanguage === lang
-                        ? "bg-slate-900 text-white shadow-lg shadow-slate-200"
-                        : "hover:bg-slate-100 text-slate-600"
+                        ? "bg-primary text-white shadow-lg shadow-primary/20"
+                        : "hover:bg-muted text-muted-foreground"
                     }`}
                   >
                     {lang}
@@ -206,7 +206,7 @@ export default function MoviesPage() {
               {[1, 2, 3, 4].map((i) => (
                 <div
                   key={i}
-                  className="aspect-[2/3] rounded-3xl bg-slate-100 animate-pulse"
+                  className="aspect-[2/3] rounded-3xl bg-muted animate-pulse"
                 />
               ))}
             </div>
@@ -231,7 +231,7 @@ export default function MoviesPage() {
                   className="group"
                 >
                   <Link href={`/movies/${movie.id}`}>
-                    <Card className="border-none bg-white/60 backdrop-blur-sm shadow-[0_10px_30px_rgba(0,0,0,0.04)] rounded-[2.5rem] overflow-hidden transition-all duration-500 hover:shadow-[0_20px_50px_rgba(0,0,0,0.1)]">
+                    <Card className="border border-border/50 bg-card/60 backdrop-blur-sm shadow-[0_10px_30px_rgba(0,0,0,0.04)] rounded-[2.5rem] overflow-hidden transition-all duration-500 hover:shadow-[0_20px_50px_rgba(0,0,0,0.1)]">
                       <div className="relative aspect-[3/4] overflow-hidden">
                         <img
                           src={movie.poster}
@@ -239,7 +239,7 @@ export default function MoviesPage() {
                           className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                         />
                         <div className="absolute top-4 left-4 flex flex-col gap-2">
-                          <CustomBadge className="bg-white/90 backdrop-blur text-slate-900 border-none shadow-sm">
+                          <CustomBadge className="bg-card/90 backdrop-blur text-foreground border-none shadow-sm">
                             {movie.ageRating}
                           </CustomBadge>
                           {movie.averageRating > 0 && (
@@ -257,7 +257,7 @@ export default function MoviesPage() {
                               title={mood.name}
                             >
                               <img src={mood.symbol} alt={mood.name} className="w-4 h-4" />
-                              <span className="text-[10px] font-bold text-slate-700">
+                              <span className="text-[10px] font-bold text-muted-foreground">
                                 {mood.count}
                               </span>
                             </div>
@@ -266,20 +266,20 @@ export default function MoviesPage() {
                       </div>
 
                       <CardContent className="p-6">
-                        <h3 className="text-xl font-bold text-slate-900 mb-2 line-clamp-1">
+                        <h3 className="text-xl font-bold text-foreground mb-2 line-clamp-1">
                           {movie.title}
                         </h3>
 
-                        <div className="flex flex-wrap items-center gap-3 text-sm text-slate-500 mb-6">
-                          <span className="flex items-center gap-1 bg-slate-100 px-2 py-1 rounded-lg">
+                        <div className="flex flex-wrap items-center gap-3 text-sm text-muted-foreground mb-6">
+                          <span className="flex items-center gap-1 bg-muted px-2 py-1 rounded-lg">
                             <Film className="w-3 h-3" /> {movie.language}
                           </span>
-                          <span className="flex items-center gap-1 bg-slate-100 px-2 py-1 rounded-lg">
+                          <span className="flex items-center gap-1 bg-muted px-2 py-1 rounded-lg">
                             <Calendar className="w-3 h-3" /> {movie.duration}m
                           </span>
                         </div>
 
-                        <Button className="w-full h-12 rounded-2xl bg-red-400 hover:bg-red-700 text-white font-bold shadow-lg shadow-indigo-100 transition-all active:scale-95">
+                        <Button className="w-full h-12 rounded-2xl bg-[var(--primary)] hover:opacity-90 text-white font-bold shadow-lg shadow-primary/10 transition-all active:scale-95">
                           Book Ticket
                         </Button>
                       </CardContent>
@@ -294,13 +294,13 @@ export default function MoviesPage() {
         {/* No Results Styling */}
         {!isLoading && movies.length === 0 && (
           <div className="text-center py-20">
-            <div className="inline-flex p-6 rounded-full bg-slate-50 mb-4">
-              <Search className="w-10 h-10 text-slate-300" />
+            <div className="inline-flex p-6 rounded-full bg-muted mb-4">
+              <Search className="w-10 h-10 text-muted-foreground" />
             </div>
-            <h2 className="text-2xl font-bold text-slate-900">
+            <h2 className="text-2xl font-bold text-foreground">
               No movies found
             </h2>
-            <p className="text-slate-500">Try a different search or filter.</p>
+            <p className="text-muted-foreground">Try a different search or filter.</p>
           </div>
         )}
       </main>

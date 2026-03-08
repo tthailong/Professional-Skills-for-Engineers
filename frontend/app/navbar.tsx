@@ -28,6 +28,7 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 export function Navbar() {
   const { user, logoutUser } = useUserStore();
@@ -141,6 +142,7 @@ export function Navbar() {
   /* ---------------- LINKS ---------------- */
 
   const userLinks = [
+    { href: "/", label: "Home", icon: Film },
     { href: "/bookings", label: "My Booking", icon: Ticket },
     { href: "/movies", label: "Movies", icon: Film },
     { href: "/branches", label: "Branch", icon: MapPin },
@@ -148,6 +150,7 @@ export function Navbar() {
   ];
 
   const adminPrimaryLinks = [
+    { href: "/", label: "Home", icon: Film },
     {
       href: "/admin/primary/dashboard",
       label: "Dashboard",
@@ -165,6 +168,7 @@ export function Navbar() {
   ];
 
   const adminRegularLinks = [
+    { href: "/", label: "Home", icon: Film },
     { href: "/admin/dashboard", label: "Dashboard", icon: LayoutDashboard },
     { href: "/admin/bookings", label: "Booking", icon: CreditCard },
     {
@@ -186,11 +190,8 @@ export function Navbar() {
 
   return (
     <>
-      {/* Spacer — keeps content below the fixed navbar on page load.
-          Height matches: top-4 (16px) + pill (~48px) + some gap = ~72px */}
       <div className="h-[72px] w-full flex-shrink-0" aria-hidden="true" />
 
-      {/* NAVBAR */}
       <nav
         className={`
 fixed top-4 left-1/2 -translate-x-1/2 z-50 w-[96%] max-w-7xl
@@ -208,21 +209,19 @@ rounded-full px-6 py-3 flex items-center justify-between
 transition-all duration-500 backdrop-blur-xl
 ${
   scrolled
-    ? "bg-white/80 border border-rose-200 shadow-xl"
-    : "bg-white/40 border border-white/30"
+    ? "bg-background/80 border border-border shadow-xl"
+    : "bg-background/30 border border-border/20"
 }
 `}
         >
-          {/* LOGO */}
           <Link
             href="/"
-            className="flex items-center gap-2 font-bold text-lg text-rose-600"
+            className="flex items-center gap-2 font-bold text-lg text-[var(--primary)] transition-colors"
           >
             <Film className="w-5 h-5" />
             LDHK Cinema
           </Link>
 
-          {/* DESKTOP LINKS */}
           <div className="hidden md:flex items-center gap-2">
             {navLinks.map((link) => {
               const active = pathname === link.href;
@@ -234,8 +233,8 @@ ${
                   className={`flex items-center gap-2 px-5 py-2 rounded-full text-sm font-semibold transition-all duration-300
                   ${
                     active
-                      ? "bg-gradient-to-r from-rose-500 to-pink-500 text-white shadow-lg shadow-rose-300/40"
-                      : "hover:bg-rose-100 text-foreground"
+                      ? "bg-gradient-to-r from-primary to-accent text-white shadow-lg shadow-primary/20"
+                      : "hover:bg-primary/10 text-foreground"
                   }`}
                 >
                   <link.icon className="w-4 h-4" />
@@ -244,9 +243,8 @@ ${
               );
             })}
 
-            {/* USER / ADMIN INFO */}
             {admin && (
-              <span className="ml-3 font-semibold text-rose-600">
+              <span className="ml-3 font-semibold text-primary">
                 {admin.name || "Admin"}
               </span>
             )}
@@ -254,16 +252,15 @@ ${
             {!admin && user && (
               <Link
                 href="/profile"
-                className="ml-3 text-sm font-medium hover:text-rose-600 transition"
+                className="ml-3 text-sm font-medium hover:text-primary transition"
               >
                 {user.name}
               </Link>
             )}
 
-            {/* AUTH BUTTON */}
             {!user && !admin ? (
               <Link href="/auth/login">
-                <Button className="ml-3 rounded-full bg-gradient-to-r from-rose-500 to-pink-500 text-white shadow hover:scale-105 transition">
+                <Button className="ml-3 rounded-full bg-gradient-to-r from-primary to-accent text-white shadow hover:scale-105 transition">
                   Sign In
                 </Button>
               </Link>
@@ -271,14 +268,17 @@ ${
               <Button
                 onClick={logout}
                 variant="ghost"
-                className="ml-3 rounded-full hover:bg-rose-100"
+                className="ml-3 rounded-full hover:bg-primary/10"
               >
                 <LogOut className="w-4 h-4" />
               </Button>
             )}
+
+            <div className="ml-3 pl-3 border-l border-border h-6 flex items-center">
+              <ThemeToggle />
+            </div>
           </div>
 
-          {/* MOBILE BUTTON */}
           <button
             onClick={() => setOpen(!open)}
             className="md:hidden text-xl font-bold"
@@ -287,11 +287,10 @@ ${
           </button>
         </div>
 
-        {/* MOBILE MENU */}
         <div
           className={`
 md:hidden mt-3 rounded-2xl p-5 space-y-2 backdrop-blur-xl
-border border-rose-200 bg-white/90 shadow-xl
+border border-border bg-background/90 shadow-xl
 transition-all duration-300
 ${open ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-4 pointer-events-none"}
 `}
@@ -301,16 +300,18 @@ ${open ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-4 pointer-events-
               key={link.href}
               href={link.href}
               onClick={() => setOpen(false)}
-              className="flex items-center gap-2 font-medium py-2 hover:text-rose-600 transition"
+              className="flex items-center gap-2 font-medium py-2 hover:text-primary transition"
             >
               <link.icon className="w-4 h-4" />
               {link.label}
             </Link>
           ))}
 
-          <div className="pt-3 border-t">
+          <div className="pt-3 border-t flex items-center justify-between">
             {!user && !admin ? (
-              <Link href="/auth/login">Sign In</Link>
+              <Link href="/auth/login" className="hover:text-primary">
+                Sign In
+              </Link>
             ) : (
               <button
                 onClick={() => {
@@ -323,11 +324,11 @@ ${open ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-4 pointer-events-
                 Logout
               </button>
             )}
+            <ThemeToggle />
           </div>
         </div>
       </nav>
 
-      {/* CHANGE PASSWORD DIALOG */}
       <Dialog
         open={isAdminChangePasswordOpen}
         onOpenChange={setIsAdminChangePasswordOpen}

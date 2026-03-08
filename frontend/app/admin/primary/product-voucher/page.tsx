@@ -244,9 +244,10 @@ export default function ProductVoucherPage() {
   };
 
   return (
-    <div className="min-h-screen bg-white relative overflow-hidden text-slate-900">
-      <div className="absolute top-[-10%] left-[-5%] w-[40%] h-[40%] rounded-full bg-rose-50/50 blur-[120px] -z-10" />
-      <div className="absolute bottom-[-10%] right-[-5%] w-[35%] h-[40%] rounded-full bg-indigo-50/40 blur-[120px] -z-10" />
+    <div className="min-h-screen bg-background relative overflow-hidden text-foreground transition-colors duration-500">
+      {/* Aurora Blurs */}
+      <div className="absolute top-[-10%] left-[-5%] w-[40%] h-[40%] rounded-full bg-primary/10 blur-[120px] -z-10" />
+      <div className="absolute bottom-[-10%] right-[-5%] w-[35%] h-[40%] rounded-full bg-accent/5 blur-[120px] -z-10" />
 
       <Navbar />
 
@@ -257,21 +258,21 @@ export default function ProductVoucherPage() {
             animate={{ opacity: 1, y: 0 }}
           >
             <div className="flex items-center gap-2 mb-2">
-              <div className="p-2 bg-rose-600 rounded-xl shadow-lg shadow-rose-200">
+              <div className="p-2 bg-primary rounded-xl shadow-lg shadow-primary/20">
                 <ShoppingBag className="w-5 h-5 text-white" />
               </div>
-              <span className="text-[10px] font-black uppercase tracking-[0.2em] text-rose-600">
+              <span className="text-[10px] font-black uppercase tracking-[0.2em] text-primary">
                 Concessions Hub
               </span>
             </div>
-            <h1 className="text-5xl font-black tracking-tighter bg-gradient-to-r from-slate-900 to-rose-900 bg-clip-text text-transparent">
+            <h1 className="text-5xl font-black tracking-tighter bg-gradient-to-r from-[var(--foreground)] to-[var(--primary)] bg-clip-text text-transparent">
               Products & Offers
             </h1>
           </motion.div>
 
-          <Button
+           <Button
             onClick={handleOpenCreate}
-            className="rounded-2xl bg-slate-900 hover:bg-rose-600 text-white h-14 px-8 font-black transition-all shadow-xl shadow-slate-200 active:scale-95"
+            className="rounded-2xl bg-primary hover:bg-primary/90 text-white h-14 px-8 font-black transition-all shadow-xl shadow-primary/20 active:scale-95"
           >
             <Plus className="w-5 h-5 mr-2" /> Add New Entry
           </Button>
@@ -282,35 +283,35 @@ export default function ProductVoucherPage() {
           onValueChange={(val) => setActiveTab(val as ItemType)}
           className="space-y-10"
         >
-          <TabsList className="bg-slate-100/50 backdrop-blur-md p-1 rounded-2xl border border-slate-200 w-fit">
+           <TabsList className="bg-muted/50 backdrop-blur-md p-1 rounded-2xl border border-border/50 w-fit">
             <TabsTrigger
               value="food-drink"
-              className="rounded-xl px-8 py-3 data-[state=active]:bg-white data-[state=active]:text-rose-600 font-bold transition-all gap-2"
+              className="rounded-xl px-8 py-3 data-[state=active]:bg-primary data-[state=active]:text-white font-bold transition-all gap-2"
             >
               <Coffee className="w-4 h-4" /> Concessions
             </TabsTrigger>
             <TabsTrigger
               value="souvenir"
-              className="rounded-xl px-8 py-3 data-[state=active]:bg-white data-[state=active]:text-rose-600 font-bold transition-all gap-2"
+              className="rounded-xl px-8 py-3 data-[state=active]:bg-primary data-[state=active]:text-white font-bold transition-all gap-2"
             >
               <Gift className="w-4 h-4" /> Souvenirs
             </TabsTrigger>
             <TabsTrigger
               value="voucher"
-              className="rounded-xl px-8 py-3 data-[state=active]:bg-white data-[state=active]:text-rose-600 font-bold transition-all gap-2"
+              className="rounded-xl px-8 py-3 data-[state=active]:bg-primary data-[state=active]:text-white font-bold transition-all gap-2"
             >
               <Ticket className="w-4 h-4" /> Vouchers
             </TabsTrigger>
           </TabsList>
 
-          <div className="max-w-xl">
+           <div className="max-w-xl">
             <div className="relative group">
-              <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400 group-focus-within:text-rose-600 transition-colors" />
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-primary group-focus-within:scale-110 transition-transform" />
               <Input
                 placeholder={`Search ${activeTab.replace("-", " & ")}...`}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-12 h-14 bg-white/40 backdrop-blur-xl border-slate-200 rounded-2xl shadow-sm text-lg"
+                className="pl-12 h-14 bg-muted/50 backdrop-blur-xl border-border/50 rounded-2xl shadow-inner text-lg text-foreground placeholder:text-muted-foreground"
               />
             </div>
           </div>
@@ -330,13 +331,13 @@ export default function ProductVoucherPage() {
                     exit={{ opacity: 0, scale: 0.9 }}
                     transition={{ delay: idx * 0.05 }}
                   >
-                    <Card className="border-none bg-white/70 backdrop-blur-md rounded-[2.5rem] shadow-[0_8px_30px_rgb(0,0,0,0.04)] overflow-hidden group hover:shadow-2xl hover:shadow-rose-100 transition-all duration-500">
+                   <Card className="border-none bg-card/80 backdrop-blur-md rounded-[2.5rem] shadow-xl overflow-hidden group hover:shadow-2xl hover:shadow-primary/10 transition-all duration-500">
                       {/* Visual Header */}
                       <div
                         className={`h-24 flex items-center justify-between px-8 relative overflow-hidden ${
                           item.type === "voucher"
-                            ? "bg-slate-900 text-white"
-                            : "bg-rose-50 text-rose-600"
+                            ? "bg-primary text-white"
+                            : "bg-muted/50 text-primary"
                         }`}
                       >
                         <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full blur-2xl translate-x-1/2 -translate-y-1/2" />
@@ -361,41 +362,41 @@ export default function ProductVoucherPage() {
                         </div>
                       </div>
 
-                      <CardContent className="p-8">
+                       <CardContent className="p-8">
                         <div className="mb-6">
-                          <h3 className="text-2xl font-black text-slate-900 line-clamp-1 mb-1 group-hover:text-rose-600 transition-colors">
+                          <h3 className="text-2xl font-black text-foreground line-clamp-1 mb-1 group-hover:text-primary transition-colors">
                             {item.name}
                           </h3>
-                          <p className="text-sm text-slate-500 font-medium line-clamp-2 italic">
+                          <p className="text-sm text-muted-foreground font-medium line-clamp-2 italic">
                             {item.description}
                           </p>
                         </div>
 
                         {/* Specs Section */}
-                        <div className="space-y-3 mb-8">
+                         <div className="space-y-3 mb-8">
                           {item.type === "food-drink" && (
                             <div className="flex gap-2">
-                              <CustomBadge className="bg-rose-50 text-rose-600 border-rose-100">
+                              <CustomBadge className="bg-primary/10 text-primary border-primary/20">
                                 {item.size}
                               </CustomBadge>
-                              <CustomBadge className="bg-slate-50 text-slate-500 border-slate-100">
+                              <CustomBadge className="bg-muted text-muted-foreground border-border">
                                 {item.foodType}
                               </CustomBadge>
                             </div>
                           )}
                           {item.type === "souvenir" && (
-                            <div className="flex items-center gap-2 text-slate-400 font-bold text-xs uppercase tracking-tighter">
-                              <Film className="w-3.5 h-3.5 text-rose-500" />
+                            <div className="flex items-center gap-2 text-muted-foreground font-bold text-xs uppercase tracking-tighter">
+                              <Film className="w-3.5 h-3.5 text-primary" />
                               Movie ID: {item.movieId}
                             </div>
                           )}
                           {item.type === "voucher" && (
                             <div className="space-y-2">
-                              <div className="flex items-center gap-2 text-emerald-600 font-black text-xs uppercase">
+                              <div className="flex items-center gap-2 text-primary font-black text-xs uppercase">
                                 <Tag className="w-3.5 h-3.5" /> Condition:{" "}
                                 {item.condition}
                               </div>
-                              <div className="flex items-center gap-2 text-slate-400 font-bold text-xs uppercase">
+                              <div className="flex items-center gap-2 text-muted-foreground font-bold text-xs uppercase">
                                 <Clock className="w-3.5 h-3.5" /> Expiry:{" "}
                                 {item.expiration}
                               </div>
@@ -404,15 +405,15 @@ export default function ProductVoucherPage() {
                         </div>
 
                         {/* Pricing/Discount Footer */}
-                        <div className="flex items-center justify-between pt-6 border-t border-slate-50">
+                        <div className="flex items-center justify-between pt-6 border-t border-border/50">
                           <div>
-                            <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                            <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">
                               {item.type === "voucher"
                                 ? "Direct Discount"
                                 : "Base Price"}
                             </p>
                             <p
-                              className={`text-3xl font-black ${item.type === "voucher" ? "text-emerald-600" : "text-slate-900"}`}
+                              className={`text-3xl font-black ${item.type === "voucher" ? "text-primary" : "text-foreground"}`}
                             >
                               {item.type === "voucher"
                                 ? `${item.discount}%`
@@ -424,7 +425,7 @@ export default function ProductVoucherPage() {
                               variant="outline"
                               size="icon"
                               onClick={() => handleOpenEdit(item)}
-                              className="rounded-xl border-slate-100 hover:bg-rose-50 hover:text-rose-600"
+                              className="rounded-xl border-border bg-muted/20 hover:bg-primary hover:text-white transition-all shadow-sm"
                             >
                               <Edit className="w-4 h-4" />
                             </Button>
@@ -432,7 +433,7 @@ export default function ProductVoucherPage() {
                               variant="outline"
                               size="icon"
                               onClick={() => handleDelete(item.id, item.type)}
-                              className="rounded-xl border-rose-50 text-rose-300 hover:bg-rose-600 hover:text-white"
+                              className="rounded-xl border-destructive/20 text-destructive/50 hover:bg-destructive hover:text-white transition-all shadow-sm"
                             >
                               <Trash2 className="w-4 h-4" />
                             </Button>
@@ -448,20 +449,20 @@ export default function ProductVoucherPage() {
         </Tabs>
 
         {/* Add/Edit Modal (Rose Redesign) */}
-        <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
-          <DialogContent className="sm:max-w-[500px] bg-white rounded-[3rem] border-none shadow-2xl p-10 max-h-[90vh] overflow-y-auto no-scrollbar">
+         <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
+          <DialogContent className="sm:max-w-[500px] bg-card border border-border/50 rounded-[3rem] shadow-2xl p-10 max-h-[90vh] overflow-y-auto no-scrollbar">
             <DialogHeader className="mb-6">
-              <DialogTitle className="text-3xl font-black text-slate-900">
+              <DialogTitle className="text-3xl font-black text-foreground">
                 {isEditing ? "Modify Entry" : "Global Creation"}
               </DialogTitle>
-              <DialogDescription className="text-slate-500 font-medium">
+              <DialogDescription className="text-muted-foreground font-medium">
                 Update the cinema inventory and pricing structure.
               </DialogDescription>
             </DialogHeader>
 
             <form onSubmit={handleSubmit} className="space-y-6">
               <div className="space-y-2">
-                <Label className="text-[10px] font-black uppercase text-slate-400 tracking-widest">
+                 <Label className="text-[10px] font-black uppercase text-muted-foreground tracking-widest">
                   Entry Name
                 </Label>
                 <Input
@@ -469,12 +470,12 @@ export default function ProductVoucherPage() {
                   onChange={(e) =>
                     setFormData({ ...formData, name: e.target.value })
                   }
-                  className="h-14 rounded-2xl bg-slate-50 border-none font-bold"
+                  className="h-14 rounded-2xl bg-muted border-border font-bold text-foreground"
                 />
               </div>
 
               <div className="space-y-2">
-                <Label className="text-[10px] font-black uppercase text-slate-400 tracking-widest">
+                 <Label className="text-[10px] font-black uppercase text-muted-foreground tracking-widest">
                   Technical Description
                 </Label>
                 <textarea
@@ -482,60 +483,60 @@ export default function ProductVoucherPage() {
                   onChange={(e) =>
                     setFormData({ ...formData, description: e.target.value })
                   }
-                  className="w-full min-h-[100px] rounded-2xl bg-slate-50 border-none p-4 text-sm font-medium focus:ring-2 focus:ring-rose-500/20"
+                  className="w-full min-h-[100px] rounded-2xl bg-muted border-border p-4 text-sm font-medium text-foreground focus:ring-2 focus:ring-primary/20 transition-all outline-none"
                 />
               </div>
 
               {formData.type === "voucher" ? (
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label className="text-[10px] font-black uppercase text-slate-400 tracking-widest">
+                    <Label className="text-[10px] font-black uppercase text-muted-foreground tracking-widest">
                       Discount (%)
                     </Label>
-                    <Input
+                     <Input
                       type="number"
                       value={formData.discount}
                       onChange={(e) =>
                         setFormData({ ...formData, discount: e.target.value })
                       }
-                      className="h-12 rounded-xl"
+                      className="h-12 rounded-xl bg-muted border-border text-foreground"
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label className="text-[10px] font-black uppercase text-slate-400 tracking-widest">
+                    <Label className="text-[10px] font-black uppercase text-muted-foreground tracking-widest">
                       Condition
                     </Label>
-                    <Input
+                     <Input
                       value={formData.condition}
                       onChange={(e) =>
                         setFormData({ ...formData, condition: e.target.value })
                       }
-                      className="h-12 rounded-xl"
+                      className="h-12 rounded-xl bg-muted border-border text-foreground"
                     />
                   </div>
                 </div>
               ) : (
-                <div className="space-y-2">
-                  <Label className="text-[10px] font-black uppercase text-slate-400 tracking-widest">
+                 <div className="space-y-2">
+                  <Label className="text-[10px] font-black uppercase text-muted-foreground tracking-widest">
                     Unit Price ($)
                   </Label>
                   <div className="relative">
-                    <DollarSign className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-rose-600" />
+                    <DollarSign className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-primary" />
                     <Input
                       type="number"
                       value={formData.price}
                       onChange={(e) =>
                         setFormData({ ...formData, price: e.target.value })
                       }
-                      className="h-14 pl-12 rounded-2xl bg-slate-50 border-none font-black text-lg"
+                      className="h-14 pl-12 rounded-2xl bg-muted border-border font-black text-lg text-foreground"
                     />
                   </div>
                 </div>
               )}
 
-              <Button
+               <Button
                 type="submit"
-                className="w-full h-16 rounded-[1.5rem] bg-rose-600 hover:bg-rose-700 font-black text-lg shadow-2xl shadow-rose-200 mt-6"
+                className="w-full h-16 rounded-[1.5rem] bg-primary hover:bg-primary/90 text-white font-black text-lg shadow-2xl shadow-primary/20 mt-6 active:scale-[0.98] transition-all"
               >
                 Authorize & Save
               </Button>
