@@ -6,27 +6,27 @@ import { Film, Ticket } from "lucide-react";
 
 export default function Home() {
   return (
-    <main className="min-h-screen hero-glow flex items-center justify-center px-6">
+    <main className="min-h-screen hero-glow flex items-center justify-center px-6 transition-colors duration-500">
       <div className="text-center max-w-5xl">
         {/* ICON */}
         <div className="mb-6 flex justify-center">
-          <div className="p-6 rounded-full bg-white soft-shadow">
-            <Film className="w-16 h-16 text-rose-600" />
+          <div className="p-6 rounded-full bg-card soft-shadow border border-border/50">
+            <Film className="w-16 h-16 text-primary" />
           </div>
         </div>
 
         <h1
           className="text-6xl md:text-7xl font-extrabold mb-6 tracking-tight
-            bg-gradient-to-r from-rose-600 via-pink-500 to-red-500
+            bg-gradient-to-r from-[var(--primary)] via-[var(--accent)] to-[var(--primary)]
             bg-clip-text text-transparent
-            drop-shadow-[0_5px_15px_rgba(244,63,94,0.35)]
+            drop-shadow-[0_5px_15px_rgba(0,0,0,0.1)]
             transition-all duration-500
             hover:scale-105"
         >
           LDHK Cinema
         </h1>
 
-        <p className="text-xl text-gray-500 mb-12">
+        <p className="text-xl text-muted-foreground mb-12">
           Experience cinema like never before. Book tickets instantly. Choose
           seats beautifully.
         </p>
@@ -42,7 +42,7 @@ export default function Home() {
           <Link href="/auth/login">
             <Button
               variant="outline"
-              className="rounded-full px-12 py-7 text-lg border-rose-500 text-rose-600 hover:bg-rose-600 hover:text-white"
+              className="rounded-full px-12 py-7 text-lg border-primary text-primary hover:bg-primary/10 transition-all"
             >
               Login
             </Button>
@@ -57,10 +57,10 @@ export default function Home() {
           ].map(([t, d], i) => (
             <div
               key={i}
-              className="glow-card bg-white border border-gray-200 rounded-2xl p-8 text-left soft-shadow"
+              className="glow-card group bg-card border border-border rounded-2xl p-8 text-left soft-shadow hover:scale-105 transition-all duration-300 cursor-default"
             >
-              <h3 className="font-bold text-lg mb-2 text-rose-600">{t}</h3>
-              <p className="text-gray-500">{d}</p>
+              <h3 className="font-bold text-lg mb-2 text-primary group-hover:text-white transition-colors duration-300">{t}</h3>
+              <p className="text-muted-foreground group-hover:text-white/90 transition-colors duration-300">{d}</p>
             </div>
           ))}
         </div>

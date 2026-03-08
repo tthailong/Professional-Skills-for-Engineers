@@ -132,11 +132,11 @@ export default function EventsManagementPage() {
     toast.success("Timeline Updated");
   };
 
-  const statusStyles = {
-    Upcoming: "bg-blue-50 text-blue-600 border-blue-100",
+   const statusStyles = {
+    Upcoming: "bg-primary/10 text-primary border-primary/20",
     Ongoing:
-      "bg-emerald-50 text-emerald-600 border-emerald-100 shadow-[0_0_15px_rgba(16,185,129,0.1)]",
-    Ended: "bg-slate-50 text-slate-400 border-slate-100",
+      "bg-emerald-500/10 text-emerald-500 border-emerald-500/20 shadow-[0_0_15px_rgba(16,185,129,0.1)]",
+    Ended: "bg-muted text-muted-foreground border-border",
   };
   // --- PAGINATION HANDLERS ---
   const handlePrevious = () => {
@@ -200,10 +200,10 @@ export default function EventsManagementPage() {
     }
   };
   return (
-    <div className="min-h-screen bg-white relative overflow-hidden text-slate-900 selection:bg-rose-100">
-      {/* Rose Aurora mesh background */}
-      <div className="absolute top-[-10%] right-[-5%] w-[45%] h-[40%] rounded-full bg-rose-50/50 blur-[130px] -z-10" />
-      <div className="absolute bottom-[-10%] left-[-5%] w-[40%] h-[45%] rounded-full bg-indigo-50/40 blur-[130px] -z-10" />
+     <div className="min-h-screen bg-background relative overflow-hidden text-foreground selection:bg-primary/20 transition-colors duration-500">
+      {/* Aurora mesh background */}
+      <div className="absolute top-[-10%] right-[-5%] w-[45%] h-[40%] rounded-full bg-primary/10 blur-[130px] -z-10" />
+      <div className="absolute bottom-[-10%] left-[-5%] w-[40%] h-[45%] rounded-full bg-accent/5 blur-[130px] -z-10" />
 
       <Navbar />
 
@@ -215,62 +215,62 @@ export default function EventsManagementPage() {
             animate={{ opacity: 1, x: 0 }}
           >
             <div className="flex items-center gap-2 mb-2">
-              <div className="p-2 bg-slate-900 rounded-xl shadow-lg">
+              <div className="p-2 bg-primary rounded-xl shadow-lg shadow-primary/20">
                 <Sparkles className="w-5 h-5 text-white" />
               </div>
-              <span className="text-[10px] font-black uppercase tracking-[0.2em] text-rose-600 font-mono">
+              <span className="text-[10px] font-black uppercase tracking-[0.2em] text-primary font-mono">
                 Campaign Terminal
               </span>
             </div>
-            <h1 className="text-5xl md:text-6xl font-black tracking-tighter bg-gradient-to-r from-slate-900 via-slate-800 to-rose-900 bg-clip-text text-transparent">
+            <h1 className="text-5xl md:text-6xl font-black tracking-tighter bg-gradient-to-r from-[var(--foreground)] to-[var(--primary)] bg-clip-text text-transparent">
               Event Timeline
             </h1>
           </motion.div>
 
           <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
             <DialogTrigger asChild>
-              <Button
+               <Button
                 onClick={() => {
                   resetForm();
                   setIsModalOpen(true);
                 }}
-                className="rounded-2xl bg-rose-600 hover:bg-rose-700 text-white h-14 px-8 font-black shadow-xl shadow-rose-200 transition-all active:scale-95"
+                className="rounded-2xl bg-primary hover:bg-primary/90 text-white h-14 px-8 font-black shadow-xl shadow-primary/20 transition-all active:scale-95"
               >
                 <Plus className="w-5 h-5 mr-2" /> Launch Event
               </Button>
             </DialogTrigger>
             {/* Modal Redesign */}
-            <DialogContent className="sm:max-w-[500px] rounded-[3rem] p-10 border-none shadow-2xl">
+             <DialogContent className="sm:max-w-[500px] rounded-[3rem] p-10 bg-card border border-border/50 shadow-2xl">
               <DialogHeader>
-                <DialogTitle className="text-3xl font-black">
+                <DialogTitle className="text-3xl font-black text-foreground">
                   Event Config
                 </DialogTitle>
               </DialogHeader>
               <form className="space-y-4 py-4">
-                <div className="space-y-2">
-                  <Label className="text-[10px] font-black uppercase tracking-widest text-slate-400">
+                 <div className="space-y-2">
+                  <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">
                     Campaign Title
                   </Label>
                   <Input
-                    className="h-12 rounded-xl"
+                    className="h-12 rounded-xl bg-muted border-border text-foreground"
                     placeholder="e.g. Summer Film Fest"
                   />
                 </div>
                 <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label className="text-[10px] font-black uppercase tracking-widest text-slate-400">
+                   <div className="space-y-2">
+                    <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">
                       Start
                     </Label>
-                    <Input type="date" className="h-12 rounded-xl" />
+                    <Input type="date" className="h-12 rounded-xl bg-muted border-border text-foreground" />
                   </div>
                   <div className="space-y-2">
-                    <Label className="text-[10px] font-black uppercase tracking-widest text-slate-400">
+                    <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">
                       End
                     </Label>
-                    <Input type="date" className="h-12 rounded-xl" />
+                    <Input type="date" className="h-12 rounded-xl bg-muted border-border text-foreground" />
                   </div>
                 </div>
-                <Button className="w-full h-14 bg-rose-600 rounded-2xl font-black mt-4">
+                 <Button className="w-full h-14 bg-primary hover:bg-primary/90 text-white rounded-2xl font-black mt-4 shadow-lg shadow-primary/20 active:scale-[0.98] transition-all">
                   Deploy Campaign
                 </Button>
               </form>
@@ -279,9 +279,9 @@ export default function EventsManagementPage() {
         </header>
 
         {/* Glass Search Bar */}
-        <div className="max-w-2xl mb-12">
+         <div className="max-w-2xl mb-12">
           <div className="relative group">
-            <Search className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400 group-focus-within:text-rose-600 transition-colors" />
+            <Search className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-primary group-focus-within:scale-110 transition-transform" />
             <Input
               placeholder="Filter timeline by campaign name..."
               value={searchQuery}
@@ -289,7 +289,7 @@ export default function EventsManagementPage() {
                 setSearchQuery(e.target.value);
                 setCurrentPage(1);
               }}
-              className="pl-14 h-16 bg-white/40 backdrop-blur-2xl border-slate-200 rounded-3xl shadow-sm text-lg font-medium transition-all focus:shadow-xl focus:shadow-rose-100/50"
+              className="pl-14 h-16 bg-muted/50 backdrop-blur-2xl border-border/50 rounded-3xl shadow-inner text-lg font-medium text-foreground placeholder:text-muted-foreground transition-all focus:shadow-xl focus:shadow-primary/10"
             />
           </div>
         </div>
@@ -298,13 +298,13 @@ export default function EventsManagementPage() {
         <div className="space-y-6">
           <AnimatePresence mode="popLayout">
             {paginatedEvents.length === 0 ? (
-              <motion.div
+               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                className="text-center py-32 bg-slate-50 rounded-[3rem] border-2 border-dashed border-slate-200"
+                className="text-center py-32 bg-muted/30 rounded-[3rem] border-2 border-dashed border-border/50"
               >
-                <Film className="w-16 h-16 text-slate-200 mx-auto mb-4" />
-                <h3 className="text-xl font-bold text-slate-400">
+                <Film className="w-16 h-16 text-muted-foreground mx-auto mb-4 opacity-20" />
+                <h3 className="text-xl font-bold text-muted-foreground">
                   No active campaigns found
                 </h3>
               </motion.div>
@@ -318,10 +318,10 @@ export default function EventsManagementPage() {
                   exit={{ opacity: 0, scale: 0.95 }}
                   transition={{ delay: index * 0.05 }}
                 >
-                  <Card className="border-none bg-white/70 backdrop-blur-md rounded-[2.5rem] shadow-[0_8px_30px_rgb(0,0,0,0.03)] hover:shadow-2xl hover:shadow-rose-100 transition-all duration-500 overflow-hidden group">
-                    <CardContent className="p-0 flex flex-col md:flex-row items-center">
+                   <Card className="border-none bg-card/80 backdrop-blur-md rounded-[2.5rem] shadow-xl hover:shadow-2xl hover:shadow-primary/10 transition-all duration-500 overflow-hidden group">
+                     <CardContent className="p-0 flex flex-col md:flex-row items-center">
                       {/* Image Hub */}
-                      <div className="w-full md:w-64 h-48 bg-slate-100 relative overflow-hidden flex-shrink-0">
+                      <div className="w-full md:w-64 h-48 bg-muted relative overflow-hidden flex-shrink-0">
                         <img
                           src={event.poster}
                           className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110"
@@ -330,7 +330,7 @@ export default function EventsManagementPage() {
                               "https://placehold.co/400x300?text=No+Poster")
                           }
                         />
-                        <div className="absolute inset-0 bg-gradient-to-r from-slate-900/40 to-transparent" />
+                        <div className="absolute inset-0 bg-gradient-to-r from-background/40 to-transparent" />
                         <div className="absolute bottom-4 left-4">
                           <span className="px-3 py-1 bg-white/20 backdrop-blur-md rounded-lg text-[10px] font-black text-white uppercase tracking-widest border border-white/20">
                             ID: {event.id}
@@ -340,27 +340,27 @@ export default function EventsManagementPage() {
 
                       {/* Content Hub */}
                       <div className="flex-1 p-8 md:p-10">
-                        <div className="flex flex-wrap items-center gap-3 mb-4">
+                         <div className="flex flex-wrap items-center gap-3 mb-4">
                           <span
-                            className={`px-4 py-1 rounded-full text-[10px] font-black uppercase tracking-[0.2em] border ${statusStyles[event.status]}`}
+                            className={`px-4 py-1 rounded-full text-[10px] font-black uppercase tracking-[0.2em] border ${statusStyles[event.status as keyof typeof statusStyles]}`}
                           >
                             {event.status}
                           </span>
-                          <span className="px-4 py-1 bg-slate-900 text-white rounded-full text-[10px] font-black uppercase tracking-[0.2em]">
+                          <span className="px-4 py-1 bg-primary text-white rounded-full text-[10px] font-black uppercase tracking-[0.2em]">
                             {event.type}
                           </span>
                         </div>
 
-                        <h3 className="text-3xl font-black text-slate-900 group-hover:text-rose-600 transition-colors leading-tight mb-2">
+                         <h3 className="text-3xl font-black text-foreground group-hover:text-primary transition-colors leading-tight mb-2">
                           {event.title}
                         </h3>
-                        <p className="text-slate-500 font-medium line-clamp-1 italic text-sm mb-6">
+                        <p className="text-muted-foreground font-medium line-clamp-1 italic text-sm mb-6">
                           "{event.description}"
                         </p>
 
-                        <div className="flex items-center gap-6 text-slate-400">
+                         <div className="flex items-center gap-6 text-muted-foreground">
                           <div className="flex items-center gap-2">
-                            <div className="p-1.5 bg-rose-50 rounded-lg text-rose-500">
+                            <div className="p-1.5 bg-primary/10 rounded-lg text-primary">
                               <Calendar className="w-4 h-4" />
                             </div>
                             <span className="text-xs font-bold uppercase tracking-tighter">
@@ -369,7 +369,7 @@ export default function EventsManagementPage() {
                           </div>
                           <ChevronRight className="w-3 h-3 opacity-20" />
                           <div className="flex items-center gap-2">
-                            <div className="p-1.5 bg-slate-50 rounded-lg text-slate-400">
+                            <div className="p-1.5 bg-muted rounded-lg text-muted-foreground">
                               <Clock className="w-4 h-4" />
                             </div>
                             <span className="text-xs font-bold uppercase tracking-tighter">
@@ -379,13 +379,13 @@ export default function EventsManagementPage() {
                         </div>
                       </div>
 
-                      {/* Action Hub */}
+                       {/* Action Hub */}
                       <div className="p-8 md:pr-10 flex md:flex-col gap-3">
                         <Link href={`/admin/primary/events/${event.id}`}>
                           <Button
                             variant="ghost"
                             size="icon"
-                            className="h-12 w-12 rounded-2xl hover:bg-slate-900 hover:text-white transition-all shadow-sm"
+                            className="h-12 w-12 rounded-2xl hover:bg-primary hover:text-white transition-all shadow-sm"
                           >
                             <Eye className="w-5 h-5" />
                           </Button>
@@ -394,7 +394,7 @@ export default function EventsManagementPage() {
                           onClick={() => openEditModal(event)}
                           variant="ghost"
                           size="icon"
-                          className="h-12 w-12 rounded-2xl hover:bg-rose-600 hover:text-white transition-all shadow-sm"
+                          className="h-12 w-12 rounded-2xl hover:bg-primary hover:text-white transition-all shadow-sm"
                         >
                           <Edit className="w-5 h-5" />
                         </Button>
@@ -402,7 +402,7 @@ export default function EventsManagementPage() {
                           onClick={() => handleDelete(event.id)}
                           variant="ghost"
                           size="icon"
-                          className="h-12 w-12 rounded-2xl hover:bg-rose-100 text-rose-300 hover:text-rose-600 transition-all shadow-sm"
+                          className="h-12 w-12 rounded-2xl hover:bg-destructive/10 text-destructive/50 hover:text-destructive transition-all shadow-sm"
                         >
                           <Trash2 className="w-5 h-5" />
                         </Button>
@@ -416,24 +416,24 @@ export default function EventsManagementPage() {
         </div>
 
         {/* Pagination Controls */}
-        {totalPages > 1 && (
-          <div className="flex justify-center items-center gap-4 mt-16 pt-8 border-t border-slate-100">
+         {totalPages > 1 && (
+          <div className="flex justify-center items-center gap-4 mt-16 pt-8 border-t border-border/50">
             <Button
               variant="ghost"
               onClick={handlePrevious}
               disabled={currentPage === 1}
-              className="rounded-xl h-12 px-6 font-bold hover:bg-rose-50 text-rose-600"
+              className="rounded-xl h-12 px-6 font-bold hover:bg-primary/10 text-primary"
             >
               <ChevronLeft className="w-4 h-4 mr-2" /> Previous
             </Button>
-            <div className="h-10 px-6 rounded-full bg-slate-50 flex items-center text-xs font-black text-slate-400 tracking-widest uppercase">
+            <div className="h-10 px-6 rounded-full bg-muted flex items-center text-xs font-black text-muted-foreground tracking-widest uppercase border border-border/50">
               Phase {currentPage} / {totalPages}
             </div>
             <Button
               variant="ghost"
               onClick={handleNext}
               disabled={currentPage === totalPages}
-              className="rounded-xl h-12 px-6 font-bold hover:bg-rose-50 text-rose-600"
+              className="rounded-xl h-12 px-6 font-bold hover:bg-primary/10 text-primary"
             >
               Next <ChevronRight className="w-4 h-4 ml-2" />
             </Button>

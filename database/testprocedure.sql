@@ -5,7 +5,7 @@ DELIMITER $$
 -- THIS IS TEST CASE PLACE FOR TESTING SOME AMAZING THING --
 
 
-SET SQL_SAFE_UPDATES = 0;
+SET SQL_SAFE_UPDATES = 0 
 -- Suppose we already have a customer with Customer_id = 1
 -- We want to update only the Last Name to "Nguyen"
 

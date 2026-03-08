@@ -143,16 +143,16 @@ export default function PrimaryDashboard() {
 
   if (loading && !data)
     return (
-      <div className="min-h-screen bg-white flex items-center justify-center">
-        <div className="w-12 h-12 border-4 border-rose-100 border-t-rose-600 rounded-full animate-spin" />
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="w-12 h-12 border-4 border-primary/10 border-t-primary rounded-full animate-spin" />
       </div>
     );
 
   return (
-    <div className="min-h-screen bg-white relative overflow-hidden text-slate-900">
-      {/* Rose Aurora Blurs */}
-      <div className="absolute top-[-10%] left-[-5%] w-[40%] h-[40%] rounded-full bg-rose-50/60 blur-[120px] -z-10" />
-      <div className="absolute bottom-[-10%] right-[-5%] w-[30%] h-[40%] rounded-full bg-rose-100/40 blur-[120px] -z-10" />
+    <div className="min-h-screen bg-background relative overflow-hidden text-foreground">
+      {/* Aurora Blurs */}
+      <div className="absolute top-[-10%] left-[-5%] w-[40%] h-[40%] rounded-full bg-primary/10 blur-[120px] -z-10" />
+      <div className="absolute bottom-[-10%] right-[-5%] w-[30%] h-[40%] rounded-full bg-accent/5 blur-[120px] -z-10" />
 
       <Navbar />
 
@@ -164,40 +164,40 @@ export default function PrimaryDashboard() {
         >
           <div>
             <div className="flex items-center gap-2 mb-2">
-              <div className="p-2 bg-rose-600 rounded-xl shadow-lg shadow-rose-200">
+              <div className="p-2 bg-primary rounded-xl shadow-lg shadow-primary/20">
                 <LayoutDashboard className="w-5 h-5 text-white" />
               </div>
-              <span className="text-xs font-black uppercase tracking-widest text-rose-600">
+              <span className="text-xs font-black uppercase tracking-widest text-primary">
                 Admin Control
               </span>
             </div>
-            <h1 className="text-5xl font-black tracking-tighter bg-gradient-to-r from-slate-900 to-rose-900 bg-clip-text text-transparent">
+            <h1 className="text-5xl font-black tracking-tighter bg-gradient-to-r from-[var(--foreground)] to-[var(--primary)] bg-clip-text text-transparent">
               {isBranch ? "Branch Metrics" : "System Core"}
             </h1>
           </div>
 
-          {/* Rose Filter Bar */}
-          <div className="p-2 bg-white/60 backdrop-blur-xl border border-rose-100 rounded-3xl shadow-xl flex flex-wrap gap-4 items-center">
+          {/* Filter Bar */}
+          <div className="p-2 bg-card/60 backdrop-blur-xl border border-border/50 rounded-3xl shadow-xl flex flex-wrap gap-4 items-center">
             <div className="flex items-center gap-2 px-4">
-              <Calendar className="w-4 h-4 text-rose-500" />
+              <Calendar className="w-4 h-4 text-primary" />
               <Input
                 type="date"
                 value={startDate}
                 onChange={(e) => setStartDate(e.target.value)}
-                className="border-none bg-transparent h-8 w-32 focus-visible:ring-0 font-bold p-0"
+                className="border-none bg-transparent h-8 w-32 focus-visible:ring-0 font-bold p-0 text-foreground"
               />
-              <span className="text-slate-300 mx-1">—</span>
+              <span className="text-muted-foreground mx-1">—</span>
               <Input
                 type="date"
                 value={endDate}
                 onChange={(e) => setEndDate(e.target.value)}
-                className="border-none bg-transparent h-8 w-32 focus-visible:ring-0 font-bold p-0"
+                className="border-none bg-transparent h-8 w-32 focus-visible:ring-0 font-bold p-0 text-foreground"
               />
             </div>
             <Button
               size="icon"
               variant="ghost"
-              className="rounded-2xl hover:bg-rose-50 text-rose-600"
+              className="rounded-2xl hover:bg-primary/10 text-primary"
               onClick={() => window.location.reload()}
             >
               <RefreshCw className="w-4 h-4" />
@@ -216,14 +216,14 @@ export default function PrimaryDashboard() {
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: i * 0.1 }}
             >
-              <Card className="border-none bg-white/80 backdrop-blur-md shadow-[0_8px_30px_rgb(0,0,0,0.04)] rounded-[2.5rem] overflow-hidden group hover:shadow-2xl hover:shadow-rose-100 transition-all duration-500">
+              <Card className="border border-border/50 bg-card/80 backdrop-blur-md shadow-[0_8px_30px_rgb(0,0,0,0.04)] rounded-[2.5rem] overflow-hidden group hover:shadow-2xl hover:shadow-primary/10 transition-all duration-500">
                 <CardContent className="p-8">
                   <div className="flex items-start justify-between">
                     <div>
-                      <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">
+                      <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest mb-2">
                         {item.label}
                       </p>
-                      <div className="text-3xl font-black text-slate-900 leading-none">
+                      <div className="text-3xl font-black text-foreground leading-none">
                         {typeof item.value === "number" &&
                         item.label.includes("Revenue")
                           ? formatCurrency(item.value)
@@ -231,9 +231,9 @@ export default function PrimaryDashboard() {
                       </div>
                     </div>
                     <div
-                      className={`p-4 ${item.bg} rounded-[1.5rem] group-hover:scale-110 transition-transform duration-500`}
+                      className={`p-4 bg-primary/10 rounded-[1.5rem] group-hover:scale-110 transition-transform duration-500`}
                     >
-                      <item.icon className={`w-6 h-6 ${item.color}`} />
+                      <item.icon className="w-6 h-6 text-primary" />
                     </div>
                   </div>
                 </CardContent>
@@ -243,16 +243,16 @@ export default function PrimaryDashboard() {
         </div>
 
         <Tabs defaultValue="movies" className="space-y-8">
-          <TabsList className="bg-rose-50/50 backdrop-blur-md p-1 rounded-2xl border border-rose-100 w-fit">
+          <TabsList className="bg-muted p-1 rounded-2xl border border-border/50 w-fit">
             <TabsTrigger
               value="movies"
-              className="rounded-xl px-8 py-3 data-[state=active]:bg-white data-[state=active]:text-rose-600 font-bold transition-all"
+              className="rounded-xl px-8 py-3 data-[state=active]:bg-card data-[state=active]:text-primary font-bold transition-all"
             >
               Movie Performance
             </TabsTrigger>
             <TabsTrigger
               value="alerts"
-              className="rounded-xl px-8 py-3 data-[state=active]:bg-white data-[state=active]:text-rose-600 font-bold transition-all gap-2"
+              className="rounded-xl px-8 py-3 data-[state=active]:bg-card data-[state=active]:text-primary font-bold transition-all gap-2"
             >
               <AlertTriangle className="w-4 h-4" /> System Alerts
             </TabsTrigger>
@@ -260,9 +260,9 @@ export default function PrimaryDashboard() {
 
           <TabsContent value="movies">
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-              <Card className="lg:col-span-5 border-none bg-white shadow-xl shadow-slate-100 rounded-[2.5rem] p-6">
+              <Card className="lg:col-span-5 border border-border/50 bg-card rounded-[2.5rem] p-6 shadow-xl shadow-primary/5">
                 <CardHeader>
-                  <CardTitle className="font-black text-xl">
+                  <CardTitle className="font-black text-xl text-foreground">
                     Revenue Share
                   </CardTitle>
                 </CardHeader>
@@ -294,34 +294,34 @@ export default function PrimaryDashboard() {
                 </CardContent>
               </Card>
 
-              <Card className="lg:col-span-7 border-none bg-white shadow-xl shadow-slate-100 rounded-[2.5rem] p-8">
+              <Card className="lg:col-span-7 border border-border/50 bg-card rounded-[2.5rem] p-8 shadow-xl shadow-primary/5">
                 <CardHeader>
-                  <CardTitle className="font-black text-xl">
+                  <CardTitle className="font-black text-xl text-foreground">
                     Top Ranking Movies
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-6">
                   {data?.charts.top_movies.map((movie: any, i: number) => (
                     <div key={i} className="flex items-center gap-4 group">
-                      <span className="text-lg font-black text-rose-200">
+                      <span className="text-lg font-black text-primary/30">
                         0{i + 1}
                       </span>
                       <div className="flex-1">
                         <div className="flex justify-between mb-2">
-                          <span className="font-bold text-slate-900 truncate">
+                          <span className="font-bold text-muted-foreground truncate">
                             {movie.name}
                           </span>
-                          <span className="font-black text-rose-600">
+                          <span className="font-black text-primary">
                             {formatCurrency(movie.value)}
                           </span>
                         </div>
-                        <div className="w-full bg-slate-50 rounded-full h-3 overflow-hidden">
+                        <div className="w-full bg-muted rounded-full h-3 overflow-hidden">
                           <motion.div
                             initial={{ width: 0 }}
                             animate={{
                               width: `${(movie.value / data.charts.top_movies[0].value) * 100}%`,
                             }}
-                            className="bg-gradient-to-r from-rose-400 to-rose-600 h-full rounded-full"
+                            className="bg-gradient-to-r from-primary/60 to-primary h-full rounded-full"
                           />
                         </div>
                       </div>
@@ -333,17 +333,17 @@ export default function PrimaryDashboard() {
           </TabsContent>
 
           <TabsContent value="alerts">
-            <Card className="border-none bg-white shadow-2xl shadow-rose-100/50 rounded-[2.5rem] overflow-hidden">
-              <CardHeader className="p-10 pb-4 border-b border-slate-50">
+            <Card className="border border-border/50 bg-card shadow-2xl shadow-primary/5 rounded-[2.5rem] overflow-hidden">
+              <CardHeader className="p-10 pb-4 border-b border-border/50">
                 <div className="flex items-center gap-3">
-                  <div className="p-3 bg-rose-50 rounded-2xl">
-                    <AlertTriangle className="w-6 h-6 text-rose-600" />
+                  <div className="p-3 bg-muted rounded-2xl">
+                    <AlertTriangle className="w-6 h-6 text-primary" />
                   </div>
                   <div>
-                    <CardTitle className="font-black text-2xl">
+                    <CardTitle className="font-black text-2xl text-foreground">
                       Low Occupancy Watch
                     </CardTitle>
-                    <CardDescription className="font-medium">
+                    <CardDescription className="font-medium text-muted-foreground">
                       Showtimes below 20% capacity.
                     </CardDescription>
                   </div>
@@ -351,13 +351,13 @@ export default function PrimaryDashboard() {
               </CardHeader>
               <CardContent className="p-0">
                 {alerts.length === 0 ? (
-                  <div className="py-20 text-center text-slate-400 font-bold">
+                  <div className="py-20 text-center text-muted-foreground font-bold">
                     Safe! No low occupancy alerts found.
                   </div>
                 ) : (
                   <div className="overflow-x-auto">
                     <table className="w-full text-left">
-                      <thead className="bg-slate-50/50 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">
+                      <thead className="bg-muted text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground">
                         <tr>
                           <th className="px-10 py-5">Movie Detail</th>
                           <th className="px-6 py-5">Branch</th>
@@ -365,25 +365,25 @@ export default function PrimaryDashboard() {
                           <th className="px-10 py-5 text-right">Action</th>
                         </tr>
                       </thead>
-                      <tbody className="divide-y divide-slate-50">
+                      <tbody className="divide-y divide-border/50">
                         {alerts.map((alert, idx) => (
                           <tr
                             key={idx}
-                            className="group hover:bg-rose-50/30 transition-colors"
+                            className="group hover:bg-muted transition-colors"
                           >
                             <td className="px-10 py-6">
-                              <p className="font-black text-slate-900">
+                              <p className="font-black text-foreground">
                                 {alert.Movie_Name}
                               </p>
-                              <p className="text-xs text-slate-400 font-bold mt-1">
+                              <p className="text-xs text-muted-foreground font-bold mt-1">
                                 {alert.Date} @ {alert.Start_time}
                               </p>
                             </td>
-                            <td className="px-6 py-6 font-bold text-slate-600 text-sm">
+                            <td className="px-6 py-6 font-bold text-muted-foreground text-sm">
                               {alert.Branch_Name}
                             </td>
                             <td className="px-6 py-6 text-right">
-                              <span className="px-3 py-1 bg-rose-100 text-rose-600 rounded-full text-xs font-black">
+                              <span className="px-3 py-1 bg-primary/10 text-primary rounded-full text-xs font-black">
                                 {alert.Occupancy_Rate}%
                               </span>
                             </td>
@@ -391,7 +391,7 @@ export default function PrimaryDashboard() {
                               <Button
                                 size="sm"
                                 variant="ghost"
-                                className="rounded-xl text-xs font-bold hover:bg-rose-600 hover:text-white"
+                                className="rounded-xl text-xs font-bold hover:bg-primary hover:text-white"
                               >
                                 Notify Branch
                               </Button>

@@ -161,10 +161,10 @@ export const MovieScheduleTab: React.FC<MovieScheduleProps> = ({
     <div className="space-y-8">
       {/* SEARCH */}
       <div className="relative max-w-md">
-        <Search className="absolute left-3 top-3 w-4 h-4 text-rose-400" />
+        <Search className="absolute left-3 top-3 w-4 h-4 text-primary" />
         <Input
           placeholder="Search movies..."
-          className="pl-10 bg-white border-rose-200 focus-visible:ring-rose-400 shadow-sm"
+          className="pl-10 bg-muted border-border focus-visible:ring-primary shadow-sm text-foreground placeholder-muted-foreground"
           value={searchQueries.movies}
           onChange={(e) =>
             setSearchQueries((prev) => ({
@@ -183,9 +183,9 @@ export const MovieScheduleTab: React.FC<MovieScheduleProps> = ({
         return (
           <Card
             key={movie.movie_id}
-            className={`rounded-2xl border border-rose-100 bg-white/80 backdrop-blur-xl shadow-md hover:shadow-xl transition-all duration-300 hover:-translate-y-1 ${
+            className={`rounded-2xl border border-border/50 bg-card/80 backdrop-blur-xl shadow-md hover:shadow-xl transition-all duration-300 hover:-translate-y-1 ${
               current.isActive
-                ? "ring-2 ring-green-400/40"
+                ? "ring-2 ring-emerald-500/40"
                 : "opacity-90 hover:opacity-100"
             }`}
           >
@@ -198,24 +198,24 @@ export const MovieScheduleTab: React.FC<MovieScheduleProps> = ({
                       <div
                         className={`p-2 rounded-full ${
                           current.isActive
-                            ? "bg-green-100 text-green-600"
-                            : "bg-rose-50 text-rose-400"
+                            ? "bg-emerald-500/10 text-emerald-500"
+                            : "bg-primary/10 text-primary"
                         }`}
                       >
                         <Film className="w-5 h-5" />
                       </div>
 
                       <div>
-                        <h3 className="text-xl font-bold flex items-center gap-2">
+                        <h3 className="text-xl font-bold flex items-center gap-2 text-foreground">
                           {movie.title}
                           {current.isActive && (
-                            <span className="text-xs bg-gradient-to-r from-green-500 to-emerald-500 text-white px-2 py-0.5 rounded-full">
+                            <span className="text-xs bg-emerald-500 text-white px-2 py-0.5 rounded-full">
                               Active
                             </span>
                           )}
                         </h3>
 
-                        <p className="text-sm text-gray-400">
+                        <p className="text-sm text-muted-foreground">
                           {movie.duration} mins • {movie.age_rating}
                         </p>
                       </div>
@@ -228,8 +228,8 @@ export const MovieScheduleTab: React.FC<MovieScheduleProps> = ({
                       }
                       className={
                         current.isActive
-                          ? "bg-white border border-red-400 text-red-500 hover:bg-red-50"
-                          : "bg-gradient-to-r from-rose-500 to-pink-500 text-white"
+                          ? "bg-transparent border border-destructive/50 text-destructive hover:bg-destructive/10"
+                          : "bg-primary hover:bg-primary/90 text-white"
                       }
                     >
                       {current.isActive ? "Deactivate" : "Activate"}
@@ -237,7 +237,7 @@ export const MovieScheduleTab: React.FC<MovieScheduleProps> = ({
                   </div>
 
                   {!current.isActive && (
-                    <p className="text-sm italic text-gray-400 mt-2">
+                    <p className="text-sm italic text-muted-foreground mt-2">
                       Activate this movie to manage showtimes.
                     </p>
                   )}
@@ -247,15 +247,15 @@ export const MovieScheduleTab: React.FC<MovieScheduleProps> = ({
                 {current.isActive && (
                   <div className="flex-1 md:border-l md:pl-6">
                     <div className="flex items-center justify-between mb-3">
-                      <Label className="font-semibold flex items-center gap-2">
-                        <Clock className="w-4 h-4 text-rose-500" />
+                      <Label className="font-semibold flex items-center gap-2 text-foreground">
+                        <Clock className="w-4 h-4 text-primary" />
                         Showtimes
                       </Label>
 
                       <Button
                         size="sm"
                         onClick={() => handleOpenAddModal(movie.movie_id)}
-                        className="bg-gradient-to-r from-rose-500 to-pink-500 text-white shadow"
+                        className="bg-primary hover:bg-primary/90 text-white shadow"
                       >
                         <Plus className="w-4 h-4 mr-2" />
                         Add
@@ -264,7 +264,7 @@ export const MovieScheduleTab: React.FC<MovieScheduleProps> = ({
 
                     <div className="flex flex-wrap gap-3">
                       {current.showtimes.length === 0 ? (
-                        <span className="text-xs text-red-500 bg-red-50 px-3 py-1 rounded-full flex items-center gap-1">
+                        <span className="text-xs text-destructive border border-destructive/20 bg-destructive/10 px-3 py-1 rounded-full flex items-center gap-1">
                           <AlertCircle className="w-3 h-3" />
                           No showtimes set
                         </span>
@@ -272,18 +272,18 @@ export const MovieScheduleTab: React.FC<MovieScheduleProps> = ({
                         current.showtimes.map((s) => (
                           <div
                             key={s.showtime_id}
-                            className="relative group bg-white border border-rose-100 rounded-xl px-4 py-3 text-sm shadow hover:shadow-md transition"
+                            className="relative group bg-muted border border-border/50 rounded-xl px-4 py-3 text-sm shadow hover:shadow-md transition"
                           >
-                            <div className="text-xs text-gray-400 flex items-center gap-1">
+                            <div className="text-xs text-muted-foreground flex items-center gap-1">
                               <Calendar className="w-3 h-3" />
                               {s.date}
                             </div>
 
-                            <div className="font-bold text-lg text-rose-500">
+                            <div className="font-bold text-lg text-primary">
                               {s.start_time.slice(0, 5)}
                             </div>
 
-                            <div className="text-xs text-gray-400">
+                            <div className="text-xs text-muted-foreground">
                               Hall {s.hall_number} • {s.format} • {s.subtitle}
                             </div>
 
@@ -291,7 +291,7 @@ export const MovieScheduleTab: React.FC<MovieScheduleProps> = ({
                               onClick={() =>
                                 removeShowtime(movie.movie_id, s.showtime_id)
                               }
-                              className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 text-gray-400 hover:text-red-500 transition"
+                              className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 text-muted-foreground hover:text-destructive transition"
                             >
                               <X className="w-4 h-4" />
                             </button>
@@ -316,9 +316,9 @@ export const MovieScheduleTab: React.FC<MovieScheduleProps> = ({
 
       {/* MODAL */}
       <Dialog open={isAddModalOpen} onOpenChange={setIsAddModalOpen}>
-        <DialogContent className="sm:max-w-[425px] rounded-2xl bg-white border border-rose-100 shadow-xl">
+        <DialogContent className="sm:max-w-[425px] rounded-2xl bg-card border border-border/50 shadow-xl">
           <DialogHeader>
-            <DialogTitle className="text-xl font-bold text-rose-500">
+            <DialogTitle className="text-xl font-bold text-primary">
               Add New Showtime
             </DialogTitle>
           </DialogHeader>
@@ -327,6 +327,7 @@ export const MovieScheduleTab: React.FC<MovieScheduleProps> = ({
             <Input
               type="date"
               value={newShowtime.date}
+              className="bg-muted border-border text-foreground"
               onChange={(e) =>
                 setNewShowtime({ ...newShowtime, date: e.target.value })
               }
@@ -335,6 +336,7 @@ export const MovieScheduleTab: React.FC<MovieScheduleProps> = ({
             <Input
               type="time"
               value={newShowtime.time}
+              className="bg-muted border-border text-foreground"
               onChange={(e) =>
                 setNewShowtime({ ...newShowtime, time: e.target.value })
               }
@@ -346,7 +348,7 @@ export const MovieScheduleTab: React.FC<MovieScheduleProps> = ({
                 setNewShowtime({ ...newShowtime, format: v })
               }
             >
-              <SelectTrigger>
+              <SelectTrigger className="bg-muted border-border text-foreground">
                 <SelectValue placeholder="Format" />
               </SelectTrigger>
               <SelectContent>
@@ -367,7 +369,7 @@ export const MovieScheduleTab: React.FC<MovieScheduleProps> = ({
                 setNewShowtime({ ...newShowtime, hall_number: v })
               }
             >
-              <SelectTrigger>
+              <SelectTrigger className="bg-muted border-border text-foreground">
                 <SelectValue placeholder="Hall" />
               </SelectTrigger>
               <SelectContent>
@@ -388,7 +390,7 @@ export const MovieScheduleTab: React.FC<MovieScheduleProps> = ({
                 setNewShowtime({ ...newShowtime, subtitle: v })
               }
             >
-              <SelectTrigger>
+              <SelectTrigger className="bg-muted border-border text-foreground">
                 <SelectValue placeholder="Subtitle" />
               </SelectTrigger>
               <SelectContent>
@@ -405,12 +407,12 @@ export const MovieScheduleTab: React.FC<MovieScheduleProps> = ({
           </div>
 
           <DialogFooter>
-            <Button variant="outline" onClick={() => setIsAddModalOpen(false)}>
+            <Button variant="outline" onClick={() => setIsAddModalOpen(false)} className="border-border text-foreground hover:bg-muted">
               Cancel
             </Button>
             <Button
               onClick={handleAddShowtimeSubmit}
-              className="bg-gradient-to-r from-rose-500 to-pink-500 text-white"
+              className="bg-primary hover:bg-primary/90 text-white"
             >
               Add Showtime
             </Button>

@@ -10,8 +10,10 @@ import {
   Film,
   Calendar,
 } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Navbar } from "@/app/navbar";
+import { Label } from "@/components/ui/label";
 import { API_BASE_URL } from "@/store/useUserStore";
 import { toast } from "sonner";
 import { useAdminStore } from "@/store/useAdminStore";
@@ -117,163 +119,183 @@ export default function AdminBookingsPage() {
   const handleNext = () => setCurrentPage((p) => Math.min(p + 1, totalPages));
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-white via-rose-50 to-white">
+     <div className="min-h-screen bg-background relative overflow-hidden text-foreground selection:bg-primary/20 transition-colors duration-500">
+      {/* Aurora Blurs */}
+      <div className="absolute top-[-10%] left-[-5%] w-[40%] h-[40%] rounded-full bg-primary/10 blur-[120px] -z-10" />
+      <div className="absolute bottom-[-10%] right-[-5%] w-[35%] h-[40%] rounded-full bg-accent/5 blur-[120px] -z-10" />
+
       <Navbar />
 
       <main className="container mx-auto px-4 py-10">
         {/* Header */}
-        <div className="mb-10">
-          <h1 className="text-4xl font-bold text-gray-800 tracking-tight">
-            Bookings Dashboard
+         <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+        >
+          <h1 className="text-5xl font-black tracking-tighter bg-gradient-to-r from-[var(--foreground)] to-[var(--primary)] bg-clip-text text-transparent mb-2">
+            Centralized Bookings
           </h1>
-          <p className="text-gray-500 mt-2">
-            Monitor and manage customer bookings across branches
+          <p className="text-muted-foreground font-medium mb-12">
+            Monitor and coordinate global reservation flows across all regional branches.
           </p>
-        </div>
+        </motion.div>
 
         {/* Filters */}
-        <Card className="mb-8 bg-white/70 backdrop-blur-xl border border-rose-100 shadow-xl">
-          <CardContent className="pt-6">
-            <div className="grid md:grid-cols-3 gap-4 items-center">
+         <Card className="mb-10 border-none bg-card/60 backdrop-blur-md rounded-[2.5rem] shadow-xl border border-border/50">
+          <CardContent className="p-8">
+            <div className="grid md:grid-cols-4 gap-6 items-end">
               {/* Search */}
-              <div className="relative md:col-span-1">
-                <Search className="absolute left-3 top-3 w-5 h-5 text-rose-400" />
-                <Input
-                  placeholder="Search booking, customer, movie..."
-                  className="pl-10 bg-white border-rose-200 focus:ring-2 focus:ring-rose-400"
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                />
+              <div className="md:col-span-2 space-y-3">
+                <Label className="text-[10px] font-black uppercase text-muted-foreground tracking-widest ml-1">
+                  Query System
+                </Label>
+                <div className="relative group">
+                  <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-primary group-focus-within:scale-110 transition-transform" />
+                  <Input
+                    placeholder="Search transaction ID, customer, or production..."
+                    className="pl-12 h-14 rounded-2xl bg-muted/50 border-border text-foreground text-md placeholder:text-muted-foreground"
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                  />
+                </div>
               </div>
 
-              {/* Date */}
-              <div className="flex gap-3 md:col-span-2">
-                <Calendar className="text-rose-400 mt-2" />
-                <Input
-                  type="date"
-                  className="bg-white border-rose-200"
-                  value={startDate}
-                  onChange={(e) => setStartDate(e.target.value)}
-                />
-                <Input
-                  type="date"
-                  className="bg-white border-rose-200"
-                  value={endDate}
-                  min={startDate}
-                  onChange={(e) => setEndDate(e.target.value)}
-                />
+               {/* Date */}
+              <div className="md:col-span-2 space-y-3">
+                <div className="flex items-center gap-2 mb-1">
+                  <Calendar className="w-4 h-4 text-primary" />
+                  <Label className="text-[10px] font-black uppercase text-muted-foreground tracking-widest">
+                    Theatrical Window
+                  </Label>
+                </div>
+                <div className="flex gap-3">
+                  <Input
+                    type="date"
+                    className="h-14 rounded-2xl bg-muted/50 border-border text-foreground font-bold"
+                    value={startDate}
+                    onChange={(e) => setStartDate(e.target.value)}
+                  />
+                  <Input
+                    type="date"
+                    className="h-14 rounded-2xl bg-muted/50 border-border text-foreground font-bold"
+                    value={endDate}
+                    min={startDate}
+                    onChange={(e) => setEndDate(e.target.value)}
+                  />
+                </div>
               </div>
             </div>
           </CardContent>
         </Card>
 
         {/* Table */}
-        <Card className="bg-white/70 backdrop-blur-xl border border-rose-100 shadow-xl">
-          <CardContent className="pt-6">
+         <Card className="border-none bg-card/60 backdrop-blur-md rounded-[2.5rem] shadow-2xl border border-border/50 overflow-hidden">
+          <CardContent className="p-0">
             {isLoading ? (
-              <div className="space-y-4">
+              <div className="p-8 space-y-6">
                 {[...Array(5)].map((_, i) => (
                   <div
                     key={i}
-                    className="h-10 rounded-md bg-rose-100 animate-pulse"
+                    className="h-16 rounded-2xl bg-primary/5 animate-pulse"
                   />
                 ))}
               </div>
             ) : filteredBookings.length === 0 ? (
-              <div className="text-center py-14 text-gray-500 animate-fade-in">
-                <Film className="mx-auto w-12 h-12 mb-4 text-rose-400" />
-                No bookings match your filters
+              <div className="text-center py-24 text-muted-foreground animate-fade-in">
+                <Film className="mx-auto w-16 h-16 mb-6 text-primary/30" />
+                <p className="text-xl font-bold">No Records Found</p>
+                <p className="text-sm">Adjust filters to broaden the search.</p>
               </div>
             ) : (
               <>
                 <div className="overflow-x-auto">
-                  <table className="w-full text-sm">
+                  <table className="w-full">
                     <thead>
-                      <tr className="border-b border-rose-100 text-gray-500">
+                      <tr className="border-b border-border/50 text-muted-foreground uppercase tracking-widest text-[10px] font-black">
                         {[
-                          "Booking ID",
-                          "Customer",
-                          "Movie",
-                          "Seats",
-                          "Amount",
-                          "Status",
-                          "Date",
+                          "Hash ID",
+                          "Customer Profile",
+                          "Feature Film",
+                          "Allocated Seats",
+                          "Net Amount",
+                          "State",
+                          "Timestamp",
                         ].map((h) => (
                           <th
                             key={h}
-                            className="py-3 px-4 text-left font-semibold"
+                            className="py-6 px-8 text-left"
                           >
                             {h}
                           </th>
                         ))}
                       </tr>
                     </thead>
-
-                    <tbody>
+ 
+                    <tbody className="divide-y divide-border/30">
                       {currentBookings.map((b) => (
                         <tr
                           key={b.id}
-                          className="border-b border-rose-50 hover:bg-rose-50 transition"
+                          className="group hover:bg-primary/5 transition-colors"
                         >
-                          <td className="px-4 py-3 font-mono text-gray-800">
-                            {b.id}
+                          <td className="px-8 py-6 font-mono text-xs font-bold text-muted-foreground">
+                            #{b.id}
                           </td>
-                          <td className="px-4 py-3 text-gray-700">
+                          <td className="px-8 py-6 font-black text-foreground">
                             {b.customer}
                           </td>
-                          <td className="px-4 py-3 text-gray-700">{b.movie}</td>
-                          <td className="px-4 py-3 text-gray-400 text-xs">
+                          <td className="px-8 py-6 font-bold text-primary/80">{b.movie}</td>
+                          <td className="px-8 py-6 font-mono text-xs text-muted-foreground">
                             {b.seats}
                           </td>
-                          <td className="px-4 py-3 text-rose-500 font-semibold">
+                          <td className="px-8 py-6 text-primary font-black text-lg">
                             {formatMoney(b.amount)}
                           </td>
-                          <td className="px-4 py-3">
-                            <span className="px-3 py-1 rounded-full text-xs bg-rose-100 text-rose-500">
+                          <td className="px-8 py-6">
+                            <span className="px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-primary/10 text-primary border border-primary/20">
                               {b.status}
                             </span>
                           </td>
-                          <td className="px-4 py-3 text-gray-400">{b.date}</td>
+                          <td className="px-8 py-6 text-muted-foreground font-medium">{b.date}</td>
                         </tr>
                       ))}
                     </tbody>
                   </table>
                 </div>
 
-                {/* Pagination */}
-                <div className="flex justify-between items-center pt-6 border-t border-rose-100">
-                  <p className="text-sm text-gray-500">
-                    Showing {startIndex + 1} to{" "}
+                 {/* Pagination */}
+                <div className="p-8 flex justify-between items-center bg-muted/20 border-t border-border/50">
+                  <p className="text-xs font-black uppercase tracking-widest text-muted-foreground">
+                    Items {startIndex + 1} -{" "}
                     {Math.min(
                       startIndex + itemsPerPage,
                       filteredBookings.length,
                     )}{" "}
-                    of {filteredBookings.length}
+                    / {filteredBookings.length}
                   </p>
-
-                  <div className="flex items-center gap-2">
+ 
+                  <div className="flex items-center gap-6">
                     <Button
-                      size="sm"
-                      variant="outline"
+                      size="icon"
+                      variant="ghost"
                       onClick={handlePrevious}
                       disabled={currentPage === 1}
-                      className="border-rose-200 hover:bg-rose-50"
+                      className="h-12 w-12 rounded-2xl hover:bg-primary hover:text-white transition-all shadow-sm"
                     >
-                      <ChevronLeft />
+                      <ChevronLeft className="w-6 h-6" />
                     </Button>
-
-                    <span className="text-gray-700 text-sm">
-                      Page {currentPage} / {totalPages || 1}
+ 
+                    <span className="text-foreground font-black text-sm">
+                      {currentPage} / {totalPages || 1}
                     </span>
-
+ 
                     <Button
-                      size="sm"
-                      variant="outline"
+                      size="icon"
+                      variant="ghost"
                       onClick={handleNext}
                       disabled={currentPage === totalPages || totalPages === 0}
-                      className="border-rose-200 hover:bg-rose-50"
+                      className="h-12 w-12 rounded-2xl hover:bg-primary hover:text-white transition-all shadow-sm"
                     >
-                      <ChevronRight />
+                      <ChevronRight className="w-6 h-6" />
                     </Button>
                   </div>
                 </div>

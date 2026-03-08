@@ -33,7 +33,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Edit, Trash2, Plus, Search, Film, Save, X } from "lucide-react";
+import { Edit, Trash2, Plus, Search, Film, Save, X, Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useAdminStore } from "@/store/useAdminStore";
 import { API_BASE_URL } from "@/store/useUserStore";
@@ -211,13 +211,18 @@ export default function AdminMoviesPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-background to-secondary">
+    <div className="min-h-screen bg-background relative overflow-hidden text-foreground">
+      {/* Aurora Blurs */}
+      <div className="absolute top-[-10%] right-[-5%] w-[40%] h-[40%] rounded-full bg-primary/10 blur-[120px] -z-10" />
+      <div className="absolute bottom-[-10%] left-[-5%] w-[30%] h-[40%] rounded-full bg-accent/5 blur-[120px] -z-10" />
+      
       <Navbar />
 
       <main className="container mx-auto px-4 py-8">
         <div className="flex justify-between items-center mb-8">
           <div>
-            <h1 className="text-4xl font-bold text-foreground mb-2">
+            <h1 className="text-4xl font-black bg-gradient-to-r from-[var(--foreground)] to-[var(--primary)] bg-clip-text text-transparent mb-2 flex items-center gap-3">
+              <Film className="w-9 h-9 text-primary" />
               Manage Movies
             </h1>
             <p className="text-muted-foreground">
@@ -226,7 +231,7 @@ export default function AdminMoviesPage() {
           </div>
           {/* Note: You can keep the Add button as a separate page if you prefer */}
           <Link href="/admin/primary/movies/new">
-            <Button className="bg-primary hover:bg-primary/90 text-primary-foreground flex items-center gap-2">
+            <Button className="bg-primary hover:bg-primary/90 text-white flex items-center gap-2 rounded-xl shadow-lg shadow-primary/20">
               <Plus className="w-4 h-4" />
               Add New Movie
             </Button>
@@ -234,94 +239,90 @@ export default function AdminMoviesPage() {
         </div>
 
         {/* Search */}
-        <Card className="border-border bg-card mb-6">
-          <CardContent className="pt-6">
+        <Card className="border border-border/50 bg-card/80 backdrop-blur-xl rounded-2xl shadow-xl mb-8 overflow-hidden">
+          <CardContent className="p-6">
             <div className="relative">
-              <Search className="absolute left-3 top-3 w-5 h-5 text-muted-foreground" />
+              <Search className="absolute left-3 top-3 w-5 h-5 text-primary" />
               <Input
-                placeholder="Search movies..."
+                placeholder="Search movies by title..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-10 bg-secondary border-border text-foreground"
+                className="pl-11 bg-muted border-border text-foreground h-11 rounded-xl shadow-inner placeholder:text-muted-foreground"
               />
             </div>
           </CardContent>
         </Card>
 
         {/* Movies Table */}
-        <Card className="border-border bg-card">
-          <CardHeader>
-            <CardTitle>Movie Catalog</CardTitle>
-            <CardDescription>
+        <Card className="border border-border/50 bg-card/80 backdrop-blur-xl rounded-2xl shadow-xl overflow-hidden">
+          <CardHeader className="bg-muted/30 border-b border-border/50 pb-4">
+            <CardTitle className="text-xl font-bold flex items-center gap-2 text-foreground">
+               <Film className="w-5 h-5 text-primary" /> Movie Catalog
+            </CardTitle>
+            <CardDescription className="text-muted-foreground">
               {filteredMovies.length} movies in total
             </CardDescription>
           </CardHeader>
-          <CardContent>
+          <CardContent className="p-0">
             {isLoading ? (
-              <div className="text-center py-4">Loading movies...</div>
+              <div className="text-center p-12 text-muted-foreground flex justify-center items-center gap-3">
+                <Loader2 className="h-6 w-6 animate-spin text-primary" /> Loading movies...
+              </div>
             ) : (
               <div className="overflow-x-auto">
                 <table className="w-full text-sm">
-                  <thead className="border-b border-border">
-                    <tr className="text-muted-foreground">
-                      <th className="text-left py-3 px-4 font-semibold">
-                        Title
-                      </th>
-                      <th className="text-left py-3 px-4 font-semibold">
-                        Genre
-                      </th>
-                      <th className="text-left py-3 px-4 font-semibold">
-                        Duration
-                      </th>
-                      <th className="text-left py-3 px-4 font-semibold">
-                        Age Rating
-                      </th>
-                      <th className="text-left py-3 px-4 font-semibold">
-                        Actions
-                      </th>
+                  <thead>
+                    <tr className="bg-muted/50 text-left text-xs font-bold uppercase text-muted-foreground tracking-wider border-b border-border/50">
+                      <th className="p-4">Title</th>
+                      <th className="p-4">Genre</th>
+                      <th className="p-4">Duration</th>
+                      <th className="p-4">Age Rating</th>
+                      <th className="p-4 text-right">Actions</th>
                     </tr>
                   </thead>
-                  <tbody>
+                  <tbody className="divide-y divide-border/50">
                     {filteredMovies.map((movie) => (
                       <tr
                         key={movie.id}
-                        className="border-b border-border/50 hover:bg-secondary/30"
+                        className="hover:bg-muted/50 transition-colors group"
                       >
-                        <td className="py-3 px-4 text-foreground font-semibold flex items-center gap-2">
-                          <Film className="w-4 h-4 text-primary" />
+                        <td className="p-4 text-foreground font-bold flex items-center gap-3">
+                          <Film className="w-4 h-4 text-primary group-hover:scale-110 transition-transform" />
                           {movie.title}
                         </td>
-                        <td className="py-3 px-4 text-foreground">
+                        <td className="p-4 text-foreground/80">
                           {movie.genre}
                         </td>
-                        <td className="py-3 px-4 text-foreground">
+                        <td className="p-4 text-foreground/80">
                           {movie.duration} min
                         </td>
-                        <td className="py-3 px-4 text-foreground">
-                          {movie.ageRating}
+                        <td className="p-4">
+                          <span className="px-2 py-0.5 rounded-full bg-primary/10 text-primary text-[10px] font-bold uppercase tracking-wider">
+                            {movie.ageRating}
+                          </span>
                         </td>
-                        <td className="py-3 px-4">
+                        <td className="p-4 text-right">
                           <div className="flex gap-2">
                             {/* Changed from Link to onClick Handler */}
-                            <Button
+                             <Button
                               size="sm"
                               variant="outline"
                               onClick={() => handleEditClick(movie)}
-                              className="border-border bg-secondary hover:bg-secondary/80"
+                              className="border-border/50 bg-muted/20 hover:bg-muted text-foreground rounded-xl h-9 w-9 p-0"
                             >
-                              <Edit className="w-4 h-4" />
+                              <Edit className="w-4 h-4 text-primary" />
                             </Button>
                             <AlertDialog>
                               <AlertDialogTrigger asChild>
-                                <Button
+                                 <Button
                                   size="sm"
                                   variant="destructive"
-                                  className="bg-red-500 hover:bg-red-600 border-none"
+                                  className="bg-destructive/10 hover:bg-destructive text-destructive hover:text-white border border-destructive/20 rounded-xl h-9 w-9 p-0 transition-all"
                                 >
                                   <Trash2 className="w-4 h-4" />
                                 </Button>
                               </AlertDialogTrigger>
-                              <AlertDialogContent className="bg-white border-border shadow-2xl">
+                              <AlertDialogContent className="bg-card border border-border/50 shadow-2xl rounded-2xl">
                                 <AlertDialogHeader>
                                   <AlertDialogTitle>
                                     Are you absolutely sure?
@@ -332,13 +333,13 @@ export default function AdminMoviesPage() {
                                     {movie.title}" from the catalog.
                                   </AlertDialogDescription>
                                 </AlertDialogHeader>
-                                <AlertDialogFooter>
-                                  <AlertDialogCancel className="bg-secondary">
+                                 <AlertDialogFooter>
+                                  <AlertDialogCancel className="bg-muted border-border font-bold rounded-xl text-foreground">
                                     Cancel
                                   </AlertDialogCancel>
                                   <AlertDialogAction
                                     onClick={() => handleDelete(movie.id)}
-                                    className="bg-red-500 hover:bg-red-600"
+                                    className="bg-destructive hover:bg-destructive/90 text-white font-bold rounded-xl"
                                   >
                                     Delete
                                   </AlertDialogAction>
@@ -358,29 +359,31 @@ export default function AdminMoviesPage() {
       </main>
 
       {/* Edit Movie Modal */}
-      <Dialog open={isEditOpen} onOpenChange={setIsEditOpen}>
-        <DialogOverlay className="bg-card/100 backdrop-blur-sm" />
-        <DialogContent className="sm:max-w-[600px] bg-card/100 border-border text-foreground max-h-[80vh] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle>Edit Movie</DialogTitle>
-            <DialogDescription>
-              Make changes to the movie details here. Click save when done.
-            </DialogDescription>
-          </DialogHeader>
+       <Dialog open={isEditOpen} onOpenChange={setIsEditOpen}>
+        <DialogContent className="sm:max-w-[700px] bg-card border border-border/50 rounded-2xl shadow-xl max-h-[90vh] overflow-y-auto p-0 overflow-hidden">
+          <div className="p-6 bg-muted/30 border-b border-border/50">
+            <DialogHeader>
+              <DialogTitle className="text-2xl font-black text-primary">Edit Movie Catalog</DialogTitle>
+              <DialogDescription className="text-muted-foreground">
+                Update cinematic production details. Click save when done.
+              </DialogDescription>
+            </DialogHeader>
+          </div>
+          <div className="p-6">
           {editingMovie && (
             <form onSubmit={handleSaveEdit} className="grid gap-4 py-4">
               <div className="grid grid-cols-4 items-center gap-4">
                 <Label htmlFor="title" className="text-right">
                   Title
                 </Label>
-                <Input
-                  id="title"
-                  value={editingMovie.title}
-                  onChange={(e) =>
-                    setEditingMovie({ ...editingMovie, title: e.target.value })
-                  }
-                  className="col-span-3 bg-secondary border-border"
-                />
+                   <Input
+                    id="title"
+                    value={editingMovie.title}
+                    onChange={(e) =>
+                      setEditingMovie({ ...editingMovie, title: e.target.value })
+                    }
+                    className="col-span-3 bg-muted border-border text-foreground rounded-xl"
+                  />
               </div>
 
               {/* Multi-value Genres */}
@@ -388,10 +391,10 @@ export default function AdminMoviesPage() {
                 <Label className="text-right pt-2">Genres</Label>
                 <div className="col-span-3">
                   <div className="flex gap-2 mb-2">
-                    <select
+                     <select
                       value={newGenre}
                       onChange={(e) => setNewGenre(e.target.value)}
-                      className="flex-1 bg-secondary border border-border rounded px-3 py-2 text-sm"
+                      className="flex-1 bg-muted border border-border rounded-xl px-3 py-2 text-sm text-foreground"
                     >
                       <option value="">Select Genre</option>
                       <option value="Action">Action</option>
@@ -406,6 +409,7 @@ export default function AdminMoviesPage() {
                     <Button
                       type="button"
                       onClick={() => addItem(newGenre, "genres", setNewGenre)}
+                      className="rounded-xl bg-primary hover:bg-primary/90 text-white"
                       size="sm"
                     >
                       <Plus className="w-4 h-4" />
@@ -433,15 +437,16 @@ export default function AdminMoviesPage() {
                 <Label className="text-right pt-2">Actors</Label>
                 <div className="col-span-3">
                   <div className="flex gap-2 mb-2">
-                    <Input
+                     <Input
                       value={newActor}
                       onChange={(e) => setNewActor(e.target.value)}
                       placeholder="Add actor"
-                      className="flex-1 bg-secondary border-border text-sm"
+                      className="flex-1 bg-muted border-border text-foreground rounded-xl text-sm"
                     />
                     <Button
                       type="button"
                       onClick={() => addItem(newActor, "actors", setNewActor)}
+                      className="rounded-xl bg-primary hover:bg-primary/90 text-white"
                       size="sm"
                     >
                       <Plus className="w-4 h-4" />
@@ -468,7 +473,7 @@ export default function AdminMoviesPage() {
                 <Label htmlFor="duration" className="text-right">
                   Duration
                 </Label>
-                <Input
+                 <Input
                   id="duration"
                   type="number"
                   value={editingMovie.duration}
@@ -478,7 +483,7 @@ export default function AdminMoviesPage() {
                       duration: Number(e.target.value),
                     })
                   }
-                  className="col-span-3 bg-secondary border-border"
+                  className="col-span-3 bg-muted border-border text-foreground rounded-xl"
                 />
               </div>
               <div className="grid grid-cols-4 items-center gap-4">
@@ -509,10 +514,10 @@ export default function AdminMoviesPage() {
                 <Label className="text-right pt-2">Formats</Label>
                 <div className="col-span-3">
                   <div className="flex gap-2 mb-2">
-                    <select
+                     <select
                       value={newFormat}
                       onChange={(e) => setNewFormat(e.target.value)}
-                      className="flex-1 bg-secondary border border-border rounded px-3 py-2 text-sm"
+                      className="flex-1 bg-muted border border-border rounded-xl px-3 py-2 text-sm text-foreground"
                     >
                       <option value="">Select Format</option>
                       <option value="2D">2D</option>
@@ -525,6 +530,7 @@ export default function AdminMoviesPage() {
                       onClick={() =>
                         addItem(newFormat, "formats", setNewFormat)
                       }
+                      className="rounded-xl bg-primary hover:bg-primary/90 text-white"
                       size="sm"
                     >
                       <Plus className="w-4 h-4" />
@@ -552,17 +558,18 @@ export default function AdminMoviesPage() {
                 <Label className="text-right pt-2">Subtitles</Label>
                 <div className="col-span-3">
                   <div className="flex gap-2 mb-2">
-                    <Input
+                     <Input
                       value={newSubtitle}
                       onChange={(e) => setNewSubtitle(e.target.value)}
                       placeholder="Add subtitle"
-                      className="flex-1 bg-secondary border-border text-sm"
+                      className="flex-1 bg-muted border-border text-foreground rounded-xl text-sm"
                     />
                     <Button
                       type="button"
                       onClick={() =>
                         addItem(newSubtitle, "subtitles", setNewSubtitle)
                       }
+                      className="rounded-xl bg-primary hover:bg-primary/90 text-white"
                       size="sm"
                     >
                       <Plus className="w-4 h-4" />
@@ -601,10 +608,10 @@ export default function AdminMoviesPage() {
                   <option value="Inactive">Inactive</option>
                 </select>
               </div> */}
-              <DialogFooter>
+               <DialogFooter className="mt-6">
                 <Button
                   type="submit"
-                  className="bg-primary hover:bg-primary/90"
+                  className="bg-primary hover:bg-primary/90 text-white font-bold px-8 rounded-xl h-11 shadow-lg shadow-primary/20"
                 >
                   <Save className="w-4 h-4 mr-2" />
                   Save Changes
@@ -612,6 +619,7 @@ export default function AdminMoviesPage() {
               </DialogFooter>
             </form>
           )}
+          </div>
         </DialogContent>
       </Dialog>
     </div>

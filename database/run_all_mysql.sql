@@ -2,10 +2,10 @@
 -- MySQL Batch Execution Script
 -- =============================================================================
 -- This file runs all SQL files in the database directory
--- Usage: mysql -u username -p database_name < run_all_mysql.sql
--- Or from MySQL CLI: SOURCE /path/to/run_all_mysql.sql
 -- =============================================================================
 
+
+SET NAMES 'utf8mb4';
 
 -- dont work in mysql workbench
 

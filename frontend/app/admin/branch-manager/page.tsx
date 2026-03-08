@@ -297,8 +297,8 @@ export default function BranchManagerPage() {
 
   if (isLoading)
     return (
-      <div className="min-h-screen flex items-center justify-center text-white">
-        Loading...
+      <div className="min-h-screen flex items-center justify-center bg-background text-foreground">
+        <div className="w-12 h-12 border-4 border-primary/10 border-t-primary rounded-full animate-spin" />
       </div>
     );
 
@@ -388,13 +388,16 @@ export default function BranchManagerPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-background to-secondary">
+    <div className="min-h-screen bg-background relative overflow-hidden text-foreground">
+      {/* Aurora Blurs */}
+      <div className="absolute top-[-10%] right-[-5%] w-[40%] h-[40%] rounded-full bg-primary/10 blur-[120px] -z-10" />
+      <div className="absolute bottom-[-10%] right-[-5%] w-[30%] h-[40%] rounded-full bg-accent/5 blur-[120px] -z-10" />
       <Navbar />
 
       <main className="container mx-auto px-4 py-8">
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
           <div>
-            <h1 className="text-3xl font-bold text-foreground mb-2">
+            <h1 className="text-3xl font-bold bg-gradient-to-r from-[var(--foreground)] to-[var(--primary)] bg-clip-text text-transparent mb-2">
               Branch Manager
             </h1>
             <p className="text-muted-foreground">
@@ -403,7 +406,7 @@ export default function BranchManagerPage() {
           </div>
           <Button
             onClick={saveConfiguration}
-            className="bg-green-600 hover:bg-green-700 text-white gap-2"
+            className="bg-emerald-600 hover:bg-emerald-700 text-white gap-2 shadow-lg shadow-emerald-500/20"
           >
             <Save className="w-4 h-4" /> Save Branch Changes
           </Button>
@@ -414,10 +417,10 @@ export default function BranchManagerPage() {
           onValueChange={setActiveTab}
           className="space-y-6"
         >
-          <TabsList className="grid w-full grid-cols-3 bg-card border border-border">
-            <TabsTrigger value="info">Info & Details</TabsTrigger>
-            <TabsTrigger value="movies">Movies & Schedule</TabsTrigger>
-            <TabsTrigger value="halls">Halls</TabsTrigger>
+          <TabsList className="grid w-full grid-cols-3 bg-muted p-1 rounded-xl border border-border/50">
+            <TabsTrigger value="info" className="rounded-lg data-[state=active]:bg-card data-[state=active]:text-primary font-bold">Info & Details</TabsTrigger>
+            <TabsTrigger value="movies" className="rounded-lg data-[state=active]:bg-card data-[state=active]:text-primary font-bold">Movies & Schedule</TabsTrigger>
+            <TabsTrigger value="halls" className="rounded-lg data-[state=active]:bg-card data-[state=active]:text-primary font-bold">Halls</TabsTrigger>
           </TabsList>
 
           {/* 1. BRANCH INFO TAB */}
@@ -575,18 +578,18 @@ function HallManagementTab({ branchId }: { branchId: string }) {
 
   return (
     <div className="space-y-6">
-      <Card className="border-border bg-card">
+      <Card className="border border-border/50 bg-card/80 backdrop-blur-xl rounded-2xl shadow-xl">
         <CardHeader>
-          <CardTitle>Hall Management</CardTitle>
-          <CardDescription>
+          <CardTitle className="text-foreground">Hall Management</CardTitle>
+          <CardDescription className="text-muted-foreground">
             Create and manage halls for your branch.
           </CardDescription>
         </CardHeader>
         <CardContent>
           <div className="grid gap-6">
             {/* Form */}
-            <div className="p-4 border rounded-lg bg-secondary/30">
-              <h3 className="text-sm font-semibold mb-3">
+            <div className="p-4 border border-border/50 rounded-xl bg-muted/30">
+              <h3 className="text-sm font-semibold mb-3 text-foreground">
                 {editingHall ? "Edit Hall" : "Add New Hall"}
               </h3>
               <form
@@ -594,7 +597,7 @@ function HallManagementTab({ branchId }: { branchId: string }) {
                 className="grid grid-cols-2 gap-4"
               >
                 <div>
-                  <Label htmlFor="hallNumber">Hall Number</Label>
+                   <Label htmlFor="hallNumber" className="text-foreground">Hall Number</Label>
                   <Input
                     id="hallNumber"
                     type="number"
@@ -605,10 +608,11 @@ function HallManagementTab({ branchId }: { branchId: string }) {
                     placeholder="1"
                     required
                     disabled={!!editingHall}
+                    className="bg-muted border-border text-foreground"
                   />
                 </div>
-                <div>
-                  <Label htmlFor="type">Type</Label>
+                 <div>
+                  <Label htmlFor="type" className="text-foreground">Type</Label>
                   <select
                     id="type"
                     value={hallForm.type}
@@ -624,25 +628,26 @@ function HallManagementTab({ branchId }: { branchId: string }) {
                     <option value="3D">3D</option>
                   </select>
                 </div>
-                <div>
-                  <Label htmlFor="seatCapacity">Seat Capacity</Label>
+                 <div>
+                  <Label htmlFor="seatCapacity" className="text-foreground">Seat Capacity</Label>
                   <Input
                     id="seatCapacity"
                     type="number"
                     value={hallForm.seatCapacity}
                     readOnly
-                    className="bg-muted"
+                    className="bg-muted/50 border-border text-foreground"
                     placeholder="Auto-calculated"
                   />
                 </div>
                 <div className="grid grid-cols-2 gap-2">
-                  <div>
-                    <Label htmlFor="rowCount">Rows</Label>
+                   <div>
+                    <Label htmlFor="rowCount" className="text-foreground">Rows</Label>
                     <Input
                       id="rowCount"
                       type="number"
                       min="1"
                       value={hallForm.rowCount}
+                      className="bg-muted border-border text-foreground"
                       onChange={(e) => {
                         const val = parseInt(e.target.value);
                         if (val < 0) return; // Prevent negative
@@ -660,13 +665,14 @@ function HallManagementTab({ branchId }: { branchId: string }) {
                       required
                     />
                   </div>
-                  <div>
-                    <Label htmlFor="colCount">Cols</Label>
+                   <div>
+                    <Label htmlFor="colCount" className="text-foreground">Cols</Label>
                     <Input
                       id="colCount"
                       type="number"
                       min="1"
                       value={hallForm.colCount}
+                      className="bg-muted border-border text-foreground"
                       onChange={(e) => {
                         const val = parseInt(e.target.value);
                         if (val < 0) return; // Prevent negative
@@ -696,29 +702,29 @@ function HallManagementTab({ branchId }: { branchId: string }) {
                       Cancel
                     </Button>
                   )}
-                  <Button type="submit" size="sm">
+                   <Button type="submit" size="sm" className="bg-primary hover:bg-primary/90">
                     {editingHall ? "Update Hall" : "Add Hall"}
                   </Button>
                 </div>
               </form>
             </div>
 
-            {/* List */}
+             {/* List */}
             <div>
-              <h3 className="text-sm font-semibold mb-2">Existing Halls</h3>
+              <h3 className="text-sm font-semibold mb-2 text-foreground">Existing Halls</h3>
               {isLoading ? (
                 <p className="text-sm text-muted-foreground">Loading...</p>
               ) : halls.length === 0 ? (
                 <p className="text-sm text-muted-foreground">No halls found.</p>
-              ) : (
-                <div className="border rounded-md divide-y">
+               ) : (
+                <div className="border border-border/50 rounded-xl divide-y divide-border/50 overflow-hidden">
                   {halls.map((hall) => (
                     <div
                       key={hall.hallNumber}
                       className="p-3 flex justify-between items-center hover:bg-muted/50"
                     >
-                      <div>
-                        <div className="font-medium">
+                       <div>
+                        <div className="font-medium text-foreground">
                           Hall {hall.hallNumber} ({hall.type})
                         </div>
                         <div className="text-xs text-muted-foreground">

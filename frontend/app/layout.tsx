@@ -6,7 +6,9 @@ import "./globals.css";
 import { Toast } from "@/components/ui/toast";
 import { Toaster } from "sonner";
 import { Navbar } from "@/app/navbar";
-const balooFont = Baloo_Chettan_2({ subsets: ["latin"] });
+import { ThemeProvider } from "next-themes";
+
+const balooFont = Baloo_Chettan_2({ subsets: ["latin", "vietnamese"] });
 
 export const metadata: Metadata = {
   title: "LDHK Cinema - Movie Ticket Booking",
@@ -20,11 +22,13 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body className={`${balooFont.className} font-sans antialiased`}>
-        {children}
-        <Analytics />
-        <Toaster position="top-right" richColors />
+        <ThemeProvider attribute="data-theme" defaultTheme="system" enableSystem>
+          {children}
+          <Analytics />
+          <Toaster position="top-right" richColors />
+        </ThemeProvider>
       </body>
     </html>
   );

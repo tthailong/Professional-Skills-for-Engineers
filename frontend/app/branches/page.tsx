@@ -171,10 +171,10 @@ export default function BranchManagementPage() {
   const totalPages = Math.ceil(totalBranches / itemsPerPage);
 
   return (
-    <div className="min-h-screen bg-white relative overflow-hidden text-slate-900 selection:bg-rose-100">
-      {/* Rose Aurora Mesh background */}
-      <div className="absolute top-[-10%] right-[-5%] w-[45%] h-[40%] rounded-full bg-rose-50/60 blur-[130px] -z-10" />
-      <div className="absolute bottom-[-10%] left-[-5%] w-[40%] h-[45%] rounded-full bg-indigo-50/40 blur-[130px] -z-10" />
+    <div className="min-h-screen bg-background relative overflow-hidden text-foreground selection:bg-primary/20">
+      {/* Aurora Mesh background */}
+      <div className="absolute top-[-10%] right-[-5%] w-[45%] h-[40%] rounded-full bg-primary/10 blur-[130px] -z-10" />
+      <div className="absolute bottom-[-10%] left-[-5%] w-[40%] h-[45%] rounded-full bg-accent/5 blur-[130px] -z-10" />
 
       <Navbar />
 
@@ -186,21 +186,21 @@ export default function BranchManagementPage() {
             animate={{ opacity: 1, x: 0 }}
           >
             <div className="flex items-center gap-2 mb-2">
-              <div className="p-2 bg-rose-600 rounded-xl shadow-lg shadow-rose-200">
+              <div className="p-2 bg-[var(--primary)] rounded-xl shadow-lg shadow-primary/20">
                 <Building className="w-5 h-5 text-white" />
               </div>
-              <span className="text-[10px] font-black uppercase tracking-[0.2em] text-rose-600">
+              <span className="text-[10px] font-black uppercase tracking-[0.2em] text-primary">
                 Infrastructure
               </span>
             </div>
-            <h1 className="text-5xl md:text-6xl font-black tracking-tighter bg-gradient-to-r from-rose-500 via-rose-500 to-rose-500 bg-clip-text text-transparent">
+            <h1 className="text-5xl md:text-6xl font-black tracking-tighter bg-gradient-to-r from-[var(--primary)] via-[var(--accent)] to-[var(--primary)] bg-clip-text text-transparent">
               Branch Network
             </h1>
           </motion.div>
 
           <Button
             onClick={handleOpenCreate}
-            className="rounded-2xl bg-slate-900 hover:bg-rose-600 text-white h-14 px-8 font-black transition-all shadow-xl shadow-slate-200 active:scale-95"
+            className="rounded-2xl bg-foreground text-background hover:bg-primary hover:text-white h-14 px-8 font-black transition-all shadow-xl shadow-foreground/5 active:scale-95"
           >
             <Plus className="w-5 h-5 mr-2" /> Register Branch
           </Button>
@@ -208,21 +208,21 @@ export default function BranchManagementPage() {
 
         {/* Search & Filters Glass Bar */}
         <div className="max-w-4xl mx-auto mb-16">
-          <div className="p-2 rounded-[2rem] bg-white/40 backdrop-blur-2xl border border-white/20 shadow-[0_8px_32px_0_rgba(225,29,72,0.05)]">
+          <div className="p-2 rounded-[2rem] bg-card/40 backdrop-blur-2xl border border-border/20 shadow-[0_8px_32px_0_rgba(0,0,0,0.05)]">
             <div className="flex flex-col md:flex-row gap-2">
               <div className="relative flex-1 group">
-                <Search className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400 group-focus-within:text-rose-600 transition-colors" />
+                <Search className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground group-focus-within:text-primary transition-colors" />
                 <Input
                   placeholder="Find branches by city or name..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-14 h-14 bg-transparent border-none text-lg font-medium focus-visible:ring-0 placeholder:text-slate-300"
+                  className="pl-14 h-14 bg-transparent border-none text-lg font-medium focus-visible:ring-0 placeholder:text-muted-foreground"
                 />
               </div>
-              <div className="h-10 w-[1px] bg-slate-200 hidden md:block self-center mx-2" />
+              <div className="h-10 w-[1px] bg-border hidden md:block self-center mx-2" />
               <div className="flex items-center gap-2 px-4">
                 <Select value={sortBy} onValueChange={setSortBy}>
-                  <SelectTrigger className="w-[140px] border-none bg-transparent font-bold text-slate-600 focus:ring-0">
+                  <SelectTrigger className="w-[140px] border-none bg-transparent font-bold text-muted-foreground focus:ring-0">
                     <SelectValue placeholder="Sort By" />
                   </SelectTrigger>
                   <SelectContent className="rounded-2xl border-none shadow-2xl">
@@ -234,7 +234,7 @@ export default function BranchManagementPage() {
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="rounded-xl hover:bg-rose-50 text-rose-600"
+                  className="rounded-xl hover:bg-primary/10 text-primary"
                   onClick={() =>
                     setSortOrder(sortOrder === "ASC" ? "DESC" : "ASC")
                   }
@@ -262,34 +262,34 @@ export default function BranchManagementPage() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.4, delay: index * 0.05 }}
               >
-                <Card className="border-none bg-white/70 backdrop-blur-md rounded-[2.5rem] shadow-sm hover:shadow-2xl hover:shadow-rose-100 transition-all duration-500 group overflow-hidden">
+                <Card className="border border-border/50 bg-card/70 backdrop-blur-md rounded-[2.5rem] shadow-sm hover:shadow-2xl hover:shadow-primary/10 transition-all duration-500 group overflow-hidden">
                   {/* Visual Header */}
-                  <div className="h-32 bg-slate-900 p-8 flex justify-between items-start relative overflow-hidden text-white">
-                    <div className="absolute top-0 right-0 w-32 h-32 bg-rose-600/20 rounded-full blur-2xl translate-x-1/2 -translate-y-1/2" />
+                  <div className="h-32 bg-foreground p-8 flex justify-between items-start relative overflow-hidden text-background">
+                    <div className="absolute top-0 right-0 w-32 h-32 bg-primary/20 rounded-full blur-2xl translate-x-1/2 -translate-y-1/2" />
                     <div className="relative z-10">
-                      <p className="text-[10px] font-black text-rose-400 uppercase tracking-widest mb-1">
+                      <p className="text-[10px] font-black text-primary uppercase tracking-widest mb-1">
                         Venue ID: #{branch.id}
                       </p>
                       <h3 className="text-2xl font-black truncate">
                         {branch.name}
                       </h3>
                     </div>
-                    <Layers className="text-white/20 w-12 h-12" />
+                    <Layers className="text-background/20 w-12 h-12" />
                   </div>
 
                   <CardContent className="p-8">
                     <div className="space-y-4 mb-8">
-                      <div className="flex items-center gap-3 text-slate-500">
-                        <div className="p-2 bg-rose-50 rounded-lg">
-                          <MapPin className="w-4 h-4 text-rose-500" />
+                      <div className="flex items-center gap-3 text-muted-foreground">
+                        <div className="p-2 bg-muted rounded-lg">
+                          <MapPin className="w-4 h-4 text-primary" />
                         </div>
                         <span className="text-sm font-bold truncate">
                           {branch.address}, {branch.city}
                         </span>
                       </div>
-                      <div className="flex items-center gap-3 text-slate-500">
-                        <div className="p-2 bg-rose-50 rounded-lg">
-                          <User className="w-4 h-4 text-rose-500" />
+                      <div className="flex items-center gap-3 text-muted-foreground">
+                        <div className="p-2 bg-muted rounded-lg">
+                          <User className="w-4 h-4 text-primary" />
                         </div>
                         <span className="text-sm font-bold">
                           Manager: {getManagerName(branch.managerId)}
@@ -297,10 +297,10 @@ export default function BranchManagementPage() {
                       </div>
                     </div>
 
-                    <div className="grid grid-cols-2 gap-3 pt-6 border-t border-slate-50">
+                    <div className="grid grid-cols-2 gap-3 pt-6 border-t border-border/50">
                       <Button
                         variant="secondary"
-                        className="rounded-xl h-12 bg-slate-50 hover:bg-slate-900 hover:text-white font-bold transition-all"
+                        className="rounded-xl h-12 bg-muted hover:bg-foreground hover:text-background font-bold transition-all"
                         onClick={() => handleOpenHallManager(branch)}
                       >
                         Manage Halls
@@ -309,7 +309,7 @@ export default function BranchManagementPage() {
                         <Button
                           variant="outline"
                           size="icon"
-                          className="h-12 w-12 rounded-xl border-slate-100 hover:bg-rose-50 hover:text-rose-600 transition-all"
+                          className="h-12 w-12 rounded-xl border-border hover:bg-primary/10 hover:text-primary transition-all"
                           onClick={() => handleOpenEdit(branch)}
                         >
                           <Edit className="w-4 h-4" />
@@ -317,7 +317,7 @@ export default function BranchManagementPage() {
                         <Button
                           variant="outline"
                           size="icon"
-                          className="h-12 w-12 rounded-xl border-rose-50 text-rose-300 hover:bg-rose-600 hover:text-white transition-all"
+                          className="h-12 w-12 rounded-xl border-primary/20 text-muted-foreground hover:bg-primary hover:text-white transition-all"
                           onClick={() => deleteBranch(branch.id)}
                         >
                           <Trash2 className="w-4 h-4" />
@@ -338,7 +338,7 @@ export default function BranchManagementPage() {
               variant="ghost"
               onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
               disabled={currentPage === 1}
-              className="rounded-xl hover:bg-rose-50 font-bold"
+              className="rounded-xl hover:bg-primary/10 font-bold"
             >
               <ChevronLeft className="w-4 h-4 mr-2" /> Previous
             </Button>
@@ -350,8 +350,8 @@ export default function BranchManagementPage() {
                   className={cn(
                     "w-10 h-10 rounded-xl font-bold transition-all",
                     currentPage === i + 1
-                      ? "bg-slate-900 text-white shadow-lg"
-                      : "text-slate-400 hover:bg-rose-50 hover:text-rose-600",
+                      ? "bg-foreground text-background shadow-lg"
+                      : "text-muted-foreground hover:bg-primary/10 hover:text-primary",
                   )}
                 >
                   {i + 1}
@@ -362,7 +362,7 @@ export default function BranchManagementPage() {
               variant="ghost"
               onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
               disabled={currentPage === totalPages}
-              className="rounded-xl hover:bg-rose-50 font-bold"
+              className="rounded-xl hover:bg-primary/10 font-bold"
             >
               Next <ChevronRight className="w-4 h-4 ml-2" />
             </Button>
@@ -372,15 +372,15 @@ export default function BranchManagementPage() {
 
       {/* Modern Hall Management Modal */}
       <Dialog open={isHallModalOpen} onOpenChange={setIsHallModalOpen}>
-        <DialogContent className="sm:max-w-[700px] bg-white rounded-[3rem] border-none shadow-2xl p-10 max-h-[85vh] overflow-y-auto no-scrollbar">
+        <DialogContent className="sm:max-w-[700px] bg-card rounded-[3rem] border-none shadow-2xl p-10 max-h-[85vh] overflow-y-auto no-scrollbar text-foreground">
           <DialogHeader className="mb-8 text-center">
-            <div className="mx-auto p-4 bg-rose-50 rounded-[2rem] w-fit mb-4">
-              <Monitor className="w-8 h-8 text-rose-600" />
+            <div className="mx-auto p-4 bg-primary/10 rounded-[2rem] w-fit mb-4">
+              <Monitor className="w-8 h-8 text-primary" />
             </div>
             <DialogTitle className="text-3xl font-black tracking-tight">
               Manage Auditoriums
             </DialogTitle>
-            <DialogDescription className="text-slate-500 font-medium">
+            <DialogDescription className="text-muted-foreground font-medium">
               Configure seating and technology for {currentBranchForHalls?.name}
               .
             </DialogDescription>
@@ -393,30 +393,30 @@ export default function BranchManagementPage() {
               {halls.map((hall) => (
                 <div
                   key={hall.hallNumber}
-                  className="p-6 bg-slate-50 rounded-3xl border border-slate-100 flex justify-between items-center group hover:bg-white hover:shadow-xl transition-all"
+                  className="p-6 bg-muted rounded-3xl border border-border/50 flex justify-between items-center group hover:bg-card hover:shadow-xl transition-all"
                 >
                   <div>
-                    <p className="text-[10px] font-black uppercase text-rose-500 mb-1 tracking-widest">
+                    <p className="text-[10px] font-black uppercase text-primary mb-1 tracking-widest">
                       {hall.type}
                     </p>
-                    <h4 className="text-xl font-black text-slate-900">
+                    <h4 className="text-xl font-black text-foreground">
                       Hall {hall.hallNumber}
                     </h4>
-                    <p className="text-xs font-bold text-slate-400 mt-1">
+                    <p className="text-xs font-bold text-muted-foreground mt-1">
                       {hall.seatCapacity} Seats
                     </p>
                   </div>
                   <Button
                     variant="ghost"
                     size="icon"
-                    className="rounded-xl group-hover:bg-rose-50 group-hover:text-rose-600"
+                    className="rounded-xl group-hover:bg-primary/10 group-hover:text-primary"
                   >
                     <ChevronRight className="w-5 h-5" />
                   </Button>
                 </div>
               ))}
             </div>
-            <Button className="w-full h-14 rounded-2xl bg-slate-900 font-black">
+            <Button className="w-full h-14 rounded-2xl bg-foreground text-background font-black hover:bg-primary hover:text-white transition-all">
               <Plus className="w-4 h-4 mr-2" /> Add New Hall
             </Button>
           </div>
