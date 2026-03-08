@@ -1,4 +1,4 @@
-
+﻿
 USE db_assignment2;
 
 DELIMITER $$
@@ -3622,7 +3622,7 @@ BEGIN
     SET
 		Receipt_date = COALESCE(rec_date, Receipt_date),
         Method= COALESCE(NULLIF(p_method, ''), Method),
-        Customer_id  = COALESCE(p_customer_id, Customer_id),
+        Customer_id  = COALESCE(p_customer_id, Customer_id),
         CV_id= COALESCE(p_cv_id, CV_id)
 	WHERE Receipt_id = p_receipt_id ;
 END $$
@@ -3687,9 +3687,10 @@ BEGIN
 END $$
 
 
-------------------------------------------------------------------------------------------------------------------
+-- ----------------------------------------------------------------------------------------------------------------
 -- READ PROCEDURE --
 -- xếp hạng thành viên có loyal point cao nhất dựa theo từng mức (input: Bronze, Silver)
+-- ----------------------------------------------------------------------------------------------------------------
 DROP PROCEDURE IF EXISTS get_customers_by_membership $$
 CREATE PROCEDURE get_customers_by_membership (
     IN p_membership_type VARCHAR(50)
@@ -4659,6 +4660,7 @@ BEGIN
 
 END $$
     
-SET SQL_SAFE_UPDATES = 1;
 DELIMITER ;
+SET SQL_SAFE_UPDATES = 1;
+
 
