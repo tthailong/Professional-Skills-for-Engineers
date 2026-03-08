@@ -1,5 +1,3 @@
-select * from customerphone;
-
 DELIMITER $$
 
 DROP PROCEDURE IF exists login_customer $$

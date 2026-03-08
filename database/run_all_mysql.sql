@@ -19,6 +19,9 @@ SELECT NOW() AS 'Execution Start Time';
 SELECT '>> Using database: db_assignment2' AS Status;
 USE db_assignment2;
 
+SELECT '>> Executing: all/db_assignment2.sql' AS Status;
+SOURCE all/db_assignment2.sql;
+
 -- =============================================================================
 -- 2. STORED PROCEDURES
 -- =============================================================================
@@ -65,22 +68,27 @@ SELECT '>> Executing: trigger/create_data_trigger.sql' AS Status;
 SOURCE trigger/create_data_trigger.sql;
 
 -- =============================================================================
--- 5. TEST FILES
+-- 5. ADD MOCK DATA
 -- =============================================================================
-SELECT '>> Executing: testprocedure.sql' AS Status;
-SOURCE testprocedure.sql;
-
-SELECT '>> Executing: Test/trigger_test.sql' AS Status;
-SOURCE Test/trigger_test.sql;
+SELECT '>> Executing: Test/mock_votes.sql' AS Status;
+SOURCE Test/mock_votes.sql;
 
 -- =============================================================================
--- 6. ADDITIONAL FILES
+-- 6. TEST FILES
 -- =============================================================================
-SELECT '>> Executing: assignment_report.sql' AS Status;
-SOURCE assignment_report.sql;
+-- SELECT '>> Executing: testprocedure.sql' AS Status;
+-- SOURCE testprocedure.sql;
 
-SELECT '>> Executing: all/db_assignment2.sql' AS Status;
-SOURCE all/db_assignment2.sql;
+-- SELECT '>> Executing: Test/trigger_test.sql' AS Status;
+-- SOURCE Test/trigger_test.sql;
+
+-- =============================================================================
+-- 7. ADDITIONAL FILES
+-- =============================================================================
+-- SELECT '>> Executing: assignment_report.sql' AS Status;
+-- SOURCE assignment_report.sql;
+
+
 
 -- =============================================================================
 -- COMPLETION

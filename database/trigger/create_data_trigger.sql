@@ -36,7 +36,7 @@ END$$
 DELIMITER ;
 
 
---trigger tự động tạo showtimeseat
+-- trigger tự động tạo showtimeseat
 DELIMITER $$
 
 CREATE TRIGGER trg_generate_showtime_seats
