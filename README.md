@@ -15,12 +15,14 @@ Backend:
 4. Install dependencies: `pip install -r requirements.txt`
 5. Run application: `uvicorn main:app --reload`
 
-structure of .env for backend:
+Structure of `.env` for backend:
+```text
 DB_USER=your_username
 DB_PASS=your_password
 DB_HOST=your_host
 DB_NAME=your_database_name
 DB_PORT=your_port
+```
 
 Database (using bash to run - only first time): `cd database` then `mysql -u your_username -p < run_all_mysql.sql` 
 
