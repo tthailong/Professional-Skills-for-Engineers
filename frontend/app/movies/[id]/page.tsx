@@ -612,11 +612,11 @@ export default function MovieDetailsPage() {
                   {top2Moods.map((mood) => (
                     <div
                       key={mood.mood_id}
-                      className="px-2.5 py-1 rounded-lg flex items-center gap-1.5 border border-slate-900 transition-colors hover:bg-slate-50"
+                      className="px-2.5 py-1 rounded-lg flex items-center gap-1.5 border border-border transition-colors hover:bg-accent"
                       title={mood.mood_name}
                     >
                       <img src={mood.symbol} alt={mood.mood_name} className="w-4 h-4" />
-                      <span className="text-sm font-bold text-slate-900">
+                      <span className="text-sm font-bold text-foreground">
                         {mood.count}
                       </span>
                     </div>

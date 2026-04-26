@@ -6,7 +6,7 @@ from sqlalchemy import text
 from typing import Optional, List
 
 from database import get_session
-from mail_service import send_ticket_email
+from routes.mail_service import send_ticket_email
 
 router = APIRouter(
     prefix="/receipts",
