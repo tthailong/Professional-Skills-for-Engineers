@@ -1,13 +1,20 @@
-# coding=utf-8
+import os
+import json
+import hmac
+import hashlib
+import urllib.request
+import urllib.parse
 from time import time
 from datetime import datetime
-import uuid, json, hmac, hashlib, urllib.request, urllib.parse
+from dotenv import load_dotenv
+
+load_dotenv()
 
 config = {
-  "appid": 553,
-  "key1": "9phuAOYhan4urywHTh0ndEXiV3pKHr5Q",
-  "key2": "Iyz2habzyr7AG8SgvoBCbKwKi3UzlLi3",
-  "endpoint": "https://sandbox.zalopay.com.vn/v001/tpe/createorder"
+    "appid": int(os.getenv("APP_ID", "553")),
+    "key1": os.getenv("KEY1", ""),
+    "key2": os.getenv("KEY2", ""),
+    "endpoint": "https://sandbox.zalopay.com.vn/v001/tpe/createorder"
 }
 
 def create_zalopay_order(amount: int, items: list, receipt_id: int, customer_name: str = "Customer", redirect_url: str = None, bank_code: str = "", callback_url: str = None):
