@@ -28,6 +28,7 @@ import {
   Tag,
   Loader2,
   AlertCircle,
+  Wallet,
 } from "lucide-react";
 import { toast } from "sonner";
 import { API_BASE_URL, useUserStore } from "@/store/useUserStore";
@@ -219,6 +220,9 @@ export default function PaymentPage() {
         setError("Please enter bank details");
         return false;
       }
+    } else if (paymentMethod === "zalopay") {
+      // No extra validation needed as it redirects
+      return true;
     }
     return true;
   };
@@ -247,6 +251,7 @@ export default function PaymentPage() {
       let dbMethod = "CARD";
       if (paymentMethod === "upi") dbMethod = "UPI";
       if (paymentMethod === "bank") dbMethod = "BANK";
+      if (paymentMethod === "zalopay") dbMethod = "ZALOPAY";
 
       // 2. Build Payload from STORE data
       const payload = {
@@ -283,6 +288,13 @@ export default function PaymentPage() {
 
       if (!response.ok) {
         throw new Error(data.detail || "Payment failed");
+      }
+
+      // 3. Handle Redirect for ZaloPay
+      if (data.payment_url) {
+        toast.info("Redirecting to ZaloPay...");
+        window.location.href = data.payment_url;
+        return;
       }
 
       toast.success("Payment Successful!");
@@ -480,12 +492,18 @@ export default function PaymentPage() {
               </CardHeader>
               <CardContent>
                 <Tabs value={paymentMethod} onValueChange={setPaymentMethod}>
-                  <TabsList className="grid w-full grid-cols-3 bg-secondary mb-6">
+                  <TabsList className="grid w-full grid-cols-4 bg-secondary mb-6">
                     <TabsTrigger
                       value="card"
                       className="flex items-center gap-2"
                     >
                       <CreditCard className="w-4 h-4" /> Card
+                    </TabsTrigger>
+                    <TabsTrigger
+                      value="zalopay"
+                      className="flex items-center gap-2"
+                    >
+                      <Wallet className="w-4 h-4" /> ZaloPay
                     </TabsTrigger>
                     <TabsTrigger
                       value="upi"
@@ -596,6 +614,18 @@ export default function PaymentPage() {
                       }
                       className="bg-secondary border-border"
                     />
+                  </TabsContent>
+
+                  <TabsContent value="zalopay" className="space-y-4">
+                    <div className="bg-primary/10 border border-primary/30 rounded-lg p-6 text-center">
+                      <div className="w-16 h-16 bg-primary/20 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                        <Wallet className="w-8 h-8 text-primary" />
+                      </div>
+                      <h3 className="font-bold text-lg mb-2">Pay with ZaloPay</h3>
+                      <p className="text-sm text-muted-foreground max-w-xs mx-auto">
+                        You will be redirected to ZaloPay to complete your transaction securely.
+                      </p>
+                    </div>
                   </TabsContent>
                 </Tabs>
 

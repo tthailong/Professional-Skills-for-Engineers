@@ -5,6 +5,45 @@ import io
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from email.mime.image import MIMEImage
+from sqlalchemy import text
+
+def send_receipt_email_helper(receipt_id: int, customer_id: int, session, tickets: list):
+    """
+    Helper function to fetch receipt details and send a confirmation email.
+    """
+    try:
+        customer_q = text("""
+            SELECT c.Email, CONCAT(c.FName, ' ', c.LName) as full_name
+            FROM Customer c WHERE c.Customer_id = :cid
+        """)
+        cust = session.exec(customer_q, params={"cid": customer_id}).first()
+        
+        ticket_q = text("""
+            SELECT m.Title, s.Start_time, s.Date, b.Name as branch_name
+            FROM Ticket t
+            JOIN Showtime s ON t.Showtime_id = s.Showtime_id
+            JOIN Movie m ON s.Movie_id = m.Movie_id
+            JOIN Cinema_Branch b ON t.Branch_id = b.Branch_id
+            WHERE t.Receipt_id = :rid
+            LIMIT 1
+        """)
+        ticket_row = session.exec(ticket_q, params={"rid": receipt_id}).first()
+
+        if cust and ticket_row:
+            # Handle both list of objects (Store) and list of rows (DB)
+            seat_numbers = ", ".join([t.seat_number if hasattr(t, 'seat_number') else t['seat_number'] for t in tickets])
+            
+            ticket_info = {
+                "ticket_id": str(receipt_id),
+                "customer_name": cust[1],
+                "movie_name": ticket_row[0],
+                "showtime": f"{str(ticket_row[1])[:5]} - {ticket_row[2]}",
+                "cinema": ticket_row[3],
+                "seat": seat_numbers,
+            }
+            send_ticket_email(cust[0], ticket_info)
+    except Exception as mail_err:
+        print(f"[Email] Failed to send ticket email: {mail_err}")
 
 # ==============================================================================
 # Config EMAIL SERVER (GMAIL)

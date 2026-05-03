@@ -25,6 +25,9 @@ DB_PASS=your_password
 DB_HOST=your_host (ex: localhost)
 DB_NAME=your_database_name (ex: db_assignment)
 DB_PORT=your_port (ex: 3306)
+APP_ID=merchant_app_id
+KEY1=mac_key (to zalopay)
+KEY2=callback_key (from zalopay)
 ```
 
 #### Database (using Git Bash to run - first time only)

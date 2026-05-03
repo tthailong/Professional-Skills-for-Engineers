@@ -1,5 +1,6 @@
 "use client";
 
+import React from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { Navbar } from "@/app/navbar";
@@ -20,17 +21,70 @@ import { useUserCart } from "@/store/useUserCart";
 export default function ConfirmationPage() {
   const searchParams = useSearchParams();
   const { tickets, products, getTotalPrice } = useUserCart();
+  const [isMounted, setIsMounted] = React.useState(false);
 
   // Extract data passed from the payment page success redirect
   const bookingId = searchParams.get("bookingId") || "PENDING";
+  const [paymentStatus, setPaymentStatus] = React.useState<string | null>(null);
 
-  // Derived data from Cart
-  const movieName = tickets[0]?.movie_name || "Unknown Movie";
-  const seats = tickets.map((t) => t.seat_number).join(", ");
-  const totalAmount = getTotalPrice().toFixed(0);
+  React.useEffect(() => {
+    setIsMounted(true);
+    
+    // Trigger the backend to verify the payment status with ZaloPay
+    if (bookingId !== "PENDING") {
+      const urlStatus = searchParams.get("status");
+      
+      // If ZaloPay explicitly says it failed or was cancelled in the URL
+      // (status 1 is success, anything else is usually a fail/cancel)
+      if (urlStatus && urlStatus !== "1") {
+        console.log("Payment failed based on URL status, deleting receipt...");
+        fetch(`http://localhost:8000/receipts/${bookingId}`, { method: "DELETE" })
+          .then(() => setPaymentStatus("Failed"))
+          .catch(err => console.error("Error deleting failed receipt:", err));
+      } else {
+        // Otherwise, verify with the backend (which queries ZaloPay API)
+        fetch(`http://localhost:8000/receipts/${bookingId}/status`)
+          .then(res => res.json())
+          .then(data => {
+            console.log("Payment status verified:", data);
+            setPaymentStatus(data.status);
+          })
+          .catch(err => console.error("Error verifying payment:", err));
+      }
+    }
+  }, [bookingId]);
+
+  // Derived data from Cart (only valid on client)
+  const movieName = isMounted ? (tickets[0]?.movie_name || "Unknown Movie") : "Loading...";
+  const seats = isMounted ? tickets.map((t) => t.seat_number).join(", ") : "";
+  const totalAmount = isMounted ? getTotalPrice().toFixed(0) : "0";
 
   // Create a QR code URL (using a placeholder service for visual effect)
   const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${bookingId}`;
+
+  if (paymentStatus === "Failed") {
+    return (
+      <div className="min-h-screen bg-background flex flex-col items-center justify-center p-4">
+        <div className="text-center space-y-4 max-w-md">
+          <div className="flex justify-center">
+            <div className="bg-red-500/10 p-4 rounded-full">
+              <CheckCircle className="w-16 h-16 text-red-500 rotate-45" />
+            </div>
+          </div>
+          <h1 className="text-3xl font-bold">Payment Failed</h1>
+          <p className="text-muted-foreground">
+            Your payment was declined or cancelled. The seats have been released.
+            Please try booking again if you still wish to watch this movie.
+          </p>
+          <div className="pt-4">
+            <Link href="/movies">
+              <Button className="w-full">Back to Movies</Button>
+            </Link>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-secondary">
@@ -43,13 +97,12 @@ export default function ConfirmationPage() {
             <CheckCircle className="w-20 h-20 text-green-500 animate-in zoom-in duration-300" />
           </div>
           <h1 className="text-4xl font-bold text-foreground mb-2">
-            Booking Confirmed!
+            {paymentStatus === "Paid" ? "Booking Confirmed!" : "Verifying Payment..."}
           </h1>
           <p className="text-muted-foreground text-lg">
-            Your tickets are ready. Receipt ID:{" "}
-            <span className="font-mono text-foreground font-bold">
-              {bookingId}
-            </span>
+            {paymentStatus === "Paid" 
+              ? `Your tickets are ready. Receipt ID: ${bookingId}`
+              : "Please wait while we verify your transaction..."}
           </p>
         </div>
 

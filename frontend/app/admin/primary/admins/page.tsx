@@ -670,7 +670,7 @@ export default function AdminManagementPage() {
 
       {/* --- EDIT PROFILE DIALOG (PRIMARY) --- */}
       <Dialog open={isEditProfileOpen} onOpenChange={setIsEditProfileOpen}>
-        <DialogContent className="sm:max-w-[425px]">
+        <DialogContent className="sm:max-w-[425px] rounded-[2rem] bg-card border border-border/50 shadow-2xl p-8">
           <DialogHeader>
             <DialogTitle>Edit My Profile</DialogTitle>
           </DialogHeader>
@@ -734,8 +734,7 @@ export default function AdminManagementPage() {
 
       {/* --- EDIT ADMIN DIALOG (REGULAR) --- */}
       <Dialog open={isEditAdminOpen} onOpenChange={setIsEditAdminOpen}>
-        <DialogOverlay className="bg-card/100 backdrop-blur-sm" />
-        <DialogContent className="sm:max-w-[425px]">
+        <DialogContent className="sm:max-w-[425px] rounded-[2rem] bg-card border border-border/50 shadow-2xl p-8">
           <DialogHeader>
             <DialogTitle>Edit Admin</DialogTitle>
           </DialogHeader>
