@@ -45,6 +45,7 @@ KEY2=callback_key (from zalopay)
 │   ├── main.py             # Entry point
 │   ├── database.py         # Database connection
 │   ├── model.py            # Data models
+│   ├── requirements.txt    # Requirements deps
 │   └── .env                # Environment variables (add your .env here)
 │
 ├── database/               # MySQL scripts
