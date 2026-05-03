@@ -585,7 +585,8 @@ CREATE TABLE Ticket (
 CREATE TABLE Receipt(
     Receipt_id INT PRIMARY KEY AUTO_INCREMENT,
     Receipt_date DATE,
-    Method ENUM('CARD', 'UPI', 'BANK') DEFAULT 'CARD',
+    Method ENUM('CARD', 'UPI', 'BANK', 'ZALOPAY') DEFAULT 'CARD',
+    Status ENUM('Pending', 'Paid', 'Failed') DEFAULT 'Pending',
     Customer_id INT NOT NULL,
     CV_id INT,
     FOREIGN KEY (Customer_id) REFERENCES Customer(Customer_id),
@@ -594,13 +595,13 @@ CREATE TABLE Receipt(
 CHARACTER SET utf8mb4
 COLLATE utf8mb4_unicode_ci;
 
-INSERT INTO Receipt (Receipt_date, Method, Customer_id, CV_id)
+INSERT INTO Receipt (Receipt_date, Method, Status, Customer_id, CV_id)
 VALUES
-('2025-11-01 10:00:00', 'CARD', 1, 1),
-('2025-11-02 14:30:00', 'CARD', 2, 1),
-('2025-11-03 18:45:00', 'CARD', 3, 1),
-('2025-11-04 20:00:00', 'CARD', 4, 1),
-('2025-11-05 09:00:00', 'CARD', 5, 1);
+('2025-11-01 10:00:00', 'CARD', 'Paid', 1, 1),
+('2025-11-02 14:30:00', 'CARD', 'Paid', 2, 1),
+('2025-11-03 18:45:00', 'CARD', 'Paid', 3, 1),
+('2025-11-04 20:00:00', 'CARD', 'Paid', 4, 1),
+('2025-11-05 09:00:00', 'CARD', 'Paid', 5, 1);
 
 INSERT INTO Ticket 
 (Price, Receipt_id, Movie_id, Showtime_id, Branch_id, Hall_number, Seat_number)
@@ -796,3 +797,4 @@ ADD CONSTRAINT fk_reciept_product FOREIGN KEY(Receipt_id) REFERENCES  Receipt(Re
 
 ALTER TABLE Ticket
 ADD CONSTRAINT fk_reciept_ticket FOREIGN KEY(Receipt_id) REFERENCES  Receipt(Receipt_id);
+

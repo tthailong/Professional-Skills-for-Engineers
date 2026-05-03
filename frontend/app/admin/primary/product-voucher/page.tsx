@@ -78,6 +78,7 @@ export default function ProductVoucherPage() {
   const [activeTab, setActiveTab] = useState<ItemType>("food-drink");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [currentItemId, setCurrentItemId] = useState<string | null>(null);
 
   const [formData, setFormData] = useState({
@@ -155,12 +156,14 @@ export default function ProductVoucherPage() {
     fetchItems();
   }, []);
 
-  const filteredItems = items.filter(
-    (i) =>
-      i.type === activeTab &&
-      (i.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        i.description?.toLowerCase().includes(searchQuery.toLowerCase())),
-  );
+  const filteredItems = items
+    .filter(
+      (i) =>
+        i.type === activeTab &&
+        (i.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          i.description?.toLowerCase().includes(searchQuery.toLowerCase())),
+    )
+    .sort((a, b) => parseInt(b.id) - parseInt(a.id));
 
   const handleOpenCreate = () => {
     setFormData({
@@ -235,12 +238,67 @@ export default function ProductVoucherPage() {
       );
     }
   };
-  // --- SUBMIT LOGIC (Simplified for Redesign) ---
+  // --- SUBMIT LOGIC (Full Implementation) ---
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Re-use your original fetch logic here...
-    setIsModalOpen(false);
-    toast.success("Success!");
+    setLoading(true);
+
+    try {
+      let url = "";
+      let method = isEditing ? "PUT" : "POST";
+      let payload: any = {};
+
+      if (formData.type === "food-drink") {
+        url = `${API_BASE_URL}/admin/products/food_drink${isEditing ? `/${currentItemId}` : ""}`;
+        payload = {
+          name: formData.name,
+          price: parseFloat(formData.price),
+          description: formData.description,
+          size: formData.size,
+          type: formData.foodType,
+        };
+      } else if (formData.type === "souvenir") {
+        url = `${API_BASE_URL}/admin/products/souvenir${isEditing ? `/${currentItemId}` : ""}`;
+        payload = {
+          name: formData.name,
+          price: parseFloat(formData.price),
+          description: formData.description,
+          movie_id: parseInt(formData.movieId),
+        };
+      } else if (formData.type === "voucher") {
+        url = `${API_BASE_URL}/admin/vouchers/${isEditing ? currentItemId : ""}`;
+        payload = {
+          discount: parseFloat(formData.discount),
+          expiration: formData.expiration,
+          description: formData.description,
+          condition: formData.condition,
+        };
+      }
+
+      const res = await fetch(url, {
+        method: method,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData.detail || "Submission failed");
+      }
+
+      toast.success(
+        isEditing
+          ? "Inventory updated successfully"
+          : "New entry authorized and added",
+      );
+      setIsModalOpen(false);
+      fetchItems(); // Refresh the list
+    } catch (error: any) {
+      console.error("Submit error:", error);
+      toast.error(error.message || "An error occurred during submission");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -487,6 +545,67 @@ export default function ProductVoucherPage() {
                 />
               </div>
 
+              {formData.type === "food-drink" && (
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label className="text-[10px] font-black uppercase text-muted-foreground tracking-widest">
+                      Size
+                    </Label>
+                    <select
+                      value={formData.size}
+                      onChange={(e) =>
+                        setFormData({ ...formData, size: e.target.value })
+                      }
+                      className="w-full h-12 rounded-xl bg-muted border-border p-2 text-sm font-bold text-foreground focus:ring-2 focus:ring-primary/20 outline-none"
+                    >
+                      <option value="SMALL">Small</option>
+                      <option value="MEDIUM">Medium</option>
+                      <option value="LARGE">Large</option>
+                      <option value="COMBO">Combo</option>
+                    </select>
+                  </div>
+                  <div className="space-y-2">
+                    <Label className="text-[10px] font-black uppercase text-muted-foreground tracking-widest">
+                      Food Type
+                    </Label>
+                    <select
+                      value={formData.foodType}
+                      onChange={(e) =>
+                        setFormData({ ...formData, foodType: e.target.value })
+                      }
+                      className="w-full h-12 rounded-xl bg-muted border-border p-2 text-sm font-bold text-foreground focus:ring-2 focus:ring-primary/20 outline-none"
+                    >
+                      <option value="Snack">Snack</option>
+                      <option value="Drink">Drink</option>
+                      <option value="Popcorn">Popcorn</option>
+                      <option value="Combo">Combo</option>
+                    </select>
+                  </div>
+                </div>
+              )}
+
+              {formData.type === "souvenir" && (
+                <div className="space-y-2">
+                  <Label className="text-[10px] font-black uppercase text-muted-foreground tracking-widest">
+                    Related Movie
+                  </Label>
+                  <select
+                    value={formData.movieId}
+                    onChange={(e) =>
+                      setFormData({ ...formData, movieId: e.target.value })
+                    }
+                    className="w-full h-12 rounded-xl bg-muted border-border p-2 text-sm font-bold text-foreground focus:ring-2 focus:ring-primary/20 outline-none"
+                  >
+                    <option value="">Select a Movie</option>
+                    {movies.map((m) => (
+                      <option key={m.movie_id} value={m.movie_id}>
+                        {m.title}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              )}
+
               {formData.type === "voucher" ? (
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
@@ -514,6 +633,19 @@ export default function ProductVoucherPage() {
                       className="h-12 rounded-xl bg-muted border-border text-foreground"
                     />
                   </div>
+                  <div className="space-y-2 col-span-2">
+                    <Label className="text-[10px] font-black uppercase text-muted-foreground tracking-widest">
+                      Expiration (dd/mm/yyyy)
+                    </Label>
+                    <Input
+                      placeholder="e.g. 31/12/2026"
+                      value={formData.expiration}
+                      onChange={(e) =>
+                        setFormData({ ...formData, expiration: e.target.value })
+                      }
+                      className="h-12 rounded-xl bg-muted border-border text-foreground"
+                    />
+                  </div>
                 </div>
               ) : (
                  <div className="space-y-2">
@@ -536,9 +668,10 @@ export default function ProductVoucherPage() {
 
                <Button
                 type="submit"
-                className="w-full h-16 rounded-[1.5rem] bg-primary hover:bg-primary/90 text-white font-black text-lg shadow-2xl shadow-primary/20 mt-6 active:scale-[0.98] transition-all"
+                disabled={loading}
+                className="w-full h-16 rounded-[1.5rem] bg-primary hover:bg-primary/90 text-white font-black text-lg shadow-2xl shadow-primary/20 mt-6 active:scale-[0.98] transition-all disabled:opacity-50"
               >
-                Authorize & Save
+                {loading ? "Processing..." : "Authorize & Save"}
               </Button>
             </form>
           </DialogContent>

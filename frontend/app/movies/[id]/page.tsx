@@ -207,7 +207,7 @@ export default function MovieDetailsPage() {
       setError(null);
       try {
         const url = `${API_BASE_URL}/movies/${id}/${tag ? `?tag=${tag}` : ""}`;
-        const response = await fetch(url);
+        const response = await fetch(url, { cache: 'no-store' });
 
         if (response.status === 404) {
           setError("Movie not found (404)");

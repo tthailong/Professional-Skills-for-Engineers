@@ -384,7 +384,7 @@ export default function BookingPage() {
 
     try {
       const url = `${API_BASE_URL}/movies/${movieId}/${showtimeId}`;
-      const response = await fetch(url);
+      const response = await fetch(url, { cache: 'no-store' });
       if (!response.ok) throw new Error("Data load failed.");
       const data: BookingPageOut = await response.json();
 

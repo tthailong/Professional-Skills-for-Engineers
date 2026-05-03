@@ -355,8 +355,7 @@ export default function BranchManagementPage() {
                 <Plus className="w-4 h-4" /> Add New Branch
               </Button>
             </DialogTrigger>
-            <DialogOverlay className="bg-card/100 backdrop-blur-sm" />
-            <DialogContent className="sm:max-w-[500px] bg-card border border-border/50 rounded-2xl shadow-xl">
+            <DialogContent className="sm:max-w-[500px] bg-card border border-border/50 rounded-[2.5rem] shadow-2xl p-8">
               <DialogHeader>
                 <DialogTitle className="text-xl font-bold text-primary">
                   {isEditing ? "Edit Branch Details" : "Add New Branch"}
@@ -485,7 +484,7 @@ export default function BranchManagementPage() {
 
           {/* --- HALL MANAGEMENT MODAL --- */}
           <Dialog open={isHallModalOpen} onOpenChange={setIsHallModalOpen}>
-             <DialogContent className="sm:max-w-[700px] bg-card border border-border/50 rounded-2xl shadow-xl max-h-[90vh] overflow-y-auto">
+             <DialogContent className="sm:max-w-[700px] bg-card border border-border/50 rounded-[2.5rem] shadow-2xl p-10 max-h-[90vh] overflow-y-auto no-scrollbar">
               <DialogHeader>
                 <DialogTitle className="text-2xl font-bold text-primary">
                   Manage Halls - {currentBranchForHalls?.name}

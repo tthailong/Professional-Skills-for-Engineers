@@ -1,4 +1,4 @@
-﻿
+
 USE db_assignment2;
 
 DELIMITER $$
@@ -3494,6 +3494,7 @@ CREATE PROCEDURE create_receipt
 (
     IN p_receipt_date VARCHAR(20),
     IN p_method VARCHAR(250),
+    IN p_status VARCHAR(20),
     IN p_customer_id INT,
     IN p_cv_id INT,
     
@@ -3528,6 +3529,9 @@ BEGIN
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'ERROR: Payment method cannot be NULL.';
     END IF;
 
+    IF p_status IS NULL OR p_status = '' THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'ERROR: Payment status cannot be NULL.';
+    END IF;
 
 	IF p_cv_id IS NOT NULL THEN
 		IF NOT EXISTS (SELECT 1 FROM `CustomerVoucher` WHERE Customer_id = p_customer_id AND CV_id = p_cv_id) THEN
@@ -3538,8 +3542,8 @@ BEGIN
 		END IF;
 	END IF;
     
-    INSERT INTO Receipt(Receipt_date, Method, Customer_id, CV_id)
-    VALUES (rec_date, p_method, p_customer_id, p_cv_id);
+    INSERT INTO Receipt(Receipt_date, Method, Status, Customer_id, CV_id)
+    VALUES (rec_date, p_method, p_status, p_customer_id, p_cv_id);
 
     SET receipt_id = LAST_INSERT_ID();
 

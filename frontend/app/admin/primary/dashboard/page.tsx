@@ -13,24 +13,24 @@ import {
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
+import { useTheme } from "next-themes";
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from "recharts";
 import {
-  Filter,
   TrendingUp,
   DollarSign,
   Ticket,
   Users,
   AlertTriangle,
   Calendar,
-  Clock,
   LayoutDashboard,
   RefreshCw,
 } from "lucide-react";
-import { useUserStore, API_BASE_URL } from "@/store/useUserStore";
+import { API_BASE_URL } from "@/store/useUserStore";
 import { useAdminStore } from "@/store/useAdminStore";
 
-// --- ROSE THEME CONSTANTS ---
-const ROSE_COLORS = ["#e11d48", "#fb7185", "#fda4af", "#fff1f2", "#f43f5e"];
+// --- DASHBOARD THEME PALETTES ---
+const LIGHT_PALETTE = ["#e11d48", "#fb7185", "#fda4af", "#f43f5e", "#9f1239"]; // Rose/Red
+const DARK_PALETTE = ["#3b82f6", "#60a5fa", "#93c5fd", "#2563eb", "#1d4ed8"]; // Blue
 
 const formatCurrency = (amount: number) => {
   if (amount >= 1000000000) return `${(amount / 1000000000).toFixed(1)}B`;
@@ -38,12 +38,24 @@ const formatCurrency = (amount: number) => {
   return new Intl.NumberFormat("en-US", {
     style: "currency",
     currency: "USD",
+    maximumFractionDigits: 0,
   }).format(amount);
 };
 
 export default function PrimaryDashboard() {
+  const { resolvedTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
+  
+  useEffect(() => { setMounted(true); }, []);
+
   const { admin, alerts, totalAlerts, fetchLowOccupancyAlerts } =
     useAdminStore();
+  
+  // Only use dynamic colors after mounting to prevent hydration mismatch
+  const currentPalette = mounted && resolvedTheme === "dark" ? DARK_PALETTE : LIGHT_PALETTE;
+  const primaryColorClass = mounted && resolvedTheme === "dark" ? "text-blue-500" : "text-rose-600";
+  const primaryBgClass = mounted && resolvedTheme === "dark" ? "bg-blue-500/10" : "bg-rose-500/10";
+  
   const [startDate, setStartDate] = useState(
     new Date(new Date().getFullYear(), new Date().getMonth(), 1)
       .toISOString()
@@ -57,7 +69,6 @@ export default function PrimaryDashboard() {
   const [alertPage, setAlertPage] = useState(1);
   const alertLimit = 5;
 
-  // ... (Keep your existing useEffect Fetch Logic exactly as it was) ...
   useEffect(() => {
     const fetchData = async () => {
       if (!admin) return;
@@ -99,15 +110,15 @@ export default function PrimaryDashboard() {
           label: "Net Revenue",
           value: data?.stats?.net_revenue || 0,
           icon: DollarSign,
-          color: "text-rose-600",
-          bg: "bg-rose-50",
+          color: primaryColorClass,
+          bg: primaryBgClass,
         },
         {
           label: "Occupancy Rate",
           value: `${data?.stats?.occupancy_rate?.toFixed(1)}%` || "0%",
           icon: Users,
-          color: "text-rose-500",
-          bg: "bg-rose-50",
+          color: primaryColorClass,
+          bg: primaryBgClass,
         },
       ]
     : [
@@ -115,29 +126,29 @@ export default function PrimaryDashboard() {
           label: "Total Net Revenue",
           value: data?.financials?.net_revenue || 0,
           icon: DollarSign,
-          color: "text-rose-600",
-          bg: "bg-rose-50",
+          color: primaryColorClass,
+          bg: primaryBgClass,
         },
         {
           label: "Total Tickets",
           value: data?.system_stats?.total_bookings || 0,
           icon: Ticket,
-          color: "text-rose-500",
-          bg: "bg-rose-50",
+          color: primaryColorClass,
+          bg: primaryBgClass,
         },
         {
           label: "Avg Order Value",
           value: data?.financials?.avg_receipt_value || 0,
           icon: TrendingUp,
-          color: "text-rose-400",
-          bg: "bg-rose-50",
+          color: primaryColorClass,
+          bg: primaryBgClass,
         },
         {
           label: "Occupancy Rate",
           value: `${data?.system_stats?.occupancy_rate?.toFixed(1)}%` || "0%",
           icon: Users,
-          color: "text-rose-600",
-          bg: "bg-rose-50",
+          color: primaryColorClass,
+          bg: primaryBgClass,
         },
       ];
 
@@ -223,7 +234,7 @@ export default function PrimaryDashboard() {
                       <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest mb-2">
                         {item.label}
                       </p>
-                      <div className="text-3xl font-black text-foreground leading-none">
+                      <div className={`text-3xl font-black ${item.color} leading-none`}>
                         {typeof item.value === "number" &&
                         item.label.includes("Revenue")
                           ? formatCurrency(item.value)
@@ -231,9 +242,9 @@ export default function PrimaryDashboard() {
                       </div>
                     </div>
                     <div
-                      className={`p-4 bg-primary/10 rounded-[1.5rem] group-hover:scale-110 transition-transform duration-500`}
+                      className={`p-4 ${item.bg} rounded-[1.5rem] group-hover:scale-110 transition-transform duration-500`}
                     >
-                      <item.icon className="w-6 h-6 text-primary" />
+                      <item.icon className={`w-6 h-6 ${item.color}`} />
                     </div>
                   </div>
                 </CardContent>
@@ -282,7 +293,7 @@ export default function PrimaryDashboard() {
                           (_: any, index: number) => (
                             <Cell
                               key={index}
-                              fill={ROSE_COLORS[index % ROSE_COLORS.length]}
+                              fill={currentPalette[index % currentPalette.length]}
                               stroke="none"
                             />
                           ),
