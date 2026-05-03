@@ -4,25 +4,32 @@ HCMUT - Professional Skills for Engineers (MySQL + Next.js + FastAPI)
 
 How to set up:
 
-Frontend: `cd frontend` then `npm install` (or `npm install --legacy-peer-deps` if React 19 and vaul are incompatible) then `npm run dev`
+#### Frontend: 
+- `cd frontend`
+- `npm install` (first time only), or `npm install --legacy-peer-deps` if React 19 and vaul are incompatible 
+- `npm run dev`
 
-Backend: 
-1. `cd backend`
-2. Create virtual environment: `python -m venv venv`
-3. Activate virtual environment:
+#### Backend: 
+- `cd backend`
+- Create virtual environment: `python -m venv venv` (first time only)
+- Activate virtual environment:
    - Windows: `venv\Scripts\activate`
    - Bash/Unix: `source venv/bin/activate`
-4. Install dependencies: `pip install -r requirements.txt`
-5. Run application: `uvicorn main:app --reload`
+- Install dependencies: `pip install -r requirements.txt` (first time only)
+- Run application: `uvicorn main:app --reload`
 
-structure of .env for backend:
+Structure of `.env` for backend:
+```text
 DB_USER=your_username
 DB_PASS=your_password
-DB_HOST=your_host
-DB_NAME=your_database_name
-DB_PORT=your_port
+DB_HOST=your_host (ex: localhost)
+DB_NAME=your_database_name (ex: db_assignment)
+DB_PORT=your_port (ex: 3306)
+```
 
-Database (using bash to run - only first time): `cd database` then `mysql -u your_username -p < run_all_mysql.sql` 
+#### Database (using Git Bash to run - first time only)
+- `cd database`
+- `mysql -u your_username -p < run_all_mysql.sql` 
 
 ## Project Structure
 
@@ -35,13 +42,15 @@ Database (using bash to run - only first time): `cd database` then `mysql -u you
 │   ├── main.py             # Entry point
 │   ├── database.py         # Database connection
 │   ├── model.py            # Data models
-│   └── .env                # Environment variables
+│   └── .env                # Environment variables (add your .env here)
 │
 ├── database/               # MySQL scripts
-│   ├── procedure/          # Stored procedures
-│   ├── function/           # SQL functions
+│   ├── all/                # Database entities
+│   ├── function/           # Database functions
+│   ├── procedure/          # Database stored procedures
 │   ├── trigger/            # Database triggers
-│   └── run_all_mysql.sql   # Setup script
+│   ├── run_all_mysql.sql   # Setup script
+│   └── testprocedure.sql   # Mock data
 │
 ├── frontend/               # Next.js application
 │   ├── app/                # App router pages
