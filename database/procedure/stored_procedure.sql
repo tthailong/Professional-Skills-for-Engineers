@@ -1,4 +1,4 @@
-
+﻿
 USE db_assignment2;
 
 DELIMITER $$
@@ -3494,7 +3494,7 @@ CREATE PROCEDURE create_receipt
 (
     IN p_receipt_date VARCHAR(20),
     IN p_method VARCHAR(250),
-    IN p_status VARCHAR(20),
+    IN p_status VARCHAR(250),
     IN p_customer_id INT,
     IN p_cv_id INT,
     
